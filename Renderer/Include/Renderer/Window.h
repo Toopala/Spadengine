@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-class SDL_Window;
+struct SDL_Window;
 
 namespace sge
 {

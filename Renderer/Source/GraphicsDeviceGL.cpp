@@ -1,6 +1,5 @@
 #ifndef DIRECTX_MODE
 
-#include <iostream>
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Window.h"
 #include "SDL/SDL.h"
@@ -16,23 +15,13 @@ namespace sge
 		{
 			if (!gladLoadGL())
 			{
-				std::cout << "EI VITTU TOIMI!" << std::endl;
+				// TODO: Debug log
 			}
 		}
 
 		~Impl()
 		{
 			SDL_GL_DeleteContext(context);
-		}
-
-		void clear()
-		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		}
-
-		void setClearColor(float r, float g, float b, float a)
-		{
-			glClearColor(r, g, b, a);
 		}
 
 	private:
@@ -51,12 +40,12 @@ namespace sge
 
 	void GraphicsDevice::clear()
 	{
-		impl->clear();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void GraphicsDevice::setClearColor(float r, float g, float b, float a)
 	{
-		impl->setClearColor(r, g, b, a);
+		glClearColor(r, g, b, a);
 	}
 }
 
