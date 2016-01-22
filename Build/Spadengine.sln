@@ -13,7 +13,18 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample", "..\Samples\Sample\Sample.vcxproj", "{5C86AAF4-1412-4826-B526-5376C094403F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22} = {13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}
+		{6065B0DE-BA1F-4764-9ED3-A333D2863748} = {6065B0DE-BA1F-4764-9ED3-A333D2863748}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Renderer", "..\Renderer\Renderer.vcxproj", "{6065B0DE-BA1F-4764-9ED3-A333D2863748}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6} = {CDA4E388-68CC-4D24-924C-F923070B1BB6}
+		{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22} = {13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{6869C5BC-4A8F-470E-9824-81277C9FD05D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "..\ThirdParty\glad\glad.vcxproj", "{CDA4E388-68CC-4D24-924C-F923070B1BB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,8 +40,19 @@ Global
 		{5C86AAF4-1412-4826-B526-5376C094403F}.Debug|Win32.Build.0 = Debug|Win32
 		{5C86AAF4-1412-4826-B526-5376C094403F}.Release|Win32.ActiveCfg = Release|Win32
 		{5C86AAF4-1412-4826-B526-5376C094403F}.Release|Win32.Build.0 = Release|Win32
+		{6065B0DE-BA1F-4764-9ED3-A333D2863748}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6065B0DE-BA1F-4764-9ED3-A333D2863748}.Debug|Win32.Build.0 = Debug|Win32
+		{6065B0DE-BA1F-4764-9ED3-A333D2863748}.Release|Win32.ActiveCfg = Release|Win32
+		{6065B0DE-BA1F-4764-9ED3-A333D2863748}.Release|Win32.Build.0 = Release|Win32
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Debug|Win32.Build.0 = Debug|Win32
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Release|Win32.ActiveCfg = Release|Win32
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CDA4E388-68CC-4D24-924C-F923070B1BB6} = {6869C5BC-4A8F-470E-9824-81277C9FD05D}
 	EndGlobalSection
 EndGlobal
