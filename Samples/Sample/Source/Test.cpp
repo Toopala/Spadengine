@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 {
 
 	sge::math::vec2 vec(2.0f);
-	sge::printShit("TESTI");
+	//sge::printShit("TESTI");
 
 	std::cout << vec.x << ", " << vec.y << std::endl;
 
