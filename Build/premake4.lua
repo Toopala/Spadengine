@@ -16,3 +16,8 @@ solution "Spadengine"
 		includedirs { "../Core/Include/",
 			      "../ThirdParty/glm/include/" }
 
+	project "Renderer"
+		kind "StaticLib"
+		language "C++"
+		files { "../Renderer/**.ccp" }
+		includedirs { "../Renderer/Include/" }
