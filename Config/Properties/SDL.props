@@ -12,7 +12,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/SDL/lib/x86/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>XCOPY "$(SolutionDir)../ThirdParty/SDL/lib/x86/SDL2.dll" $(TargetDir) /D /K /Y</Command>
+      <Command>XCOPY "$(SolutionDir)../ThirdParty/SDL/lib/x86/SDL2.dll" "$(TargetDir)" /D /K /Y</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/SDL/lib/x86/;$(OutDir)</AdditionalLibraryDirectories>
