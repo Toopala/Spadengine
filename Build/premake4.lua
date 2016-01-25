@@ -21,3 +21,9 @@ solution "Spadengine"
 		language "C++"
 		files { "../Renderer/**.ccp" }
 		includedirs { "../Renderer/Include/" }
+
+	project "Sample"
+		kind "WindowedApp"
+		language "C++"
+		files {"../Sample/Source/**.ccp" }
+		includedirs { "../Sample/Include/"} 
