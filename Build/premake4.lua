@@ -16,14 +16,30 @@ solution "Spadengine"
 		includedirs { "../Core/Include/",
 			      "../ThirdParty/glm/include/" }
 
+	project "glad"
+		kind "StaticLib"
+		language "C"
+		files {"../ThirdParty/glad/**.c"}
+		includedirs {"../ThirdParty/glad/Include/"}
+	
 	project "Renderer"
 		kind "StaticLib"
 		language "C++"
-		files { "../Renderer/**.ccp" }
-		includedirs { "../Renderer/Include/" }
+		files { "../Renderer/**.cpp" }
+		linkoptions {"../Build/libglad.a"}
+		includedirs { "../Renderer/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glad/Include/" }
+		
 
 	project "Sample"
-		kind "WindowedApp"
+		kind "ConsoleApp"
 		language "C++"
-		files {"../Sample/Source/**.ccp" }
-		includedirs { "../Sample/Include/"} 
+		files {"../Samples/Sample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",}
+
+		links { "SDL2", "Core", "Renderer", "glad", "dl" }
