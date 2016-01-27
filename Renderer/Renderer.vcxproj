@@ -50,6 +50,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>OPENGL4;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -63,6 +64,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>OPENGL4;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -72,11 +74,20 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\GraphicsDeviceGL.cpp" />
+    <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp" />
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Renderer\Buffer.h" />
+    <ClInclude Include="Include\Renderer\Enumerations.h" />
+    <ClInclude Include="Include\Renderer\GL4\GL4Buffer.h" />
+    <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h" />
+    <ClInclude Include="Include\Renderer\GL4\GL4Shader.h" />
     <ClInclude Include="Include\Renderer\GraphicsDevice.h" />
+    <ClInclude Include="Include\Renderer\Pipeline.h" />
+    <ClInclude Include="Include\Renderer\Shader.h" />
+    <ClInclude Include="Include\Renderer\Texture.h" />
+    <ClInclude Include="Include\Renderer\Viewport.h" />
     <ClInclude Include="Include\Renderer\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

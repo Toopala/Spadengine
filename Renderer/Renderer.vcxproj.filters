@@ -13,13 +13,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\GL4">
+      <UniqueIdentifier>{f7f51b58-95f4-482d-9839-899ad9fc2983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GL4">
+      <UniqueIdentifier>{14fa0acf-6fa4-411a-8665-bc22adb2257a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDeviceGL.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp">
+      <Filter>Source Files\GL4</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +34,33 @@
     </ClInclude>
     <ClInclude Include="Include\Renderer\GraphicsDevice.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Viewport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\Enumerations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h">
+      <Filter>Header Files\GL4</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\GL4\GL4Shader.h">
+      <Filter>Header Files\GL4</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\GL4\GL4Buffer.h">
+      <Filter>Header Files\GL4</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

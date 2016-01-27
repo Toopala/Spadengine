@@ -1,5 +1,4 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#pragma once
 
 struct SDL_Window;
 
@@ -17,5 +16,3 @@ namespace sge
 		SDL_Window* window;
 	};
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef MATH_H
-#define MATH_H
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -12,5 +11,3 @@ namespace sge
 		int haeSata();
 	}
 }
-
-#endif
