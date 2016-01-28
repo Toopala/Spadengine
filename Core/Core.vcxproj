@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Core\Math.h" />
+    <ClInclude Include="Include\Core\Memory\Allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math.cpp" />
