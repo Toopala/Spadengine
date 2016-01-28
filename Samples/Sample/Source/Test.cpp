@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "Model.h"
+
 int main(int argc, char** argv)
 {
 
@@ -19,7 +21,7 @@ int main(int argc, char** argv)
 	sge::GraphicsDevice device(window);
 
 	const char* VERTEX_SOURCE =
-	"#version 440\n"
+	"#version 420\n"
 
 	"in vec3 inPosition;\n"
 
@@ -29,7 +31,7 @@ int main(int argc, char** argv)
 	"}\n";
 
 	const char* PIXEL_SOURCE =
-	"#version 440\n"
+	"#version 420\n"
 
 	"out vec4 outColour;\n"
 
@@ -45,6 +47,11 @@ int main(int argc, char** argv)
 		0.0f, 1.0f, 0.0f, 
 	};
 
+	//Assimp test
+	Model* model = &Model("cube.dae");
+
+	model->getMeshes();
+
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
 	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
@@ -58,7 +65,7 @@ int main(int argc, char** argv)
 
 	device.bindViewport(&viewport);
 	device.copyData(vertexBuffer, vertexData, sizeof(vertexData));
-
+	
 	SDL_Event event;
 
 	bool running = true;

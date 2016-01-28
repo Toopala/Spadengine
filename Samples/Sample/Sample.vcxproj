@@ -37,6 +37,7 @@
     <Import Project="..\..\Config\Properties\glm.props" />
     <Import Project="..\..\Config\Properties\glad.props" />
     <Import Project="..\..\Config\Properties\SDL.props" />
+    <Import Project="..\..\Config\Properties\assimpDebug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -78,6 +79,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Model.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
