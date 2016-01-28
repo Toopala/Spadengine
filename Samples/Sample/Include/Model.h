@@ -37,8 +37,6 @@ public:
 	}
 };
 
-int TextureFromFile(const char* path, string directory);
-
 class Model
 {
 public:
