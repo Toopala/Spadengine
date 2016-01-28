@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include "Model.h"
+
 int main(int argc, char** argv)
 {
 
@@ -21,7 +23,7 @@ int main(int argc, char** argv)
 	sge::GraphicsDevice device(window);
 
 	const char* VERTEX_SOURCE =
-	"#version 440\n"
+	"#version 420\n"
 
 	"in vec3 inPosition;\n"
 
@@ -31,7 +33,7 @@ int main(int argc, char** argv)
 	"}\n";
 
 	const char* PIXEL_SOURCE =
-	"#version 440\n"
+	"#version 420\n"
 
 	"out vec4 outColour;\n"
 
@@ -47,6 +49,11 @@ int main(int argc, char** argv)
 		0.8f, -0.8f, 0.0f,
 		-0.8f, -0.8f, 0.0f
 	};
+
+	//Assimp test
+	Model* model = &Model("cube.dae");
+
+	model->getMeshes();
 
 	short indexData[] =
 	{
@@ -65,7 +72,7 @@ int main(int argc, char** argv)
 	device.bindBuffer(indexBuffer);
 
 	pipeline->vertexLayout = device.createVertexLayout(&vertexLayoutDescription, vertexShader);
-
+	
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	device.bindViewport(&viewport);
