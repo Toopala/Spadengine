@@ -1,7 +1,9 @@
 #include "Core/Math.h"
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
+#include "Renderer/Pipeline.h"
 #include "Renderer/Shader.h"
+#include "Renderer/VertexLayout.h"
 #include "Renderer/Viewport.h"
 #include "SDL/SDL.h"
 
@@ -40,24 +42,36 @@ int main(int argc, char** argv)
 
 	float vertexData[] = 
 	{ 
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 
+		-0.8f, 0.8f, 0.0f,
+		0.8f, 0.8f, 0.0f,
+		0.8f, -0.8f, 0.0f,
+		-0.8f, -0.8f, 0.0f
+	};
+
+	short indexData[] =
+	{
+		0, 1, 2, 0, 2, 3
 	};
 
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
 	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
-	device.bindBuffer(vertexBuffer);
-
+	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::STATIC);
 	sge::Pipeline* pipeline = device.createPipeline(vertexShader, pixelShader);
+	sge::VertexLayoutDescription vertexLayoutDescription;
 
 	device.bindPipeline(pipeline);
-	
+	device.bindBuffer(vertexBuffer);
+	device.bindBuffer(indexBuffer);
+
+	pipeline->vertexLayout = device.createVertexLayout(&vertexLayoutDescription, vertexShader);
+
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	device.bindViewport(&viewport);
+
 	device.copyData(vertexBuffer, vertexData, sizeof(vertexData));
+	device.copyData(indexBuffer, indexData, sizeof(indexData));
 
 	SDL_Event event;
 
@@ -77,13 +91,16 @@ int main(int argc, char** argv)
 			}
 		}
 		
-		device.draw(3);
+		device.drawIndexed(6);
 
 		window.swap();
 	}
 
+	device.debindBuffer(indexBuffer);
 	device.debindBuffer(vertexBuffer);
+	device.debindPipeline(pipeline);
 
+	device.deleteBuffer(indexBuffer);
 	device.deleteBuffer(vertexBuffer);
 	device.deleteShader(vertexShader);
 	device.deleteShader(pixelShader);

@@ -9,9 +9,78 @@
 #include "Renderer/GL4/GL4Buffer.h"
 #include "Renderer/GL4/GL4Pipeline.h"
 #include "Renderer/GL4/GL4Shader.h"
+#include "Renderer/VertexLayout.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
+
+//OPENGL DRAWIN
+//
+//
+//::SETUP(PIPELINE ? )
+//
+//CREATE VAO
+//
+//BIND VAO
+//
+//CREATE VERTEX BUFFER
+//
+//BIND VERTEX BUFFER
+//
+//SET VERTEX ATTRIB POINTERS
+//
+//SET VERTEX DATA
+//
+//UNBIND VERTEX BUFFER
+//
+//CREATE INDEX BUFFER
+//
+//BIND INDEX BUFFER
+//
+//SET INDEX DATA
+//
+//UNBIND VAO
+//
+//CREATE VERTEX SHADER
+//
+//COMPILE VERTEX SHADER
+//
+//CREATE PIXEL SHADER
+//
+//COMPILE PIXEL SHADER
+//
+//CREATE PROGRAM
+//
+//ATTACH VERTEX SHADER
+//
+//ATTACH PIXEL SHADER
+//
+//LINK PROGRAM
+//
+//
+//::DRAWING
+//
+//
+//BIND VAO
+//
+//BIND PROGRAM
+//
+//BIND TEXTURE
+//
+//SET UNIFORMS
+//
+//DRAW
+//
+//UNBIND TEXTURE
+//
+//UNBIND PROGRAM
+//
+//UNBIND VAO
+//
+//
+//
+//
+//PROBLEMS : AttribPoints, UNIFORMS, TEXTURES ETC
 
 namespace sge
 {
@@ -101,16 +170,6 @@ namespace sge
 		glGenVertexArrays(1, &gl4Pipeline->vao);
 		glBindVertexArray(gl4Pipeline->vao);
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
-
 		GLint success;
 		GLchar infoLog[512];
 
@@ -137,13 +196,6 @@ namespace sge
 		return &gl4Pipeline->header;
 	}
 
-	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
-	{
-		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
-		glUseProgram(gl4Pipeline->program);
-		glBindVertexArray(gl4Pipeline->vao);
-	}
-
 	void GraphicsDevice::deletePipeline(Pipeline* pipeline)
 	{
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
@@ -152,6 +204,39 @@ namespace sge
 
 		delete gl4Pipeline;
 		pipeline = nullptr;
+	}
+
+	VertexLayout* GraphicsDevice::createVertexLayout(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader)
+	{
+		GL4Shader* gl4Shader = reinterpret_cast<GL4Shader*>(vertexShader);
+		VertexLayout* vertexLayout = new VertexLayout();
+
+		// TODO INPUT LAYOUT HERE
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(
+			0,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			0,
+			(void*)0
+			);
+
+
+		return nullptr;
+	}
+
+	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
+	{
+		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
+		glUseProgram(gl4Pipeline->program);
+		glBindVertexArray(gl4Pipeline->vao);
+	}
+
+	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
+	{
+		glUseProgram(0);
+		glBindVertexArray(0);
 	}
 
 	Shader* GraphicsDevice::createShader(ShaderType type, const char* buffer)
@@ -236,9 +321,9 @@ namespace sge
 		glDrawArrays(GL_TRIANGLES, 0, count);
 	}
 
-	void GraphicsDevice::drawIndexed()
+	void GraphicsDevice::drawIndexed(size_t count)
 	{
-
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, nullptr);
 	}
 }
 

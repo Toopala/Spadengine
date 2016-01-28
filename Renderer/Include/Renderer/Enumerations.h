@@ -1,7 +1,9 @@
 #pragma once
 
 namespace sge
-{
+{ 
+	static const unsigned int MAX_VERTEX_INPUTS = 15;
+
 	enum class ShaderType
 	{
 		VERTEX,
@@ -23,5 +25,13 @@ namespace sge
 	enum class PrimitiveTopology
 	{
 		TRIANGLE
+	};
+
+	enum class VertexFormat
+	{
+		FLOAT1,
+		FLOAT2,
+		FLOAT3,
+		FLOAT4
 	};
 }
