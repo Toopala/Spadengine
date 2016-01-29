@@ -48,7 +48,11 @@ namespace sge
 
 	void GraphicsDevice::init()
 	{
+/*		glFrontFace(GL_CCW);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
 
+		glEnable(GL_BLEND);*/
 	}
 
 	void GraphicsDevice::deinit()
@@ -269,7 +273,7 @@ namespace sge
 
 	void GraphicsDevice::drawIndexed(size_t count)
 	{
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, nullptr);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 }
 
