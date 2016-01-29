@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "..\ThirdParty\glad\glad.vcxproj", "{CDA4E388-68CC-4D24-924C-F923070B1BB6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "..\Game\Game.vcxproj", "{2931F991-D439-40BC-B180-A805AEC2B9DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -48,6 +50,10 @@ Global
 		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Debug|Win32.Build.0 = Debug|Win32
 		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Release|Win32.ActiveCfg = Release|Win32
 		{CDA4E388-68CC-4D24-924C-F923070B1BB6}.Release|Win32.Build.0 = Release|Win32
+		{2931F991-D439-40BC-B180-A805AEC2B9DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2931F991-D439-40BC-B180-A805AEC2B9DC}.Debug|Win32.Build.0 = Debug|Win32
+		{2931F991-D439-40BC-B180-A805AEC2B9DC}.Release|Win32.ActiveCfg = Release|Win32
+		{2931F991-D439-40BC-B180-A805AEC2B9DC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
