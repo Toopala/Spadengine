@@ -7,5 +7,10 @@ namespace sge
 	struct Pipeline
 	{
 		VertexLayout* vertexLayout;
+
+		~Pipeline()
+		{
+			delete vertexLayout;
+		}
 	};
 }

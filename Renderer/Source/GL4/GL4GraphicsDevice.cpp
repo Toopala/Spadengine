@@ -9,7 +9,6 @@
 #include "Renderer/GL4/GL4Buffer.h"
 #include "Renderer/GL4/GL4Pipeline.h"
 #include "Renderer/GL4/GL4Shader.h"
-#include "Renderer/VertexLayout.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
@@ -93,7 +92,7 @@ namespace sge
 		buffer = nullptr;
 	}
 
-	Pipeline* GraphicsDevice::createPipeline(Shader* vertexShader, Shader* pixelShader)
+	Pipeline* GraphicsDevice::createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader)
 	{
 		GL4Pipeline* gl4Pipeline = new GL4Pipeline();
 		GL4Shader* gl4VertexShader = reinterpret_cast<GL4Shader*>(vertexShader);
@@ -105,6 +104,22 @@ namespace sge
 		GLint success;
 		GLchar infoLog[512];
 
+		VertexLayout* vertexLayout = new VertexLayout();
+
+		vertexLayout->elements = new VertexElement[vertexLayoutDescription->count];
+		vertexLayout->count = vertexLayoutDescription->count;
+
+		size_t stride = 0;
+
+		for (size_t i = 0; i < vertexLayout->count; i++)
+		{
+			vertexLayout->elements[i] = { stride, vertexLayoutDescription->elements[i] };
+			stride += vertexLayoutDescription->elements[i];
+		}
+
+		vertexLayout->stride = stride;
+
+		gl4Pipeline->header.vertexLayout = vertexLayout;
 		gl4Pipeline->program = glCreateProgram();
 
 		glAttachShader(gl4Pipeline->program, gl4VertexShader->id);
@@ -138,16 +153,6 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-	VertexLayout* GraphicsDevice::createVertexLayout(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader)
-	{
-		GL4Shader* gl4Shader = reinterpret_cast<GL4Shader*>(vertexShader);
-		VertexLayout* vertexLayout = new VertexLayout();
-
-
-
-		return nullptr;
-	}
-
 	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
 	{
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
@@ -165,7 +170,7 @@ namespace sge
 		impl->pipeline = nullptr;
 	}
 
-	Shader* GraphicsDevice::createShader(ShaderType type, const char* buffer)
+	Shader* GraphicsDevice::createShader(ShaderType type, const char* source)
 	{
 		GL4Shader* shader = new GL4Shader();
 		GLint success;
@@ -177,7 +182,7 @@ namespace sge
 		case ShaderType::PIXEL: shader->id = glCreateShader(GL_FRAGMENT_SHADER); break;
 		}
 
-		glShaderSource(shader->id, 1, &buffer, nullptr);
+		glShaderSource(shader->id, 1, &source, nullptr);
 		glCompileShader(shader->id);
 
 		glGetShaderiv(shader->id, GL_COMPILE_STATUS, &success);
@@ -205,23 +210,27 @@ namespace sge
 
 	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
 	{
+		// TODO wrap assert?
+		SDL_assert(impl->pipeline);
+
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
 
-		// Set attrib pointers here! VAO needs to be bound.
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-			);
+		VertexLayout* vertexLayout = impl->pipeline->header.vertexLayout;
+
+		for (size_t i = 0; i < vertexLayout->count; i++)
+		{
+			glEnableVertexAttribArray(i);
+
+			glVertexAttribPointer(i, vertexLayout->elements[i].size, GL_FLOAT, GL_FALSE, vertexLayout->stride * sizeof(GLfloat), (void*)(vertexLayout->elements[i].offset * sizeof(GLfloat)));
+		}
 	}
 
 	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)
 	{
+		// TODO wrap assert?
+		SDL_assert(impl->pipeline);
+
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
 	}
@@ -241,13 +250,13 @@ namespace sge
 
 	}
 
-	void GraphicsDevice::copyData(Buffer* buffer, const void* data, size_t size)
+	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
 	}
 
-	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, const void* data, size_t size)
+	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferSubData(gl4Buffer->target, offset, size, data);
