@@ -47,7 +47,8 @@ public:
 		this->loadModel(path);
 	}
 
-	vector<Mesh> getMeshes(){ return meshes; }
+	vector<Vertex>* getVerticeArray(){ return &meshes[0].vertices; }
+	vector<unsigned int>* getIndexArray() { return &meshes[0].indices; }
 
 private:
 	/*  Model Data  */
@@ -60,7 +61,7 @@ private:
 	{
 		// Read file via ASSIMP
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs );
 		// Check for errors
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{

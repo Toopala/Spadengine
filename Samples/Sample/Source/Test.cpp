@@ -22,28 +22,30 @@ int main(int argc, char** argv)
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::GraphicsDevice device(window);
 
+	device.init();
+
 	const char* VERTEX_SOURCE =
-	"#version 420\n"
+		"#version 420\n"
 
-	"in vec3 inPosition;\n"
+		"in vec3 inPosition;\n"
 
-	"void main()\n"
-	"{\n"
-	"	gl_Position = vec4(inPosition, 1.0);\n"
-	"}\n";
+		"void main()\n"
+		"{\n"
+		"	gl_Position = vec4(inPosition, 1.0);\n"
+		"}\n";
 
 	const char* PIXEL_SOURCE =
-	"#version 420\n"
+		"#version 420\n"
 
-	"out vec4 outColour;\n"
+		"out vec4 outColour;\n"
 
-	"void main()\n"
-	"{\n"
-	"	outColour = vec4(1.0, 1.0, 1.0, 1.0);\n"
-	"}\n";
+		"void main()\n"
+		"{\n"
+		"	outColour = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"}\n";
 
-	float vertexData[] = 
-	{ 
+	float vertexData[] =
+	{
 		-0.8f, 0.8f, 0.0f,
 		0.8f, 0.8f, 0.0f,
 		0.8f, -0.8f, 0.0f,
@@ -51,9 +53,10 @@ int main(int argc, char** argv)
 	};
 
 	//Assimp test
-	Model* model = &Model("cube.dae");
+	Model* model = new Model("plane.dae");
 
-	model->getMeshes();
+	std::vector<Vertex>* vertices = model->getVerticeArray();
+	std::vector<unsigned int>* indices = model->getIndexArray();
 
 	short indexData[] =
 	{
@@ -72,13 +75,13 @@ int main(int argc, char** argv)
 	device.bindBuffer(indexBuffer);
 
 	pipeline->vertexLayout = device.createVertexLayout(&vertexLayoutDescription, vertexShader);
-	
+
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	device.bindViewport(&viewport);
 
-	device.copyData(vertexBuffer, vertexData, sizeof(vertexData));
-	device.copyData(indexBuffer, indexData, sizeof(indexData));
+	device.copyData(vertexBuffer, vertices->data(), vertices->size()*sizeof(sge::math::vec3));
+	//device.copyData(indexBuffer, indices->data(), indices->size()*sizeof(unsigned int));
 
 	SDL_Event event;
 
@@ -98,7 +101,7 @@ int main(int argc, char** argv)
 			}
 		}
 		
-		device.drawIndexed(6);
+		device.draw(vertices->size());
 
 		window.swap();
 	}
