@@ -9,78 +9,9 @@
 #include "Renderer/GL4/GL4Buffer.h"
 #include "Renderer/GL4/GL4Pipeline.h"
 #include "Renderer/GL4/GL4Shader.h"
-#include "Renderer/VertexLayout.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
-
-//OPENGL DRAWIN
-//
-//
-//::SETUP(PIPELINE ? )
-//
-//CREATE VAO
-//
-//BIND VAO
-//
-//CREATE VERTEX BUFFER
-//
-//BIND VERTEX BUFFER
-//
-//SET VERTEX ATTRIB POINTERS
-//
-//SET VERTEX DATA
-//
-//UNBIND VERTEX BUFFER
-//
-//CREATE INDEX BUFFER
-//
-//BIND INDEX BUFFER
-//
-//SET INDEX DATA
-//
-//UNBIND VAO
-//
-//CREATE VERTEX SHADER
-//
-//COMPILE VERTEX SHADER
-//
-//CREATE PIXEL SHADER
-//
-//COMPILE PIXEL SHADER
-//
-//CREATE PROGRAM
-//
-//ATTACH VERTEX SHADER
-//
-//ATTACH PIXEL SHADER
-//
-//LINK PROGRAM
-//
-//
-//::DRAWING
-//
-//
-//BIND VAO
-//
-//BIND PROGRAM
-//
-//BIND TEXTURE
-//
-//SET UNIFORMS
-//
-//DRAW
-//
-//UNBIND TEXTURE
-//
-//UNBIND PROGRAM
-//
-//UNBIND VAO
-//
-//
-//
-//
-//PROBLEMS : AttribPoints, UNIFORMS, TEXTURES ETC
 
 namespace sge
 {
@@ -88,7 +19,7 @@ namespace sge
 	{
 	public:
 		Impl(Window& window) :
-			context(SDL_GL_CreateContext(window.getSDLWindow()))
+			context(SDL_GL_CreateContext(window.getSDLWindow())), pipeline(nullptr)
 		{
 			if (!gladLoadGL())
 			{
@@ -101,8 +32,8 @@ namespace sge
 			SDL_GL_DeleteContext(context);
 		}
 
-	private:
 		SDL_GLContext context;
+		GL4Pipeline* pipeline;
 	};
 
 	GraphicsDevice::GraphicsDevice(Window& window) :
@@ -165,7 +96,7 @@ namespace sge
 		buffer = nullptr;
 	}
 
-	Pipeline* GraphicsDevice::createPipeline(Shader* vertexShader, Shader* pixelShader)
+	Pipeline* GraphicsDevice::createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader)
 	{
 		GL4Pipeline* gl4Pipeline = new GL4Pipeline();
 		GL4Shader* gl4VertexShader = reinterpret_cast<GL4Shader*>(vertexShader);
@@ -177,6 +108,22 @@ namespace sge
 		GLint success;
 		GLchar infoLog[512];
 
+		VertexLayout* vertexLayout = new VertexLayout();
+
+		vertexLayout->elements = new VertexElement[vertexLayoutDescription->count];
+		vertexLayout->count = vertexLayoutDescription->count;
+
+		size_t stride = 0;
+
+		for (size_t i = 0; i < vertexLayout->count; i++)
+		{
+			vertexLayout->elements[i] = { stride, vertexLayoutDescription->elements[i] };
+			stride += vertexLayoutDescription->elements[i];
+		}
+
+		vertexLayout->stride = stride;
+
+		gl4Pipeline->header.vertexLayout = vertexLayout;
 		gl4Pipeline->program = glCreateProgram();
 
 		glAttachShader(gl4Pipeline->program, gl4VertexShader->id);
@@ -210,40 +157,24 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-	VertexLayout* GraphicsDevice::createVertexLayout(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader)
-	{
-		GL4Shader* gl4Shader = reinterpret_cast<GL4Shader*>(vertexShader);
-		VertexLayout* vertexLayout = new VertexLayout();
-
-		// TODO INPUT LAYOUT HERE
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-			);
-
-
-		return nullptr;
-	}
-
 	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
 	{
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
 		glUseProgram(gl4Pipeline->program);
 		glBindVertexArray(gl4Pipeline->vao);
+
+		impl->pipeline = gl4Pipeline;
 	}
 
 	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
 	{
 		glUseProgram(0);
 		glBindVertexArray(0);
+
+		impl->pipeline = nullptr;
 	}
 
-	Shader* GraphicsDevice::createShader(ShaderType type, const char* buffer)
+	Shader* GraphicsDevice::createShader(ShaderType type, const char* source)
 	{
 		GL4Shader* shader = new GL4Shader();
 		GLint success;
@@ -255,7 +186,7 @@ namespace sge
 		case ShaderType::PIXEL: shader->id = glCreateShader(GL_FRAGMENT_SHADER); break;
 		}
 
-		glShaderSource(shader->id, 1, &buffer, nullptr);
+		glShaderSource(shader->id, 1, &source, nullptr);
 		glCompileShader(shader->id);
 
 		glGetShaderiv(shader->id, GL_COMPILE_STATUS, &success);
@@ -281,16 +212,31 @@ namespace sge
 		shader = nullptr;
 	}
 
-	void GraphicsDevice::bindBuffer(Buffer* buffer)
+	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
 	{
+		// TODO wrap assert?
+		SDL_assert(impl->pipeline);
+
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
+
+		VertexLayout* vertexLayout = impl->pipeline->header.vertexLayout;
+
+		for (size_t i = 0; i < vertexLayout->count; i++)
+		{
+			glEnableVertexAttribArray(i);
+
+			glVertexAttribPointer(i, vertexLayout->elements[i].size, GL_FLOAT, GL_FALSE, vertexLayout->stride * sizeof(GLfloat), (void*)(vertexLayout->elements[i].offset * sizeof(GLfloat)));
+		}
 	}
 
-	void GraphicsDevice::debindBuffer(Buffer* buffer)
+	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)
 	{
+		// TODO wrap assert?
+		SDL_assert(impl->pipeline);
+
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
-		glBindBuffer(gl4Buffer->target, 0);
+		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
@@ -308,13 +254,13 @@ namespace sge
 
 	}
 
-	void GraphicsDevice::copyData(Buffer* buffer, const void* data, size_t size)
+	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
 	}
 
-	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, const void* data, size_t size)
+	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferSubData(gl4Buffer->target, offset, size, data);

@@ -25,31 +25,35 @@ int main(int argc, char** argv)
 	device.init();
 
 	const char* VERTEX_SOURCE =
-		"#version 420\n"
+	"#version 420\n"
 
-		"in vec3 inPosition;\n"
+	"in vec3 inPosition;\n"
+		"in vec4 inColor;\n"
+		"out vec4 fColor;\n"
 
-		"void main()\n"
-		"{\n"
-		"	gl_Position = vec4(inPosition, 1.0);\n"
-		"}\n";
+	"void main()\n"
+	"{\n"
+	"	gl_Position = vec4(inPosition, 1.0);\n"
+		"   fColor = inColor;\n"
+	"}\n";
 
 	const char* PIXEL_SOURCE =
-		"#version 420\n"
+	"#version 420\n"
 
-		"out vec4 outColour;\n"
+		"in vec4 fColor;\n"
+	"out vec4 outColour;\n"
 
-		"void main()\n"
-		"{\n"
-		"	outColour = vec4(1.0, 1.0, 1.0, 1.0);\n"
-		"}\n";
+	"void main()\n"
+	"{\n"
+		"	outColour = fColor;\n"
+	"}\n";
 
-	float vertexData[] =
-	{
-		-0.8f, 0.8f, 0.0f,
-		0.8f, 0.8f, 0.0f,
-		0.8f, -0.8f, 0.0f,
-		-0.8f, -0.8f, 0.0f
+	float vertexData[] = 
+	{ 
+		-0.8f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		0.8f, 0.8f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,
+		0.8f, -0.8f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		-0.8f, -0.8f, 0.0f,		1.0f, 1.0f, 1.0f, 1.0f,
 	};
 
 	//Assimp test
@@ -63,25 +67,23 @@ int main(int argc, char** argv)
 		0, 1, 2, 0, 2, 3
 	};
 
+	sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
+
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
 	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
 	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::STATIC);
-	sge::Pipeline* pipeline = device.createPipeline(vertexShader, pixelShader);
-	sge::VertexLayoutDescription vertexLayoutDescription;
-
-	device.bindPipeline(pipeline);
-	device.bindBuffer(vertexBuffer);
-	device.bindBuffer(indexBuffer);
-
-	pipeline->vertexLayout = device.createVertexLayout(&vertexLayoutDescription, vertexShader);
-
+	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	device.bindViewport(&viewport);
+	device.bindPipeline(pipeline);
 
-	device.copyData(vertexBuffer, vertices->data(), vertices->size()*sizeof(sge::math::vec3));
-	//device.copyData(indexBuffer, indices->data(), indices->size()*sizeof(unsigned int));
+	device.bindVertexBuffer(vertexBuffer);
+	device.bindIndexBuffer(indexBuffer);
+
+	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	device.copyData(indexBuffer, sizeof(indexData), indexData);
 
 	SDL_Event event;
 
@@ -106,8 +108,6 @@ int main(int argc, char** argv)
 		window.swap();
 	}
 
-	device.debindBuffer(indexBuffer);
-	device.debindBuffer(vertexBuffer);
 	device.debindPipeline(pipeline);
 
 	device.deleteBuffer(indexBuffer);

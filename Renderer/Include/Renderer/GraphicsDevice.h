@@ -9,7 +9,6 @@ namespace sge
 	struct Pipeline;
 	struct Shader;
 	struct Texture;
-	struct VertexLayout;
 	struct VertexLayoutDescription;
 	struct Viewport;
 
@@ -27,33 +26,31 @@ namespace sge
 		Buffer* createBuffer(BufferType type, BufferUsage usage);
 		void deleteBuffer(Buffer* buffer);
 
-		Pipeline* createPipeline(Shader* vertexShader, Shader* pixelShader);
+		Pipeline* createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader);
 		void deletePipeline(Pipeline* pipeline);
 
-		Shader* createShader(ShaderType type, const char* buffer);
+		Shader* createShader(ShaderType type, const char* source);
 		void deleteShader(Shader* shader);
-
-		VertexLayout* createVertexLayout(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader);
 
 		void bindPipeline(Pipeline* pipeline);
 		void debindPipeline(Pipeline* pipeline);
 
-		void bindBuffer(Buffer* buffer);
-		void debindBuffer(Buffer* buffer);
+		void bindVertexBuffer(Buffer* buffer);
+		void bindIndexBuffer(Buffer* buffer);
 
 		void bindViewport(Viewport* viewport);
 
 		void bindTexture(unsigned int index, Texture* texture);
 		void debindTexture(unsigned int index);
 
-		void copyData(Buffer* buffer, const void* data, size_t size);
-		void copySubData(Buffer* buffer, size_t offset, const void* data, size_t size);
+		void copyData(Buffer* buffer, size_t size, const void* data);
+		void copySubData(Buffer* buffer, size_t offset, size_t size, const void* data);
 
 		void draw(size_t count);
 		void drawIndexed(size_t count);
 		
 	private:
-		class Impl;
+		struct Impl;
 
 		Impl* impl;
 	};
