@@ -38,8 +38,8 @@ namespace sge
 		void bindPipeline(Pipeline* pipeline);
 		void debindPipeline(Pipeline* pipeline);
 
-		void bindBuffer(Buffer* buffer);
-		void debindBuffer(Buffer* buffer);
+		void bindVertexBuffer(Buffer* buffer);
+		void bindIndexBuffer(Buffer* buffer);
 
 		void bindViewport(Viewport* viewport);
 
@@ -53,7 +53,7 @@ namespace sge
 		void drawIndexed(size_t count);
 		
 	private:
-		class Impl;
+		struct Impl;
 
 		Impl* impl;
 	};
