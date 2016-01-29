@@ -1,24 +1,27 @@
 #pragma once
 
-#include "Renderer/Enumerations.h"
-
 namespace sge
 {
 	struct VertexElement
 	{
-		VertexFormat vertexFormat;
-	};
-
-	struct VertexLayout
-	{
-		size_t stride;
-		size_t vertexElementCount;
-		VertexElement *vertexElements;
+		size_t offset;
+		size_t size;
 	};
 
 	struct VertexLayoutDescription
 	{
 		size_t count;
-		VertexElement vertexElements[MAX_VERTEX_INPUTS];
+		size_t elements[];
+
+		// TODO clean
+	};
+
+	struct VertexLayout
+	{
+		size_t count;
+		size_t stride;
+		VertexElement* elements;
+
+		// TODO clean
 	};
 }

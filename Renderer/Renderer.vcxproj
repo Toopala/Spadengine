@@ -87,10 +87,10 @@
     <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Shader.h" />
     <ClInclude Include="Include\Renderer\GraphicsDevice.h" />
-    <ClInclude Include="Include\Renderer\VertexLayout.h" />
     <ClInclude Include="Include\Renderer\Pipeline.h" />
     <ClInclude Include="Include\Renderer\Shader.h" />
     <ClInclude Include="Include\Renderer\Texture.h" />
+    <ClInclude Include="Include\Renderer\VertexLayout.h" />
     <ClInclude Include="Include\Renderer\Viewport.h" />
     <ClInclude Include="Include\Renderer\Window.h" />
   </ItemGroup>
