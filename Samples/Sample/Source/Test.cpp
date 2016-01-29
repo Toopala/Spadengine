@@ -68,8 +68,8 @@ int main(int argc, char** argv)
 	sge::VertexLayoutDescription vertexLayoutDescription;
 
 	device.bindPipeline(pipeline);
-	device.bindBuffer(vertexBuffer);
-	device.bindBuffer(indexBuffer);
+	device.bindVertexBuffer(vertexBuffer);
+	device.bindIndexBuffer(indexBuffer);
 
 	pipeline->vertexLayout = device.createVertexLayout(&vertexLayoutDescription, vertexShader);
 	
@@ -103,8 +103,6 @@ int main(int argc, char** argv)
 		window.swap();
 	}
 
-	device.debindBuffer(indexBuffer);
-	device.debindBuffer(vertexBuffer);
 	device.debindPipeline(pipeline);
 
 	device.deleteBuffer(indexBuffer);
