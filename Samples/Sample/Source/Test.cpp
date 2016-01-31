@@ -25,15 +25,21 @@ int main(int argc, char** argv)
 	device.init();
 
 	const char* VERTEX_SOURCE =
-	"#version 420\n"
+		"#version 420\n"
 
-	"in vec3 inPosition;\n"
+		"in vec3 inPosition;\n"
 		"in vec4 inColor;\n"
 		"out vec4 fColor;\n"
+		"layout (std140) uniform MVP\n"
+		"{\n"
+		"mat4 model;\n"
+		"mat4 view;\n"
+		"mat4 projection;\n"
+		"};\n"
 
 	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(inPosition, 1.0);\n"
+	"	gl_Position = projection * view * model * vec4(inPosition, 1.0);\n"
 		"   fColor = inColor;\n"
 	"}\n";
 
@@ -48,12 +54,22 @@ int main(int argc, char** argv)
 		"	outColour = fColor;\n"
 	"}\n";
 
+	float width = 256.0f;
+	float height = 256.0f;
+
 	float vertexData[] = 
 	{ 
-		-0.8f, 0.8f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
-		0.8f, 0.8f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,
-		0.8f, -0.8f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
-		-0.8f, -0.8f, 0.0f,		1.0f, 1.0f, 1.0f, 1.0f,
+		-width, height, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 0.0f,		1.0f, 0.0f, 1.0f,
+		width, -height, 0.0f, 0.0f,		0.0f, 1.0f, 1.0f,
+		-width, -height, 0.0f, 1.0f,	1.0f, 1.0f, 1.0f,
+	};
+
+	sge::math::mat4 uniformData[] =
+	{
+		sge::math::translate(sge::math::mat4(1.0f), glm::vec3(window.getWidth() / 2.0f, window.getHeight() / 2.0f, 0.0f)),
+		sge::math::mat4(1.0f),
+		sge::math::mat4(sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f))
 	};
 
 	//Assimp test
@@ -62,7 +78,7 @@ int main(int argc, char** argv)
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
 
-	short indexData[] =
+	unsigned int indexData[] =
 	{
 		0, 1, 2, 0, 2, 3
 	};
@@ -71,19 +87,24 @@ int main(int argc, char** argv)
 
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
-	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
-	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::STATIC);
+
 	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
+
+	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
+	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::STATIC);
+	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::STATIC);
 
 	device.bindViewport(&viewport);
 	device.bindPipeline(pipeline);
 
 	device.bindVertexBuffer(vertexBuffer);
 	device.bindIndexBuffer(indexBuffer);
+	device.bindVertexUniformBuffer(uniformBuffer);
 
 	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	device.copyData(indexBuffer, sizeof(indexData), indexData);
+	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
 
 	SDL_Event event;
 
@@ -103,7 +124,7 @@ int main(int argc, char** argv)
 			}
 		}
 		
-		device.draw(vertices->size());
+		device.drawIndexed(6);
 
 		window.swap();
 	}
@@ -112,9 +133,14 @@ int main(int argc, char** argv)
 
 	device.deleteBuffer(indexBuffer);
 	device.deleteBuffer(vertexBuffer);
+	device.deleteBuffer(uniformBuffer);
+
 	device.deleteShader(vertexShader);
 	device.deleteShader(pixelShader);
+
 	device.deletePipeline(pipeline);
+	
+	device.deinit();
 
 	SDL_Quit();
 

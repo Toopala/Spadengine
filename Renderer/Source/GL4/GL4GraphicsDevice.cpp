@@ -13,18 +13,15 @@
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
+#include "Core/Assert.h"
+
 namespace sge
 {
-	class GraphicsDevice::Impl
+	struct GraphicsDevice::Impl
 	{
-	public:
 		Impl(Window& window) :
 			context(SDL_GL_CreateContext(window.getSDLWindow())), pipeline(nullptr)
 		{
-			if (!gladLoadGL())
-			{
-				// TODO: Debug log
-			}
 		}
 
 		~Impl()
@@ -48,6 +45,17 @@ namespace sge
 
 	void GraphicsDevice::init()
 	{
+		if (!gladLoadGL())
+		{
+			// TODO: Debug log
+		}
+
+		int max;
+
+		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max);
+
+		std::cout << "MAX UNIFORM BUFFER BINDINGS: " << max << std::endl;
+
 /*		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
@@ -76,6 +84,7 @@ namespace sge
 		{
 		case BufferType::INDEX: buffer->target = GL_ELEMENT_ARRAY_BUFFER; break;
 		case BufferType::VERTEX: buffer->target = GL_ARRAY_BUFFER; break;
+		case BufferType::UNIFORM: buffer->target = GL_UNIFORM_BUFFER; break;
 		}
 
 		switch (usage)
@@ -141,6 +150,9 @@ namespace sge
 		{
 			std::cout << "ERROR: No errors :D in program linking" << std::endl;
 		}
+
+		gl4Pipeline->uniformLocation = glGetUniformBlockIndex(gl4Pipeline->program, "MVP");
+		glUniformBlockBinding(gl4Pipeline->program, gl4Pipeline->uniformLocation, 0);
 
 		glBindVertexArray(0);
 
@@ -212,13 +224,17 @@ namespace sge
 		shader = nullptr;
 	}
 
-	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
+	void bindBuffer(Buffer* buffer)
 	{
-		// TODO wrap assert?
-		SDL_assert(impl->pipeline);
-
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
+	}
+
+	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
+	{
+		SGE_ASSERT(impl->pipeline);
+
+		bindBuffer(buffer);
 
 		VertexLayout* vertexLayout = impl->pipeline->header.vertexLayout;
 
@@ -232,11 +248,23 @@ namespace sge
 
 	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)
 	{
-		// TODO wrap assert?
-		SDL_assert(impl->pipeline);
+		SGE_ASSERT(impl->pipeline);
 
-		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
-		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
+		bindBuffer(buffer);
+	}
+
+	void GraphicsDevice::bindVertexUniformBuffer(Buffer* buffer)
+	{
+		SGE_ASSERT(impl->pipeline);
+
+		bindBuffer(buffer);
+	}
+
+	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer)
+	{
+		SGE_ASSERT(impl->pipeline);
+
+		bindBuffer(buffer);
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
@@ -258,6 +286,11 @@ namespace sge
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
+
+		if (gl4Buffer->target == GL_UNIFORM_BUFFER)
+		{
+			glBindBufferRange(GL_UNIFORM_BUFFER, 0, gl4Buffer->id, 0, size);
+		}
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)

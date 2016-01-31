@@ -11,6 +11,9 @@ namespace sge
 		Pipeline header;
 		GLuint program;
 		GLuint vao;
+		
+		// Test
+		GLuint uniformLocation;
 	};
 }
 

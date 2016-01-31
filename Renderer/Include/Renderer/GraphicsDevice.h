@@ -37,6 +37,8 @@ namespace sge
 
 		void bindVertexBuffer(Buffer* buffer);
 		void bindIndexBuffer(Buffer* buffer);
+		void bindVertexUniformBuffer(Buffer* buffer);
+		void bindPixelUniformBuffer(Buffer* buffer);
 
 		void bindViewport(Viewport* viewport);
 
@@ -51,7 +53,6 @@ namespace sge
 		
 	private:
 		struct Impl;
-
 		Impl* impl;
 	};
 }

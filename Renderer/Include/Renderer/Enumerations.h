@@ -11,7 +11,8 @@ namespace sge
 	enum class BufferType
 	{
 		VERTEX,
-		INDEX
+		INDEX,
+		UNIFORM
 	};
 
 	enum class BufferUsage

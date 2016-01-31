@@ -12,7 +12,19 @@ namespace sge
 
 		void swap();
 		SDL_Window* getSDLWindow();
+
+		int getWidth() 
+		{
+			return width;
+		}
+		int getHeight()
+		{
+			return height;
+		}
+
 	private:
 		SDL_Window* window;
+		int width;
+		int height;
 	};
 }
