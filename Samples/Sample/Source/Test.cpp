@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
 	sge::math::mat4 uniformData[] =
 	{
-		sge::math::translate(sge::math::mat4(1.0f), glm::vec3(window.getWidth() / 2.0f, window.getHeight() / 2.0f, 0.0f)),
+		sge::math::translate(sge::math::mat4(1.0f), sge::math::vec3(window.getWidth() / 2.0f - width, window.getHeight() / 2.0f, 0.0f)),
 		sge::math::mat4(1.0f),
 		sge::math::mat4(sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f))
 	};
@@ -110,6 +110,8 @@ int main(int argc, char** argv)
 
 	bool running = true;
 
+	float temp = 0;
+
 	while (running)
 	{
 		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
@@ -123,6 +125,10 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
+
+		uniformData[0] = sge::math::translate(uniformData[0], glm::vec3(sge::math::sin(temp += 0.025f) * 6, 0.0f, 0.0f));
+
+		device.copySubData(uniformBuffer, 0, sizeof(sge::math::mat4), uniformData);
 		
 		device.drawIndexed(6);
 
