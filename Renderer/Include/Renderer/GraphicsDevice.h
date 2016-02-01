@@ -37,8 +37,8 @@ namespace sge
 
 		void bindVertexBuffer(Buffer* buffer);
 		void bindIndexBuffer(Buffer* buffer);
-		void bindVertexUniformBuffer(Buffer* buffer);
-		void bindPixelUniformBuffer(Buffer* buffer);
+		void bindVertexUniformBuffer(Buffer* buffer, size_t slot);
+		void bindPixelUniformBuffer(Buffer* buffer, size_t slot);
 
 		void bindViewport(Viewport* viewport);
 

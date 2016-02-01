@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
 	device.bindVertexBuffer(vertexBuffer);
 	device.bindIndexBuffer(indexBuffer);
-	device.bindVertexUniformBuffer(uniformBuffer);
+	device.bindVertexUniformBuffer(uniformBuffer, 0);
 
 	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	device.copyData(indexBuffer, sizeof(indexData), indexData);

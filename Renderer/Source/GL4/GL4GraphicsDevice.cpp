@@ -50,6 +50,13 @@ namespace sge
 			// TODO: Debug log
 		}
 
+		int major, minor;
+
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+		std::cout << "RUNNING OPENGL " << major << "." << minor << std::endl;
+
 		int max;
 
 		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max);
@@ -253,18 +260,22 @@ namespace sge
 		bindBuffer(buffer);
 	}
 
-	void GraphicsDevice::bindVertexUniformBuffer(Buffer* buffer)
+	void GraphicsDevice::bindVertexUniformBuffer(Buffer* buffer, size_t slot)
 	{
 		SGE_ASSERT(impl->pipeline);
 
 		bindBuffer(buffer);
+	
+		reinterpret_cast<GL4Buffer*>(buffer)->slot = slot;
 	}
 
-	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer)
+	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
 	{
 		SGE_ASSERT(impl->pipeline);
 
 		bindBuffer(buffer);
+
+		reinterpret_cast<GL4Buffer*>(buffer)->slot = slot;
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
@@ -289,14 +300,13 @@ namespace sge
 
 		if (gl4Buffer->target == GL_UNIFORM_BUFFER)
 		{
-			glBindBufferRange(GL_UNIFORM_BUFFER, 0, gl4Buffer->id, 0, size);
+			glBindBufferRange(GL_UNIFORM_BUFFER, gl4Buffer->slot, gl4Buffer->id, 0, size);
 		}
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)
 	{
-		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
-		glBufferSubData(gl4Buffer->target, offset, size, data);
+		glBufferSubData(reinterpret_cast<GL4Buffer*>(buffer)->target, offset, size, data);
 	}
 
 	void GraphicsDevice::draw(size_t count)

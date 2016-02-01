@@ -13,6 +13,8 @@ namespace sge
 		GLuint id;
 		GLenum target;
 		GLenum usage;
+		GLuint size;
+		GLuint slot; // Temp! Used for uniform buffers.
 	};
 }
 
