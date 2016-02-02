@@ -30,16 +30,30 @@ int main(int argc, char** argv)
 		"in vec3 inPosition;\n"
 		"in vec4 inColor;\n"
 		"out vec4 fColor;\n"
-		"layout (std140) uniform MVP\n"
+
+
+		"layout (std140, binding = 1) uniform LOL\n"
+		"{\n"
+		"mat4 test;\n"
+		"mat4 ink;\n"
+		"mat4 wot;\n"
+		"};\n"
+		"layout (std140, binding = 0) uniform MVPMVPMVPMVPMVP\n"
 		"{\n"
 		"mat4 model;\n"
 		"mat4 view;\n"
 		"mat4 projection;\n"
 		"};\n"
 
-	"void main()\n"
-	"{\n"
-	"	gl_Position = projection * view * model * vec4(inPosition, 1.0);\n"
+		"layout (std140, binding = 2) uniform SUPAHAX\n"
+		"{\n"
+		"vec3 hax;\n"
+		"};\n"
+
+		"void main()\n"
+		"{\n"
+		"	gl_Position = projection * view * model * vec4(inPosition, 1.0);\n"
+		"mat4 tempo = test;\n"
 		"   fColor = inColor;\n"
 	"}\n";
 

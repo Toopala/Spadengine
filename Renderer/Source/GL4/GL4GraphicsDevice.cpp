@@ -158,8 +158,29 @@ namespace sge
 			std::cout << "ERROR: No errors :D in program linking" << std::endl;
 		}
 
-		gl4Pipeline->uniformLocation = glGetUniformBlockIndex(gl4Pipeline->program, "MVP");
-		glUniformBlockBinding(gl4Pipeline->program, gl4Pipeline->uniformLocation, 0);
+		GLint numberOfUniformBlocks = 0;
+
+		glGetProgramInterfaceiv(gl4Pipeline->program, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numberOfUniformBlocks);
+
+		gl4Pipeline->uniformBlocks = new GLuint[numberOfUniformBlocks];
+
+		for (GLint i = 0; i < numberOfUniformBlocks; i++)
+		{
+			const GLenum props[] = { GL_BLOCK_INDEX };
+
+			GLint index;
+			GLchar name[512];
+			GLsizei size;
+
+			glGetProgramResourceiv(gl4Pipeline->program, GL_UNIFORM, i, 1, props, 1, nullptr, &index);
+			glGetProgramResourceName(gl4Pipeline->program, GL_UNIFORM_BLOCK, i, 512, &size, name);
+
+			std::cout << "Found uniform block: " << name << " at index " << index << std::endl;
+
+			glUniformBlockBinding(gl4Pipeline->program, gl4Pipeline->uniformBlocks[index], index);
+		}
+
+		std::cout << "Active uniform blocks: " << numberOfUniformBlocks << std::endl;
 
 		glBindVertexArray(0);
 
@@ -171,6 +192,8 @@ namespace sge
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
 		glDeleteProgram(gl4Pipeline->program);
 		glDeleteVertexArrays(1, &gl4Pipeline->vao);
+
+		delete [] gl4Pipeline->uniformBlocks;
 
 		delete gl4Pipeline;
 		pipeline = nullptr;
@@ -265,8 +288,8 @@ namespace sge
 		SGE_ASSERT(impl->pipeline);
 
 		bindBuffer(buffer);
-	
-		reinterpret_cast<GL4Buffer*>(buffer)->slot = slot;
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 	}
 
 	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
@@ -275,7 +298,7 @@ namespace sge
 
 		bindBuffer(buffer);
 
-		reinterpret_cast<GL4Buffer*>(buffer)->slot = slot;
+		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
@@ -297,16 +320,13 @@ namespace sge
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
-
-		if (gl4Buffer->target == GL_UNIFORM_BUFFER)
-		{
-			glBindBufferRange(GL_UNIFORM_BUFFER, gl4Buffer->slot, gl4Buffer->id, 0, size);
-		}
+		gl4Buffer->size = size;
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)
 	{
-		glBufferSubData(reinterpret_cast<GL4Buffer*>(buffer)->target, offset, size, data);
+		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
+		glBufferSubData(gl4Buffer->target, offset, size, data);
 	}
 
 	void GraphicsDevice::draw(size_t count)
