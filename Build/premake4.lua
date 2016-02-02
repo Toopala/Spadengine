@@ -4,10 +4,12 @@ solution "Spadengine"
 	configuration "Debug"
 		defines { "DEBUG" }
 		flags   { "Symbols" }
+		buildoptions { "-std=c++11" }
 
 	configuration "Release"
 		defines { "NDEBUG","RELEASE_BUILD" }
 		flags   { "Optimize" }
+		buildoptions { "-std=c++11" }
 
 	project "Core"
 		kind "StaticLib"
@@ -40,6 +42,8 @@ solution "Spadengine"
 				"../Renderer/Include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/glm/include/",
-				"../ThirdParty/glad/Include/",}
-
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/",
+				"../Samples/Sample/Include/"}
 		links { "SDL2", "Core", "Renderer", "glad", "dl" }
