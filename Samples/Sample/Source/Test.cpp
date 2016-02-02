@@ -7,13 +7,16 @@
 #include "Renderer/Viewport.h"
 #include "SDL/SDL.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+
+#include "stb_image.h"
+
 #include <iostream>
 
 #include "Model.h"
 
 int main(int argc, char** argv)
 {
-
 	SDL_Init(SDL_INIT_VIDEO);
 
 	sge::math::vec2 vec;
@@ -24,12 +27,23 @@ int main(int argc, char** argv)
 
 	device.init();
 
+	int w, h, n;
+
+	unsigned char* data = stbi_load("Assets/spade.png", &w, &h, &n, STBI_rgb_alpha);
+
+	std::cout << "Opened image spade.png: " << w << "x" << h << " and something like " << n << std::endl;
+
+
+
+
 	const char* VERTEX_SOURCE =
 		"#version 420\n"
 
 		"in vec3 inPosition;\n"
+		"in vec2 inTexcoords;\n"
 		"in vec4 inColor;\n"
 		"out vec4 fColor;\n"
+		"out vec2 texcoords;\n"
 
 
 		"layout (std140, binding = 1) uniform LOL\n"
@@ -55,17 +69,21 @@ int main(int argc, char** argv)
 		"	gl_Position = projection * view * model * vec4(inPosition, 1.0);\n"
 		"mat4 tempo = test;\n"
 		"   fColor = inColor;\n"
+		"texcoords = inTexcoords;\n"
 	"}\n";
 
 	const char* PIXEL_SOURCE =
-	"#version 420\n"
+		"#version 420\n"
 
 		"in vec4 fColor;\n"
-	"out vec4 outColour;\n"
+		"in vec2 texcoords;\n"
+		"out vec4 outColour;\n"
 
-	"void main()\n"
-	"{\n"
-		"	outColour = fColor;\n"
+		"layout(binding = 0) uniform sampler2D tex;\n"
+
+		"void main()\n"
+		"{\n"
+		"	outColour = texture2D(tex, texcoords);\n"
 	"}\n";
 
 	float width = 256.0f;
@@ -73,10 +91,10 @@ int main(int argc, char** argv)
 
 	float vertexData[] = 
 	{ 
-		-width, height, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,
-		width, height, 0.0f, 0.0f,		1.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 0.0f,		0.0f, 1.0f, 1.0f,
-		-width, -height, 0.0f, 1.0f,	1.0f, 1.0f, 1.0f,
+		-width, height, 0.0f,		0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,
+		width, -height, 0.0f,		1.0f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		-width, -height, 0.0f,		0.0f, 0.0f,		1.0f, 1.0f, 1.0f, 1.0f,
 	};
 
 	sge::math::mat4 uniformData[] =
@@ -97,10 +115,13 @@ int main(int argc, char** argv)
 		0, 1, 2, 0, 2, 3
 	};
 
-	sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
+	sge::VertexLayoutDescription vertexLayoutDescription = { 3, { 3, 2, 4 } };
 
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
+	sge::Texture* texture = device.createTexture(w, h, data);
+
+	stbi_image_free(data);
 
 	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
@@ -115,6 +136,7 @@ int main(int argc, char** argv)
 	device.bindVertexBuffer(vertexBuffer);
 	device.bindIndexBuffer(indexBuffer);
 	device.bindVertexUniformBuffer(uniformBuffer, 0);
+	device.bindTexture(texture, 0);
 
 	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	device.copyData(indexBuffer, sizeof(indexData), indexData);
@@ -157,6 +179,7 @@ int main(int argc, char** argv)
 
 	device.deleteShader(vertexShader);
 	device.deleteShader(pixelShader);
+	device.deleteTexture(texture);
 
 	device.deletePipeline(pipeline);
 	

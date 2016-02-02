@@ -9,7 +9,7 @@
 #include "Renderer/GL4/GL4Buffer.h"
 #include "Renderer/GL4/GL4Pipeline.h"
 #include "Renderer/GL4/GL4Shader.h"
-#include "Renderer/Texture.h"
+#include "Renderer/GL4/GL4Texture.h"
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
@@ -199,23 +199,6 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
-	{
-		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
-		glUseProgram(gl4Pipeline->program);
-		glBindVertexArray(gl4Pipeline->vao);
-
-		impl->pipeline = gl4Pipeline;
-	}
-
-	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
-	{
-		glUseProgram(0);
-		glBindVertexArray(0);
-
-		impl->pipeline = nullptr;
-	}
-
 	Shader* GraphicsDevice::createShader(ShaderType type, const char* source)
 	{
 		GL4Shader* shader = new GL4Shader();
@@ -252,6 +235,48 @@ namespace sge
 		glDeleteShader(gl4Shader->id);
 		delete gl4Shader;
 		shader = nullptr;
+	}
+
+	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
+	{
+		GL4Texture* gl4Texture = new GL4Texture();
+
+   		glGenTextures(1, &gl4Texture->id);
+		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		return &gl4Texture->header;
+	}
+
+	void GraphicsDevice::deleteTexture(Texture* texture)
+	{
+		GL4Texture* gl4Texture = reinterpret_cast<GL4Texture*>(texture);
+		glDeleteTextures(1, &gl4Texture->id);
+		delete gl4Texture;
+		texture = nullptr;
+	}
+
+	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
+	{
+		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
+		glUseProgram(gl4Pipeline->program);
+		glBindVertexArray(gl4Pipeline->vao);
+
+		impl->pipeline = gl4Pipeline;
+	}
+
+	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
+	{
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		impl->pipeline = nullptr;
 	}
 
 	void bindBuffer(Buffer* buffer)
@@ -306,14 +331,16 @@ namespace sge
 		glViewport(viewport->x, viewport->y, viewport->width, viewport->height);
 	}
 
-	void GraphicsDevice::bindTexture(unsigned int index, Texture* texture)
+	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
-
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id);
 	}
 
-	void GraphicsDevice::debindTexture(unsigned int index)
+	void GraphicsDevice::debindTexture(Texture* texture)
 	{
-
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)

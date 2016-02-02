@@ -32,6 +32,9 @@ namespace sge
 		Shader* createShader(ShaderType type, const char* source);
 		void deleteShader(Shader* shader);
 
+		Texture* createTexture(size_t width, size_t height, unsigned char* source);
+		void deleteTexture(Texture* texture);
+
 		void bindPipeline(Pipeline* pipeline);
 		void debindPipeline(Pipeline* pipeline);
 
@@ -42,8 +45,8 @@ namespace sge
 
 		void bindViewport(Viewport* viewport);
 
-		void bindTexture(unsigned int index, Texture* texture);
-		void debindTexture(unsigned int index);
+		void bindTexture(Texture* texture, size_t slot);
+		void debindTexture(Texture* texture);
 
 		void copyData(Buffer* buffer, size_t size, const void* data);
 		void copySubData(Buffer* buffer, size_t offset, size_t size, const void* data);
