@@ -54,9 +54,7 @@ int main(int argc, char** argv)
 		"};\n"
 		"layout (std140, binding = 0) uniform MVPMVPMVPMVPMVP\n"
 		"{\n"
-		"mat4 model;\n"
-		"mat4 view;\n"
-		"mat4 projection;\n"
+		"mat4 MVP;\n"
 		"};\n"
 
 		"layout (std140, binding = 2) uniform SUPAHAX\n"
@@ -66,11 +64,11 @@ int main(int argc, char** argv)
 
 		"void main()\n"
 		"{\n"
-		"	gl_Position = projection * view * model * vec4(inPosition, 1.0);\n"
+		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
 		"mat4 tempo = test;\n"
 		"   fColor = inColor;\n"
 		"texcoords = inTexcoords;\n"
-	"}\n";
+		"}\n";
 
 	const char* PIXEL_SOURCE =
 		"#version 420\n"
@@ -84,28 +82,40 @@ int main(int argc, char** argv)
 		"void main()\n"
 		"{\n"
 		"	outColour = texture2D(tex, texcoords);\n"
-	"}\n";
+		/*"	outColour = vec4(1.0);\n"*/
+		"}\n";
 
-	float width = 256.0f;
-	float height = 256.0f;
+	float width = 1.0f;
+	float height = 1.0f;
 
-	float vertexData[] = 
-	{ 
-		-width, height, 0.0f,		0.0f, 1.0f,		1.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f, 1.0f,
-		width, -height, 0.0f,		1.0f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
-		-width, -height, 0.0f,		0.0f, 0.0f,		1.0f, 1.0f, 1.0f, 1.0f,
+	float vertexData[] =
+	{
+		-width, height, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		width, -height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 	};
+
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
+	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
+	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	glm::mat4 VP = P*V;
+
+	glm::mat4 M = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
+
+	glm::mat4 MVP = VP*M;
 
 	sge::math::mat4 uniformData[] =
 	{
-		sge::math::translate(sge::math::mat4(1.0f), sge::math::vec3(window.getWidth() / 2.0f - width, window.getHeight() / 2.0f, 0.0f)),
-		sge::math::mat4(1.0f),
-		sge::math::mat4(sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f))
+		MVP
 	};
 
 	//Assimp test
-	Model* model = new Model("plane.dae");
+	Model* model = new Model("cube_simple.obj");
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
@@ -162,13 +172,18 @@ int main(int argc, char** argv)
 			}
 		}
 
-		uniformData[0] = sge::math::translate(uniformData[0], glm::vec3(sge::math::sin(temp += 0.025f) * 6, 0.0f, 0.0f));
+		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
+		M = sge::math::rotate(M, glm::radians(5.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+		
+		// Order must not be changed.
+		MVP = VP*M;
+		uniformData[0] = MVP;
 
 		device.copySubData(uniformBuffer, 0, sizeof(sge::math::mat4), uniformData);
-		
-		device.drawIndexed(6);
 
-		window.swap();
+		device.drawIndexed(vertices->size());
+
+		window.swap();		
 	}
 
 	device.debindPipeline(pipeline);
@@ -182,7 +197,7 @@ int main(int argc, char** argv)
 	device.deleteTexture(texture);
 
 	device.deletePipeline(pipeline);
-	
+
 	device.deinit();
 
 	SDL_Quit();
