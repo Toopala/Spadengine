@@ -19,11 +19,14 @@ namespace sge
 				Component* c = components[i];
 				if (typeid(T) == typeid(*c))
 				{
-					static_cast<T*>(c);
+					return static_cast<T*>(c);
 				}
 				return nullptr;
 			}
 		}
+		
+		
+		void setComponent(Component* comp);
 
 	private:
 		std::vector<Component*> components;

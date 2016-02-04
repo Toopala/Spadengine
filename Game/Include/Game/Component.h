@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace sge
 {
 	class Entity;
@@ -7,12 +8,14 @@ namespace sge
 	class Component
 	{
 	public:
-		Component();
+		Component(Entity* ent);
 		~Component();
+
 		Entity* getParent()
 		{
 			return parent;
 		}
+
 	private:
 		Entity* parent;
 		
