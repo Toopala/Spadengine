@@ -1,72 +1,56 @@
 #pragma once
 
-#include "Allocator.h"
 #include <stdlib.h>
+#include <assert.h>
+#include "Core\Types.h"
+#include <vector>
+#include <map>
 
-struct Page // A page contains a constant amount of same sized memory slots
+namespace sge
 {
-	size_t slotSize;
-	unsigned slotCount, slotsLeft;
-	void *nextSlot;
-	Page *nextPage;
-};
-
-class PagePoolAllocator : public sge::Allocator
-{
-public:
-	PagePoolAllocator(size_t objSize, size_t s) : Allocator(s)
+	struct PageHeader // A page contains a constant amount of same sized memory slots
 	{
+		size_t slotSize;
+		unsigned slotCount, slotsLeft;
+		void *nextSlot;
 
-	}
+		unsigned freeSpaceCount;	// Check if the pages have free space
 
-	~PagePoolAllocator() 
+		PageHeader *nextPage;
+
+	};
+
+	struct HeaderLocationInfo	// 
 	{
+		PageHeader *header;
+		void *top;
+		void *bottom;
+	};
 
-	}
-
-	void* allocate(size_t size)
+	class PagePoolAllocator
 	{
-		Page *page = NULL;
-		if (page->slotsLeft == 0)
-		{
-			// No room in current page, check if there's an another page with same sized slots and free space
-			Page *anotherPage = findPageWithRoom(page);
-			if (anotherPage == NULL)
-			{
-				// If page was not found, create a new page
-				Page *newPage = createNewPage(size);
-				page->nextPage = newPage;
-				page = newPage;
-			}
-			else
-			{
-				page = anotherPage;
-			}
-		}
-	}
+	public:
+		PagePoolAllocator();
 
-	void deallocate(void* data) 
-	{
+		~PagePoolAllocator();
 
-	}
+		typedef std::map<size_t, PageHeader*> PageMap;
 
-	Page *findPageWithRoom(Page *page)
-	{
+		static const unsigned int poolSize = 100; // Max. number of items in one page
 
-	}
+		void* allocate(size_t size);
 
-	Page *createNewPage(size_t size)
-	{
-		// Creates a new page and reserves just enough space for all the blocks to fit
-		Page *page = (Page*) malloc(sizeof(Page) + size * poolSize);
-		page->slotSize = size;
-		page->slotCount = poolSize;
-		page->slotsLeft = poolSize;
-		page->nextSlot = page + 1;
-		page->nextPage = NULL;
-	}
+		void deallocate(void* data);
+		
 
-private:
-	size_t objectSize;
-	static const unsigned int poolSize = 100; // Max. number of items in one page
-};
+
+
+
+	private:
+		PageHeader *createNewPageHeader(size_t size);			// Creating a new page
+		PageHeader *findPageWithRoom(PageHeader *page);			// Check if there are same size of block in a different page
+		PageMap pageMap;
+		std::vector<HeaderLocationInfo> headerLocations;
+	};
+
+}

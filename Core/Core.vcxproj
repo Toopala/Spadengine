@@ -13,12 +13,12 @@
   <ItemGroup>
     <ClInclude Include="Include\Core\Assert.h" />
     <ClInclude Include="Include\Core\Math.h" />
-    <ClInclude Include="Include\Core\Memory\Allocator.h" />
     <ClInclude Include="Include\Core\Memory\PagePoolAllocator.h" />
     <ClInclude Include="Include\Core\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math.cpp" />
+    <ClCompile Include="Source\PagePoolAllocator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}</ProjectGuid>
