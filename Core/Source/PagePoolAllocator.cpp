@@ -31,7 +31,31 @@ namespace sge
 			}
 		}
 
-		return nullptr;
+		void *pointer = NULL;
+
+		if (page->freeSpaceCount <= 0)
+		{
+			pointer = page->nextSlot;
+			page->nextSlot = (char*)page->nextSlot + size;
+		}
+		else
+		{
+			// K00PA HELP US
+
+			//char* p = (char*)page->nextSlot;
+			//
+			//// Empty slot is used next
+			//Slot *slot = (Slot*)page->nextSlot;
+
+			////... 
+			//pointer = page->nextSlot;
+
+			//page->nextSlot = slot->data;
+
+			//--page->freeSpaceCount;
+		}
+
+		return pointer;
 	}
 	
 	void PagePoolAllocator::deallocate(void *data)
@@ -51,8 +75,17 @@ namespace sge
 		page->slotCount = poolSize;
 		page->slotsLeft = poolSize;
 		page->nextSlot = page + 1;
+		page->freeSpaceCount = 0;
 		page->nextPage = NULL;
 
-		return nullptr;
+		// Holds information of the pages, aka book.
+		HeaderLocationInfo headerLocationInfo;
+		headerLocationInfo.page = page;
+		headerLocationInfo.bottom = page + 1;
+		headerLocationInfo.top = (char*)headerLocationInfo.bottom + page->slotCount * page->slotSize;
+
+		headerLocations.push_back(headerLocationInfo);
+
+		return page;
 	}
 }

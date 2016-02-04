@@ -22,9 +22,14 @@ namespace sge
 
 	struct HeaderLocationInfo	// 
 	{
-		PageHeader *header;
+		PageHeader *page;
 		void *top;
 		void *bottom;
+	};
+
+	struct Slot
+	{
+		void *data;
 	};
 
 	class PagePoolAllocator
@@ -41,10 +46,6 @@ namespace sge
 		void* allocate(size_t size);
 
 		void deallocate(void* data);
-		
-
-
-
 
 	private:
 		PageHeader *createNewPageHeader(size_t size);			// Creating a new page
