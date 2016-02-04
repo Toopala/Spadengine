@@ -6,6 +6,7 @@
 #include "Renderer/VertexLayout.h"
 #include "Renderer/Viewport.h"
 #include "SDL/SDL.h"
+#include "Game/EntityManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -147,6 +148,20 @@ int main(int argc, char** argv)
 	bool running = true;
 
 	float temp = 0;
+
+	// -------------------------------------------------------------------------
+	// +++++++++++++++++		ECS TESTING SITE START		++++++++++++++++++++
+	// -------------------------------------------------------------------------
+
+	sge::EntityManager* EManager = new sge::EntityManager();
+
+	sge::Entity* player = EManager->createEntity();
+
+	EManager->setComponent(player, sge::ComponentType::TRANSFORMCOMPONENT);
+
+	// -------------------------------------------------------------------------
+	// +++++++++++++++++		ECS TESTING SITE END		++++++++++++++++++++
+	// -------------------------------------------------------------------------
 
 	while (running)
 	{

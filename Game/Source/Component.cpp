@@ -1,13 +1,19 @@
 #include "Game/Component.h"
+#include <assert.h>
+
 
 namespace sge
 {
-	Component::Component()
+	Component::Component(Entity* ent) : parent(ent)
 	{
+		assert(ent != nullptr);
 	}
 
 
 	Component::~Component()
 	{
 	}
+
+	
+
 }
