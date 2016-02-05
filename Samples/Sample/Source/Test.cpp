@@ -54,9 +54,7 @@ int main(int argc, char** argv)
 
 		"void main()\n"
 		"{\n"
-		"vec3 pos = inPosition;\n"
-		"pos = pos * gl_InstanceID;\n"
-		"gl_Position = vec4(pos, 1.0);\n"
+		"gl_Position = MVP * vec4(inPosition, 1.0);\n"
 		"texcoords = inTexcoords;\n"
 		"normals = inNormal;\n"
 		"}\n";
