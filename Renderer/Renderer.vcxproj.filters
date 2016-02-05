@@ -19,6 +19,12 @@
     <Filter Include="Header Files\GL4">
       <UniqueIdentifier>{14fa0acf-6fa4-411a-8665-bc22adb2257a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\DX11">
+      <UniqueIdentifier>{16c50278-0505-455e-af63-74a439fa187f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DX11">
+      <UniqueIdentifier>{5b294c91-1e5f-4b09-a8ec-eecc83ecb1b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Window.cpp">
@@ -26,6 +32,9 @@
     </ClCompile>
     <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp">
       <Filter>Source Files\GL4</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11\DX11GraphicsDevice.cpp">
+      <Filter>Source Files\DX11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

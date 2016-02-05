@@ -10,7 +10,6 @@ namespace sge
 		Window(const char* title, int x, int y, int width, int height);
 		~Window();
 
-		void swap();
 		SDL_Window* getSDLWindow();
 
 		int getWidth() 

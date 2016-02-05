@@ -23,6 +23,8 @@ namespace sge
 
 		void clear(float r, float g, float b, float a);
 
+		void swap();
+
 		Buffer* createBuffer(BufferType type, BufferUsage usage);
 		void deleteBuffer(Buffer* buffer);
 

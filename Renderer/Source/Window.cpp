@@ -15,11 +15,6 @@ namespace sge
 		SDL_DestroyWindow(window);
 	}
 
-	void Window::swap()
-	{
-		SDL_GL_SwapWindow(window);
-	}
-
 	SDL_Window* Window::getSDLWindow()
 	{
 		return window;

@@ -20,7 +20,7 @@ namespace sge
 	struct GraphicsDevice::Impl
 	{
 		Impl(Window& window) :
-			context(SDL_GL_CreateContext(window.getSDLWindow())), pipeline(nullptr)
+			window(window.getSDLWindow()), context(SDL_GL_CreateContext(window.getSDLWindow())), pipeline(nullptr)
 		{
 		}
 
@@ -29,6 +29,7 @@ namespace sge
 			SDL_GL_DeleteContext(context);
 		}
 
+		SDL_Window* window;
 		SDL_GLContext context;
 		GL4Pipeline* pipeline;
 	};
@@ -79,6 +80,11 @@ namespace sge
 	void GraphicsDevice::deinit()
 	{
 
+	}
+
+	void GraphicsDevice::swap()
+	{
+		SDL_GL_SwapWindow(impl->window);
 	}
 
 	void GraphicsDevice::clear(float r, float g, float b, float a)

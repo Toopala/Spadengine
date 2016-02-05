@@ -77,6 +77,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DX11\DX11GraphicsDevice.cpp" />
     <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp" />
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>

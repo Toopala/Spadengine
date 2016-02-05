@@ -256,7 +256,7 @@ int main(int argc, char** argv)
 
 		device.draw(vertices->size());
 
-		window.swap();		
+		device.swap();
 	}
 
 	device.debindPipeline(pipeline);
