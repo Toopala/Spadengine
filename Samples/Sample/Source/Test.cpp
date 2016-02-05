@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 		"in vec3 inPosition;\n"
 		"in vec3 inNormal;\n"
 		"in vec2 inTexcoords;\n"
-		
+
 		"out vec2 texcoords;\n"
 
 		"layout (std140, binding = 0) uniform MVPUniform\n"
@@ -53,7 +53,9 @@ int main(int argc, char** argv)
 
 		"void main()\n"
 		"{\n"
-		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
+		"vec3 pos = inPosition;\n"
+		"pos = pos * gl_InstanceID;\n"
+		"gl_Position = vec4(pos, 1.0);\n"
 		"texcoords = inTexcoords;\n"
 		"}\n";
 
@@ -70,16 +72,16 @@ int main(int argc, char** argv)
 		"	outColour = texture2D(tex, texcoords);\n"
 		"}\n";
 
-	float width = 1.0f;
-	float height = 1.0f;
+	float width = 0.1f;
+	float height = 0.1f;
 
 
 	float vertexData[] =
 	{
-		-width, height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-		width, height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+		width, 2 * height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		2 * width, 2 * height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		2 * width, height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -134,8 +136,8 @@ int main(int argc, char** argv)
 	device.bindVertexUniformBuffer(uniformBuffer, 0);
 	device.bindTexture(texture, 0);
 
-	device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
-	//device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	//device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
+	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	device.copyData(indexBuffer, sizeof(indexData), indexData);
 	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
 
@@ -168,7 +170,7 @@ int main(int argc, char** argv)
 
 		device.copySubData(uniformBuffer, 0, sizeof(sge::math::mat4), uniformData);
 
-		device.draw(6);
+		device.drawInstancedIndexed(6, 5);
 
 		window.swap();		
 	}
