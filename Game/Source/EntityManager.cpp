@@ -24,16 +24,8 @@ namespace sge
 		return actor;
 	}
 
-	void EntityManager::setComponent(Entity* ent, ComponentType type)
+	void EntityManager::setComponent(Entity* ent, Component* comp)
 	{
-		switch (type)
-		{
-		case sge::ComponentType::TRANSFORMCOMPONENT:
-			ent->setComponent(new TransformComponent(ent));
-			std::cout << "Component(s) added." << std::endl;
-			break;
-		default:
-			break;
-		}
+		ent->setComponent(comp);
 	}
 }

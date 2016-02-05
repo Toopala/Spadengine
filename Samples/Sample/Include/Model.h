@@ -20,6 +20,12 @@ struct Vertex {
 	glm::vec3 Position;
 	// Normal
 	glm::vec3 Normal;
+	// Position
+	glm::vec3 Tangent;
+	// Normal
+	glm::vec3 Bitangent;
+	// UV
+	glm::vec2 UV;
 };
 
 class Mesh {
@@ -61,7 +67,7 @@ private:
 	{
 		// Read file via ASSIMP
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs );
+		const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs || aiProcess_GenNormals || aiProcess_CalcTangentSpace);
 		// Check for errors
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
@@ -111,10 +117,24 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 			// Normals
-			/*vector.x = mesh->mNormals[i].x;
+			vector.x = mesh->mNormals[i].x;
 			vector.y = mesh->mNormals[i].y;
 			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;*/
+			vertex.Normal = vector;
+			// Tangents
+			vector.x = mesh->mTangents[i].x;
+			vector.y = mesh->mTangents[i].y;
+			vector.z = mesh->mTangents[i].z;
+			vertex.Tangent = vector;
+			// Bitangets
+			vector.x = mesh->mBitangents[i].x;
+			vector.y = mesh->mBitangents[i].y;
+			vector.z = mesh->mBitangents[i].z;
+			vertex.Bitangent = vector;
+			// UVS
+			vector.x = mesh->mTextureCoords[0][i].x;
+			vector.y = mesh->mTextureCoords[0][i].y;
+			vertex.UV = glm::vec2(vector.x, vector.y);
 			
 			vertices.push_back(vertex);
 		}

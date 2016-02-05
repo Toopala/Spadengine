@@ -53,6 +53,8 @@ namespace sge
 
 		void draw(size_t count);
 		void drawIndexed(size_t count);
+		void drawInstanced(size_t count, size_t instanceCount);
+		void drawInstancedIndexed(size_t count, size_t instanceCount);
 		
 	private:
 		struct Impl;
