@@ -7,6 +7,7 @@
 #include "Renderer/Viewport.h"
 #include "SDL/SDL.h"
 #include "Game/EntityManager.h"
+#include "Core\Memory\PagePoolAllocator.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -15,6 +16,27 @@
 #include <iostream>
 
 #include "Model.h"
+
+class MemoryTest
+{
+public:
+	MemoryTest(int a, int b)
+	{
+		testia = a;
+		testib = b;
+	}
+	~MemoryTest(){
+		std::cout << testia << " " << testib << std::endl;
+	}
+	int testia, testib;
+};
+
+class MemoryTest2
+{
+public:
+	MemoryTest2(){}
+	~MemoryTest2(){}
+};
 
 int main(int argc, char** argv)
 {
@@ -173,6 +195,22 @@ int main(int argc, char** argv)
 	// +++++++++++++++++		ECS TESTING SITE END		++++++++++++++++++++
 	// -------------------------------------------------------------------------
 
+	// Memory allocation test
+	sge::PagePoolAllocator *allocator = new sge::PagePoolAllocator;
+
+	MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	new (mt)MemoryTest(2,5);
+	MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	new (mt2)MemoryTest(7, 9);
+	MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
+	new(mt3)MemoryTest(10, 10);
+
+	std::cout << mt->testia << ", " << mt->testib << std::endl;
+	allocator->deallocate(mt);
+	allocator->deallocate(mt2);
+	std::cout << mt->testia << ", " << mt->testib << std::endl;
+	std::cout << mt2->testia << ", " << mt2->testib << std::endl;
+	std::cout << mt3->testia << ", " << mt3->testib << std::endl;
 	while (running)
 	{
 		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
