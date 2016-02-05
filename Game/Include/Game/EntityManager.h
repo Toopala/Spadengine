@@ -5,13 +5,6 @@
 
 namespace sge
 {
-	enum class ComponentType
-	{
-		TRANSFORMCOMPONENT = 0,
-		
-	};
-
-
 	class EntityManager
 	{
 	public:
@@ -21,7 +14,7 @@ namespace sge
 		Entity* createEntity();
 		Entity* createActor();
 
-		void setComponent(Entity* ent, ComponentType type);
+		void setComponent(Entity* ent, Component* comp);
 
 	};
 }

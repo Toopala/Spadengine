@@ -7,6 +7,7 @@
 #include "Renderer/Viewport.h"
 #include "SDL/SDL.h"
 #include "Game/EntityManager.h"
+#include "Game/TransformComponent.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -167,7 +168,7 @@ int main(int argc, char** argv)
 
 	sge::Entity* player = EManager->createEntity();
 
-	EManager->setComponent(player, sge::ComponentType::TRANSFORMCOMPONENT);
+	EManager->setComponent(player, new sge::TransformComponent(player));
 
 	// -------------------------------------------------------------------------
 	// +++++++++++++++++		ECS TESTING SITE END		++++++++++++++++++++
