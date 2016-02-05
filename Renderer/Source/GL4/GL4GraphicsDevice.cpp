@@ -371,6 +371,16 @@ namespace sge
 	{
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
+
+	void GraphicsDevice::drawInstanced(size_t count, size_t instanceCount)
+	{
+		glDrawArraysInstanced(GL_TRIANGLES, 0, count, instanceCount);
+	}
+
+	void GraphicsDevice::drawInstancedIndexed(size_t count, size_t instanceCount)
+	{
+		glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr, instanceCount);
+	}
 }
 
 #endif

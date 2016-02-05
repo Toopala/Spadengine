@@ -34,6 +34,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Config\Properties\spadengine.props" />
+    <Import Project="..\..\Config\Properties\SDL.props" />
     <Import Project="..\..\Config\Properties\assimpDebug.props" />
     <Import Project="..\..\Config\Properties\Renderer.props" />
     <Import Project="..\..\Config\Properties\Core.props" />
@@ -42,6 +43,7 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Config\Properties\spadengine.props" />
+    <Import Project="..\..\Config\Properties\SDL.props" />
     <Import Project="..\..\Config\Properties\Renderer.props" />
     <Import Project="..\..\Config\Properties\Core.props" />
     <Import Project="..\..\Config\Properties\Game.props" />

@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 		"out vec2 texcoords;\n"
 		"out vec3 normals;\n"
-		
+
 		"out vec3 TangentFragPos;\n"
 		"out vec3 TangentLightPos;\n"
 
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 		"	TangentFragPos = TBN * FragPos;			\n"
 		"	vec3 L = vec3(3.0, 3.0, 3.0); \n"
 		"	TangentLightPos = TBN * L;				\n"
-		"}\n";						  
+		"}\n";
 
 	const char* PIXEL_SOURCE =
 		"#version 440\n"
@@ -110,16 +110,16 @@ int main(int argc, char** argv)
 		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
 		"}\n";
 
-	float width = 1.0f;
-	float height = 1.0f;
+	float width = 0.1f;
+	float height = 0.1f;
 
 
 	float vertexData[] =
 	{
-		-width, height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-		width, height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+		width, 2 * height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		2 * width, 2 * height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		2 * width, height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);

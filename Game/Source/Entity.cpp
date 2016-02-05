@@ -1,5 +1,5 @@
 #include "Game/Entity.h"
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 namespace sge
@@ -16,7 +16,7 @@ namespace sge
 
 	void Entity::setComponent(Component* comp)
 	{
-		assert(comp != nullptr && "Component pointer null."); // Ebin hax :D
+		assert(comp != nullptr); 
 
 		components.push_back(comp);
 	}
