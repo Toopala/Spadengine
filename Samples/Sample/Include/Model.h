@@ -20,6 +20,8 @@ struct Vertex {
 	glm::vec3 Position;
 	// Normal
 	glm::vec3 Normal;
+	// UV
+	glm::vec2 UV;
 };
 
 class Mesh {
@@ -61,7 +63,7 @@ private:
 	{
 		// Read file via ASSIMP
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs );
+		const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs);
 		// Check for errors
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
@@ -111,10 +113,14 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.Position = vector;
 			// Normals
-			/*vector.x = mesh->mNormals[i].x;
+			vector.x = mesh->mNormals[i].x;
 			vector.y = mesh->mNormals[i].y;
 			vector.z = mesh->mNormals[i].z;
-			vertex.Normal = vector;*/
+			vertex.Normal = vector;
+			// UVS
+			vector.x = mesh->mTextureCoords[0][i].x;
+			vector.y = mesh->mTextureCoords[0][i].y;
+			vertex.UV = glm::vec2(vector.x, vector.y);
 			
 			vertices.push_back(vertex);
 		}

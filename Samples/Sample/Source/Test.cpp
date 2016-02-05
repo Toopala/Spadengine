@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 	int w, h, n;
 
-	unsigned char* data = stbi_load("Assets/spade.png", &w, &h, &n, STBI_rgb_alpha);
+	unsigned char* data = stbi_load("rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image spade.png: " << w << "x" << h << " and something like " << n << std::endl;
 
@@ -39,43 +39,28 @@ int main(int argc, char** argv)
 
 
 	const char* VERTEX_SOURCE =
-		"#version 420\n"
+		"#version 440\n"
 
 		"in vec3 inPosition;\n"
+		"in vec3 inNormal;\n"
 		"in vec2 inTexcoords;\n"
-		"in vec4 inColor;\n"
-		"out vec4 fColor;\n"
+		
 		"out vec2 texcoords;\n"
 
-
-		"layout (std140, binding = 1) uniform LOL\n"
-		"{\n"
-		"mat4 test;\n"
-		"mat4 ink;\n"
-		"mat4 wot;\n"
-		"};\n"
-		"layout (std140, binding = 0) uniform MVPMVPMVPMVPMVP\n"
+		"layout (std140, binding = 0) uniform MVPUniform\n"
 		"{\n"
 		"mat4 MVP;\n"
-		"};\n"
-
-		"layout (std140, binding = 2) uniform SUPAHAX\n"
-		"{\n"
-		"vec3 hax;\n"
 		"};\n"
 
 		"void main()\n"
 		"{\n"
 		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
-		"mat4 tempo = test;\n"
-		"   fColor = inColor;\n"
 		"texcoords = inTexcoords;\n"
 		"}\n";
 
 	const char* PIXEL_SOURCE =
-		"#version 420\n"
+		"#version 440\n"
 
-		"in vec4 fColor;\n"
 		"in vec2 texcoords;\n"
 		"out vec4 outColour;\n"
 
@@ -84,18 +69,18 @@ int main(int argc, char** argv)
 		"void main()\n"
 		"{\n"
 		"	outColour = texture2D(tex, texcoords);\n"
-		/*"	outColour = vec4(1.0);\n"*/
 		"}\n";
 
 	float width = 1.0f;
 	float height = 1.0f;
 
+
 	float vertexData[] =
 	{
-		-width, height, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-width, height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		width, height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		width, -height, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -117,7 +102,7 @@ int main(int argc, char** argv)
 	};
 
 	//Assimp test
-	Model* model = new Model("cube_simple.obj");
+	Model* model = new Model("plane.dae");
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
@@ -127,7 +112,7 @@ int main(int argc, char** argv)
 		0, 1, 2, 0, 2, 3
 	};
 
-	sge::VertexLayoutDescription vertexLayoutDescription = { 3, { 3, 2, 4 } };
+	sge::VertexLayoutDescription vertexLayoutDescription = { 3, { 3, 3, 2 } };
 
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
@@ -150,7 +135,8 @@ int main(int argc, char** argv)
 	device.bindVertexUniformBuffer(uniformBuffer, 0);
 	device.bindTexture(texture, 0);
 
-	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
+	//device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	device.copyData(indexBuffer, sizeof(indexData), indexData);
 	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
 
@@ -197,7 +183,7 @@ int main(int argc, char** argv)
 
 		device.copySubData(uniformBuffer, 0, sizeof(sge::math::mat4), uniformData);
 
-		device.drawIndexed(vertices->size());
+		device.draw(6);
 
 		window.swap();		
 	}
