@@ -9,7 +9,7 @@ namespace sge
 	{
 	public:
 		Component(Entity* ent);
-		~Component();
+		virtual ~Component();
 
 		Entity* getParent()
 		{
