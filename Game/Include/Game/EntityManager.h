@@ -20,11 +20,3 @@ namespace sge
 }
 
 
-//#include "Game/EntityManager.h"
-//#include "Game/TransformComponent.h"
-
-//sge::EntityManager* EManager = new sge::EntityManager();
-
-//sge::Entity* player = EManager->createEntity();
-
-//EManager->setComponent(player, new sge::TransformComponent(player));
