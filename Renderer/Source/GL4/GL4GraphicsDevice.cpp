@@ -63,11 +63,17 @@ namespace sge
 
 		std::cout << "MAX UNIFORM BUFFER BINDINGS: " << max << std::endl;
 
-		/*glFrontFace(GL_CCW);
+		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
-		glEnable(GL_CULL_FACE);*/
-
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
+
+		
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
+
+		glEnable(GL_MULTISAMPLE);
+		
 	}
 
 	void GraphicsDevice::deinit()
@@ -244,8 +250,8 @@ namespace sge
    		glGenTextures(1, &gl4Texture->id);
 		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
 
