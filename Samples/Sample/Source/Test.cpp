@@ -32,11 +32,11 @@ int main(int argc, char** argv)
 
 	unsigned char* data = stbi_load("rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
 
-	std::cout << "Opened image spade.png: " << w << "x" << h << " and something like " << n << std::endl;
+	std::cout << "Opened image rockwall_diffuse_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
 	unsigned char* data2 = stbi_load("rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
 
-	std::cout << "Opened image spade.png: " << w << "x" << h << " and something like " << n << std::endl;
+	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
 
 
@@ -73,8 +73,9 @@ int main(int argc, char** argv)
 		"	vec3 N = normalize(normalMatrix * inNormal);		\n"
 		"	mat3 TBN = transpose(mat3(T, B, N));	\n"
 		"	TangentFragPos = TBN * FragPos;			\n"
-		"	vec3 L = vec3(3.0, 3.0, 3.0); \n"
+		"	vec3 L = vec3(2.0, 3.0, 3.0); \n"
 		"	TangentLightPos = TBN * L;				\n"
+		"	normals = inNormal;\n"
 		"}\n";
 
 	const char* PIXEL_SOURCE =
@@ -208,6 +209,7 @@ int main(int argc, char** argv)
 		
 		// Order must not be changed.
 		MVP = VP*M;
+
 		uniformData[0] = MVP;
 		uniformData[1] = M;
 
