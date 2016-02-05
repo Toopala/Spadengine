@@ -11,9 +11,25 @@ namespace sge
 
 	}
 
+	// Allocate memory
 	void *PagePoolAllocator::allocate(size_t size)
 	{
+		PageMap::iterator p = pageMap.find(size);
+
 		PageHeader *page = NULL;
+
+		if (p == pageMap.end())
+		{
+			// Creates new pageheader
+			page = createNewPageHeader(size);
+			pageMap.insert(PageMap::value_type(size, page));
+		}
+
+		else
+		{
+			page = p->second;
+		}
+
 		if (page->slotsLeft == 0)
 		{
 			// No room in current page, check if there's an another page with same sized slots and free space
@@ -40,32 +56,65 @@ namespace sge
 		}
 		else
 		{
-			// K00PA HELP US
+			// Empty slot is used
+			Slot *slot = (Slot*)page->nextSlot;
 
-			//char* p = (char*)page->nextSlot;
-			//
-			//// Empty slot is used next
-			//Slot *slot = (Slot*)page->nextSlot;
+			pointer = page->nextSlot;
 
-			////... 
-			//pointer = page->nextSlot;
+			page->nextSlot = slot->data;
 
-			//page->nextSlot = slot->data;
-
-			//--page->freeSpaceCount;
+			--page->freeSpaceCount;
 		}
+
+		--page->slotsLeft;
 
 		return pointer;
 	}
 	
+	// Deallocate used memory
 	void PagePoolAllocator::deallocate(void *data)
 	{
-	
+		PageHeader *page = NULL;
+
+		//Checks if there are memory used in pages which can be deallocated
+		for (unsigned i = 0; headerLocations.size(); i++)
+		{
+			if (data >= headerLocations[i].bottom)
+			{
+				if (data < headerLocations[i].top)
+				{
+					page = headerLocations[i].page;
+					break;
+				}
+			}
+		}
+		
+		SGE_ASSERT(page);
+
+		void* value = (void*)page->nextSlot;
+		*(void**)data = value;					//<------ WUT IS TIS!
+		//data = reinterpret_cast<void*>(value);
+
+		page->nextSlot = data;
+
+		++page->freeSpaceCount;
+		++page->slotsLeft;
 	}
 
-	PageHeader *PagePoolAllocator::findPageWithRoom(PageHeader *header)
+	// Checks if there are pages with free room
+	PageHeader *PagePoolAllocator::findPageWithRoom(PageHeader *page)
 	{
-		return nullptr;
+		if (page->slotsLeft > 0)
+		{
+			return page;
+		}
+
+		if (page->nextPage == NULL)
+		{
+			return NULL;
+		}
+
+		return findPageWithRoom(page->nextPage);
 	}
 	PageHeader *PagePoolAllocator::createNewPageHeader(size_t size)
 	{
