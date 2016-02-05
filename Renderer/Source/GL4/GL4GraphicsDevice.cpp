@@ -63,11 +63,11 @@ namespace sge
 
 		std::cout << "MAX UNIFORM BUFFER BINDINGS: " << max << std::endl;
 
-	/*	glFrontFace(GL_CCW);
+		/*glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
-		glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);*/
 
-		glEnable(GL_BLEND);*/
+		glEnable(GL_BLEND);
 	}
 
 	void GraphicsDevice::deinit()

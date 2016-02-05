@@ -43,8 +43,9 @@ int main(int argc, char** argv)
 		"in vec3 inPosition;\n"
 		"in vec3 inNormal;\n"
 		"in vec2 inTexcoords;\n"
-
+		
 		"out vec2 texcoords;\n"
+		"out vec3 normals;\n"
 
 		"layout (std140, binding = 0) uniform MVPUniform\n"
 		"{\n"
@@ -57,19 +58,23 @@ int main(int argc, char** argv)
 		"pos = pos * gl_InstanceID;\n"
 		"gl_Position = vec4(pos, 1.0);\n"
 		"texcoords = inTexcoords;\n"
+		"normals = inNormal;\n"
 		"}\n";
 
 	const char* PIXEL_SOURCE =
 		"#version 440\n"
 
 		"in vec2 texcoords;\n"
+		"in vec3 normals;\n"
 		"out vec4 outColour;\n"
 
 		"layout(binding = 0) uniform sampler2D tex;\n"
 
 		"void main()\n"
 		"{\n"
-		"	outColour = texture2D(tex, texcoords);\n"
+			"vec3 eyeSpaceLigthDirection = vec3(0.0, 0.0, 1.0);					   \n"
+			"float diffuse = max(0.0, dot(normalize(normals), eyeSpaceLigthDirection));  \n"
+			"outColour = vec4(texture2D(tex, texcoords).xyz*diffuse, 1.0);			   \n"
 		"}\n";
 
 	float width = 0.1f;
@@ -136,9 +141,9 @@ int main(int argc, char** argv)
 	device.bindVertexUniformBuffer(uniformBuffer, 0);
 	device.bindTexture(texture, 0);
 
-	//device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
-	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
-	device.copyData(indexBuffer, sizeof(indexData), indexData);
+	device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
+	//device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	//device.copyData(indexBuffer, sizeof(indexData), indexData);
 	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
 
 	SDL_Event event;
@@ -162,7 +167,7 @@ int main(int argc, char** argv)
 		}
 
 		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
-		M = sge::math::rotate(M, glm::radians(5.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+		M = sge::math::rotate(M, glm::radians(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 		
 		// Order must not be changed.
 		MVP = VP*M;
@@ -170,7 +175,7 @@ int main(int argc, char** argv)
 
 		device.copySubData(uniformBuffer, 0, sizeof(sge::math::mat4), uniformData);
 
-		device.drawInstancedIndexed(6, 5);
+		device.draw(vertices->size());
 
 		window.swap();		
 	}
