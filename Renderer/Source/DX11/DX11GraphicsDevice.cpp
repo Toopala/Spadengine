@@ -9,7 +9,11 @@
 #include "SDL/SDL_syswm.h"
 
 #include "Core/Assert.h"
+#include "Renderer/DX11/DX11Buffer.h"
+#include "Renderer/DX11/DX11Pipeline.h"
+#include "Renderer/DX11/DX11Shader.h"
 #include "Renderer/GraphicsDevice.h"
+#include "Renderer/VertexLayout.h"
 #include "Renderer/Window.h"
 
 namespace sge
@@ -56,15 +60,23 @@ namespace sge
 			sd.BufferDesc.RefreshRate.Denominator = 1;
 			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			sd.OutputWindow = hwnd;
-			sd.SampleDesc.Count = 1;
+			sd.SampleDesc.Count = 4;
 			sd.SampleDesc.Quality = 0;
 			sd.Windowed = true;
+			sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
+			UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+
+#ifdef _DEBUG
+			flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 			HRESULT result = D3D11CreateDeviceAndSwapChain(
 				nullptr,
 				D3D_DRIVER_TYPE_HARDWARE,
 				nullptr,
-				D3D11_CREATE_DEVICE_SINGLETHREADED || D3D11_CREATE_DEVICE_DEBUG || D3D11_CREATE_DEVICE_DEBUGGABLE,
+				D3D11_CREATE_DEVICE_DEBUG,
 				&featureLevels,
 				1,
 				D3D11_SDK_VERSION,
@@ -86,8 +98,10 @@ namespace sge
 			context->OMSetRenderTargets(1, &renderTargetView, nullptr);
 			backBuffer->Release();
 
-			viewport.Width = window.getWidth();
-			viewport.Height = window.getHeight();
+			ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+			viewport.Width = static_cast<FLOAT>(window.getWidth());
+			viewport.Height = static_cast<FLOAT>(window.getHeight());
 			viewport.MinDepth = 0.0f;
 			viewport.MaxDepth = 1.0f;
 			viewport.TopLeftX = 0;
@@ -98,6 +112,8 @@ namespace sge
 
 		~Impl()
 		{
+			swapChain->SetFullscreenState(false, nullptr);
+
 			swapChain->Release();
 			device->Release();
 			context->Release();
@@ -111,7 +127,6 @@ namespace sge
 		IDXGISwapChain* swapChain;
 		ID3D11RenderTargetView* renderTargetView;
 		D3D_FEATURE_LEVEL featureLevel;
-		D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
 		DXGI_SWAP_CHAIN_DESC sd;
 		D3D11_VIEWPORT viewport;
 	};
@@ -147,34 +162,154 @@ namespace sge
 		impl->context->ClearRenderTargetView(impl->renderTargetView, clear);
 	}
 
-	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage)
+	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage, size_t size)
 	{
-		return nullptr;
+		DX11Buffer* dx11Buffer = new DX11Buffer();
+
+		D3D11_BUFFER_DESC bd;
+		ZeroMemory(&bd, sizeof(bd));
+
+		switch (usage)
+		{
+		case BufferUsage::DYNAMIC:
+			bd.Usage = D3D11_USAGE_DYNAMIC; 
+			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; 
+			break;
+		case BufferUsage::STATIC:
+			// TODO Fix default usage.
+			SGE_ASSERT(false);
+			break;
+		}
+
+		switch (type)
+		{
+		case BufferType::VERTEX:
+			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER; break;
+		case BufferType::INDEX:
+			bd.BindFlags = D3D11_BIND_INDEX_BUFFER; break;
+		case BufferType::UNIFORM:
+			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER; break;
+		}
+		
+
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		bd.ByteWidth = size;
+
+		impl->device->CreateBuffer(&bd, nullptr, &dx11Buffer->buffer);
+
+		dx11Buffer->header.size = size;
+
+		return &dx11Buffer->header;
 	}
 
 	void GraphicsDevice::deleteBuffer(Buffer* buffer)
 	{
-
+		DX11Buffer* dx11Buffer = reinterpret_cast<DX11Buffer*>(buffer);
+		dx11Buffer->buffer->Release();
+		delete dx11Buffer;
+		buffer = nullptr;
 	}
 
 	Pipeline* GraphicsDevice::createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader)
 	{
-		return nullptr;
+		DX11Pipeline* dx11Pipeline = new DX11Pipeline();
+
+		dx11Pipeline->vertexShader = reinterpret_cast<DX11Shader*>(vertexShader);
+		dx11Pipeline->pixelShader = reinterpret_cast<DX11Shader*>(pixelShader);
+
+		D3D11_INPUT_ELEMENT_DESC* ied = new D3D11_INPUT_ELEMENT_DESC[vertexLayoutDescription->count];
+
+		size_t positionElements = 0;
+		size_t colorElements = 0;
+
+		for (size_t i = 0; i < vertexLayoutDescription->count; i++)
+		{
+			// TODO DIRTY HAX 
+			// Add semantics!
+			// Three elements makes it a position ":D"
+			if (vertexLayoutDescription->elements[i] == 3)
+			{
+				ied[i] = {
+					"POSITION", 
+					positionElements++, 
+					DXGI_FORMAT_R32G32B32_FLOAT, 
+					0, 
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0 
+				};
+			}
+			// And four for color!
+			else if (vertexLayoutDescription->elements[i] == 4)
+			{
+				ied[i] = {
+					"COLOR",
+					colorElements++,
+					DXGI_FORMAT_R32G32B32A32_FLOAT,
+					0,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0
+				};
+			}
+		}
+
+		HRESULT result = impl->device->CreateInputLayout(
+			ied,
+			vertexLayoutDescription->count,
+			dx11Pipeline->vertexShader->source,
+			dx11Pipeline->vertexShader->size,
+			&dx11Pipeline->inputLayout
+		);
+
+		SGE_ASSERT(result == S_OK);
+
+		return &dx11Pipeline->header;
 	}
 
 	void GraphicsDevice::deletePipeline(Pipeline* pipeline)
 	{
+		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
 
+		dx11Pipeline->inputLayout->Release();
+
+		delete dx11Pipeline;
+		pipeline = nullptr;
 	}
 
-	Shader* GraphicsDevice::createShader(ShaderType type, const char* source)
+	Shader* GraphicsDevice::createShader(ShaderType type, const char* source, size_t size)
 	{
-		return nullptr;
+		DX11Shader* dx11Shader = new DX11Shader();
+		HRESULT result = S_OK;
+
+		switch (type)
+		{
+		case ShaderType::VERTEX: 
+			result = impl->device->CreateVertexShader(source, size, nullptr, &dx11Shader->vertexShader); break;
+		case ShaderType::PIXEL: 
+			result = impl->device->CreatePixelShader(source, size, nullptr, &dx11Shader->pixelShader); break;
+		}
+
+		SGE_ASSERT(result == S_OK);
+
+		dx11Shader->header.type = type;
+		dx11Shader->source = source;
+		dx11Shader->size = size;
+
+		return &dx11Shader->header;
 	}
 
 	void GraphicsDevice::deleteShader(Shader* shader)
 	{
+		DX11Shader* dx11Shader = reinterpret_cast<DX11Shader*>(shader);
 
+		switch (dx11Shader->header.type)
+		{
+		case ShaderType::VERTEX: 
+			dx11Shader->vertexShader->Release(); break;
+		case ShaderType::PIXEL:
+			dx11Shader->pixelShader->Release(); break;
+		}
+
+		shader = nullptr;
 	}
 
 	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
@@ -189,7 +324,10 @@ namespace sge
 
 	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
 	{
-
+		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
+		impl->context->VSSetShader(dx11Pipeline->vertexShader->vertexShader, 0, 0);
+		impl->context->PSSetShader(dx11Pipeline->pixelShader->pixelShader, 0, 0);
+		impl->context->IASetInputLayout(dx11Pipeline->inputLayout);
 	}
 
 	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
@@ -199,6 +337,20 @@ namespace sge
 
 	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
 	{
+		DX11Buffer* dx11Buffer = reinterpret_cast<DX11Buffer*>(buffer);
+
+		// TODO super dirty hax fix
+		UINT stride = sizeof(float) * 7;
+		UINT offset = 0;
+
+		impl->context->IASetVertexBuffers(
+			0,
+			1,
+			&dx11Buffer->buffer,
+			&stride,
+			&offset
+		);
+		
 
 	}
 
@@ -234,7 +386,12 @@ namespace sge
 
 	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)
 	{
+		DX11Buffer* dx11Buffer = reinterpret_cast<DX11Buffer*>(buffer);
 
+		D3D11_MAPPED_SUBRESOURCE ms;
+		impl->context->Map(dx11Buffer->buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		memcpy(ms.pData, data, size);
+		impl->context->Unmap(dx11Buffer->buffer, NULL);
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)
@@ -244,7 +401,8 @@ namespace sge
 
 	void GraphicsDevice::draw(size_t count)
 	{
-
+		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		impl->context->Draw(count, 0);
 	}
 
 	void GraphicsDevice::drawIndexed(size_t count)

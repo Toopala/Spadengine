@@ -93,7 +93,7 @@ namespace sge
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
-	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage)
+	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage, size_t size)
 	{
 		GL4Buffer* buffer = new GL4Buffer();
 		
@@ -136,22 +136,19 @@ namespace sge
 		GLint success;
 		GLchar infoLog[512];
 
-		VertexLayout* vertexLayout = new VertexLayout();
-
-		vertexLayout->elements = new VertexElement[vertexLayoutDescription->count];
-		vertexLayout->count = vertexLayoutDescription->count;
+		gl4Pipeline->vertexLayout.elements = new VertexElement[vertexLayoutDescription->count];
+		gl4Pipeline->vertexLayout.count = vertexLayoutDescription->count;
 
 		size_t stride = 0;
 
-		for (size_t i = 0; i < vertexLayout->count; i++)
+		for (size_t i = 0; i < gl4Pipeline->vertexLayout.count; i++)
 		{
-			vertexLayout->elements[i] = { stride, vertexLayoutDescription->elements[i] };
+			gl4Pipeline->vertexLayout.elements[i] = { stride, vertexLayoutDescription->elements[i] };
 			stride += vertexLayoutDescription->elements[i];
 		}
 
-		vertexLayout->stride = stride;
+		gl4Pipeline->vertexLayout.stride = stride;
 
-		gl4Pipeline->header.vertexLayout = vertexLayout;
 		gl4Pipeline->program = glCreateProgram();
 
 		glAttachShader(gl4Pipeline->program, gl4VertexShader->id);
@@ -211,7 +208,7 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-	Shader* GraphicsDevice::createShader(ShaderType type, const char* source)
+	Shader* GraphicsDevice::createShader(ShaderType type, const char* source, size_t size)
 	{
 		GL4Shader* shader = new GL4Shader();
 		GLint success;
@@ -303,13 +300,17 @@ namespace sge
 
 		bindBuffer(buffer);
 
-		VertexLayout* vertexLayout = impl->pipeline->header.vertexLayout;
-
-		for (size_t i = 0; i < vertexLayout->count; i++)
+		for (size_t i = 0; i < impl->pipeline->vertexLayout.count; i++)
 		{
 			glEnableVertexAttribArray(i);
 
-			glVertexAttribPointer(i, vertexLayout->elements[i].size, GL_FLOAT, GL_FALSE, vertexLayout->stride * sizeof(GLfloat), (void*)(vertexLayout->elements[i].offset * sizeof(GLfloat)));
+			glVertexAttribPointer(
+				i, 
+				impl->pipeline->vertexLayout.elements[i].size, 
+				GL_FLOAT, 
+				GL_FALSE, 
+				impl->pipeline->vertexLayout.stride * sizeof(GLfloat), 
+				(void*)(impl->pipeline->vertexLayout.elements[i].offset * sizeof(GLfloat)));
 		}
 	}
 
@@ -359,7 +360,7 @@ namespace sge
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
-		gl4Buffer->size = size;
+		gl4Buffer->header.size = size;
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)

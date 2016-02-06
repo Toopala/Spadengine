@@ -9,12 +9,12 @@
 #include "Game/EntityManager.h"
 #include "Core\Memory\PagePoolAllocator.h"
 
-
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "Model.h"
 
@@ -61,9 +61,39 @@ int main(int argc, char** argv)
 
 	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
+	// DX SHADERS
 
+	std::ifstream file;
 
+	file.open("Assets/Shaders/VertexShader.cso", ios::in | ios::ate | ios::binary);
 
+	std::vector<char> vShaderData;
+
+	if (file.is_open())
+	{
+		std::cout << "vShaderData opened!" << std::endl;
+		vShaderData.resize(static_cast<size_t>(file.tellg()));
+
+		file.seekg(0, ios::beg);
+		file.read(vShaderData.data(), vShaderData.size());
+		file.close();
+	}
+
+	file.open("Assets/Shaders/PixelShader.cso", ios::in | ios::ate | ios::binary);
+
+	std::vector<char> pShaderData;
+
+	if (file.is_open())
+	{
+		std::cout << "pShaderData opened!" << std::endl;
+		pShaderData.resize(static_cast<size_t>(file.tellg()));
+
+		file.seekg(0, ios::beg);
+		file.read(pShaderData.data(), pShaderData.size());
+		file.close();
+	}
+
+	// OPENGL SHADERS
 	const char* VERTEX_SOURCE =
 		"#version 440\n"
 
@@ -140,10 +170,9 @@ int main(int argc, char** argv)
 
 	float vertexData[] =
 	{
-		width, 2 * height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-		2 * width, 2 * height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		2 * width, height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		0.45f, -0.5, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		-0.45f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -176,10 +205,20 @@ int main(int argc, char** argv)
 		0, 1, 2, 0, 2, 3
 	};
 
-	sge::VertexLayoutDescription vertexLayoutDescription = { 5, { 3, 3, 3, 3, 2 } };
+	// DX11 Layout
+	sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
 
-	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE);
-	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE);
+	// GL4 Layout
+	//sge::VertexLayoutDescription vertexLayoutDescription = { 5, { 3, 3, 3, 3, 2 } };
+
+	// DX11 Shaders
+	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+
+	// GL4 Shaders
+	//sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE, sizeof(VERTEX_SOURCE));
+	//sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE, sizeof(PIXEL_SOURCE));
+
 	sge::Texture* texture = device.createTexture(w, h, data);
 	sge::Texture* texture2 = device.createTexture(w, h, data2);
 
@@ -189,9 +228,15 @@ int main(int argc, char** argv)
 	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::STATIC);
-	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::STATIC);
-	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::STATIC);
+	// DX11 Buffers
+	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, sizeof(indexData));
+	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
+
+	// GL4 Buffers
+	//sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertices->size() * sizeof(Vertex)));
+	//sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, sizeof(indexData));
+	//sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
 	device.bindViewport(&viewport);
 	device.bindPipeline(pipeline);
@@ -202,8 +247,8 @@ int main(int argc, char** argv)
 	device.bindTexture(texture, 0);
 	device.bindTexture(texture2, 1);
 
-	device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
-	//device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	//device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
+	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
 	//device.copyData(indexBuffer, sizeof(indexData), indexData);
 	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
 
@@ -254,7 +299,7 @@ int main(int argc, char** argv)
 
 		device.copySubData(uniformBuffer, 0, sizeof(uniformData), uniformData);
 
-		device.draw(vertices->size());
+		device.draw(3);
 
 		device.swap();
 	}

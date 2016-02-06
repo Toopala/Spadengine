@@ -1,5 +1,7 @@
 #ifdef OPENGL4
 
+#pragma once
+
 #include "glad/glad.h"
 
 #include "Renderer/Shader.h"

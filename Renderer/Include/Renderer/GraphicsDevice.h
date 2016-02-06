@@ -25,13 +25,13 @@ namespace sge
 
 		void swap();
 
-		Buffer* createBuffer(BufferType type, BufferUsage usage);
+		Buffer* createBuffer(BufferType type, BufferUsage usage, size_t size);
 		void deleteBuffer(Buffer* buffer);
 
 		Pipeline* createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader);
 		void deletePipeline(Pipeline* pipeline);
 
-		Shader* createShader(ShaderType type, const char* source);
+		Shader* createShader(ShaderType type, const char* source, size_t size);
 		void deleteShader(Shader* shader);
 
 		Texture* createTexture(size_t width, size_t height, unsigned char* source);

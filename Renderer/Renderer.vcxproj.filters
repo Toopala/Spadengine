@@ -77,5 +77,14 @@
     <ClInclude Include="Include\Renderer\GL4\GL4Texture.h">
       <Filter>Header Files\GL4</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Shader.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Pipeline.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
