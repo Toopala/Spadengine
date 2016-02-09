@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 		-width, -height, 0.0f,			1.0f, 1.0f, 1.0f, 1.0f
 	};
 
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -209,7 +209,6 @@ int main(int argc, char** argv)
 	// DX11 Layout
 	//sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
 
-	// GL4 Layout
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5, 
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
@@ -296,7 +295,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 1.0f));
+		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.01f), glm::vec3(0.0f, 1.0f, 1.0f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 

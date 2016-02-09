@@ -12,6 +12,7 @@
 #include "Renderer/DX11/DX11Buffer.h"
 #include "Renderer/DX11/DX11Pipeline.h"
 #include "Renderer/DX11/DX11Shader.h"
+#include "Renderer/DX11/DX11VertexLayout.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/VertexLayout.h"
 #include "Renderer/Window.h"
@@ -129,6 +130,8 @@ namespace sge
 		D3D_FEATURE_LEVEL featureLevel;
 		DXGI_SWAP_CHAIN_DESC sd;
 		D3D11_VIEWPORT viewport;
+
+		DX11Pipeline* pipeline;
 	};
 
 	GraphicsDevice::GraphicsDevice(Window& window) :
@@ -190,9 +193,7 @@ namespace sge
 		case BufferType::UNIFORM:
 			bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER; break;
 		}
-		
 
-		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		bd.ByteWidth = size;
 
 		impl->device->CreateBuffer(&bd, nullptr, &dx11Buffer->buffer);
@@ -217,6 +218,8 @@ namespace sge
 		dx11Pipeline->vertexShader = reinterpret_cast<DX11Shader*>(vertexShader);
 		dx11Pipeline->pixelShader = reinterpret_cast<DX11Shader*>(pixelShader);
 
+		dx11Pipeline->vertexLayout = new DX11VertexLayout();
+
 		D3D11_INPUT_ELEMENT_DESC* ied = new D3D11_INPUT_ELEMENT_DESC[vertexLayoutDescription->count];
 
 		size_t positionElements = 0;
@@ -225,81 +228,64 @@ namespace sge
 		size_t colorElements = 0;
 		size_t tangentElements = 0;
 		size_t texcoordElements = 0;
-		size_t slot = 0;
+
+		size_t stride = 0;
 
 		for (size_t i = 0; i < vertexLayoutDescription->count; i++)
 		{
+			ied[i].InputSlot = i;
+			ied[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			ied[i].InstanceDataStepRate = 0;
+			ied[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+			switch (vertexLayoutDescription->elements[i].size)
+			{
+			case 2:
+				ied[i].Format = DXGI_FORMAT_R32G32_FLOAT; stride += 2; break;
+			case 3:
+				ied[i].Format = DXGI_FORMAT_R32G32B32_FLOAT; stride += 3; break;
+			case 4:
+				ied[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT; stride += 4; break;
+			}
+
 			switch (vertexLayoutDescription->elements[i].semantic)
 			{
 			case VertexSemantic::POSITION: 
-				ied[i] = {
-					"POSITION",
-					positionElements++,
-					DXGI_FORMAT_R32G32B32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "POSITION";
+				ied[i].SemanticIndex = positionElements++;
 				break;
 			case VertexSemantic::NORMAL:
-				ied[i] = {
-					"NORMAL",
-					normalElements++,
-					DXGI_FORMAT_R32G32B32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "NORMAL";
+				ied[i].SemanticIndex = normalElements++;
 				break;
 			case VertexSemantic::BINORMAL:
-				ied[i] = {
-					"BINORMAL",
-					binormalElements++,
-					DXGI_FORMAT_R32G32B32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "BINORMAL";
+				ied[i].SemanticIndex = binormalElements++;
 				break;
 			case VertexSemantic::COLOR:
-				ied[i] = {
-					"COLOR",
-					colorElements++,
-					DXGI_FORMAT_R32G32B32A32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "COLOR";
+				ied[i].SemanticIndex = colorElements++;
 				break;
 			case VertexSemantic::TANGENT:
-				ied[i] = {
-					"TANGENT",
-					tangentElements++,
-					DXGI_FORMAT_R32G32B32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "TANGENT";
+				ied[i].SemanticIndex = tangentElements++;
 				break;
 			case VertexSemantic::TEXCOORD:
-				ied[i] = {
-					"TEXCOORD",
-					texcoordElements++,
-					DXGI_FORMAT_R32G32_FLOAT,
-					slot++,
-					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0
-				};
+				ied[i].SemanticName = "TEXCOORD";
+				ied[i].SemanticIndex = texcoordElements++;
 				break;
 			}
 		}
+
+		dx11Pipeline->vertexLayout->header.stride = stride;
+		dx11Pipeline->vertexLayout->header.count = vertexLayoutDescription->count;
 
 		HRESULT result = impl->device->CreateInputLayout(
 			ied,
 			vertexLayoutDescription->count,
 			dx11Pipeline->vertexShader->source,
 			dx11Pipeline->vertexShader->size,
-			&dx11Pipeline->inputLayout
+			&dx11Pipeline->vertexLayout->inputLayout
 		);
 
 		SGE_ASSERT(result == S_OK);
@@ -311,9 +297,11 @@ namespace sge
 	{
 		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
 
-		dx11Pipeline->inputLayout->Release();
-
+		// TODO maybe these should be deleted somewhere else?
+		dx11Pipeline->vertexLayout->inputLayout->Release();
+		delete dx11Pipeline->vertexLayout;
 		delete dx11Pipeline;
+
 		pipeline = nullptr;
 	}
 
@@ -369,8 +357,10 @@ namespace sge
 		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
 		impl->context->VSSetShader(dx11Pipeline->vertexShader->vertexShader, 0, 0);
 		impl->context->PSSetShader(dx11Pipeline->pixelShader->pixelShader, 0, 0);
-		impl->context->IASetInputLayout(dx11Pipeline->inputLayout);
+		impl->context->IASetInputLayout(dx11Pipeline->vertexLayout->inputLayout);
 		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		impl->pipeline = dx11Pipeline;
 	}
 
 	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
@@ -382,17 +372,11 @@ namespace sge
 	{
 		DX11Buffer* dx11Buffer = reinterpret_cast<DX11Buffer*>(buffer);
 
-		// TODO super dirty hax fix
-		UINT stride = sizeof(float) * 7;
+		// TODO do we really need to do this?
+		UINT stride = impl->pipeline->vertexLayout->header.stride * sizeof(float);
 		UINT offset = 0;
 
-		impl->context->IASetVertexBuffers(
-			0,
-			1,
-			&dx11Buffer->buffer,
-			&stride,
-			&offset
-		);
+		impl->context->IASetVertexBuffers(0, 1, &dx11Buffer->buffer, &stride, &offset);
 	}
 
 	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)

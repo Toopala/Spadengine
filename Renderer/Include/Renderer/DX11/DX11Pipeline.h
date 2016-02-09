@@ -5,6 +5,7 @@
 #include <d3d11.h>
 
 #include "Renderer/DX11/DX11Shader.h"
+#include "Renderer/DX11/DX11VertexLayout.h"
 #include "Renderer/Pipeline.h"
 
 namespace sge
@@ -15,7 +16,7 @@ namespace sge
 
 		DX11Shader* vertexShader;
 		DX11Shader* pixelShader;
-		ID3D11InputLayout* inputLayout;
+		DX11VertexLayout* vertexLayout;
 	};
 }
 

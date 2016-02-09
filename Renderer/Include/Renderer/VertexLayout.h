@@ -6,7 +6,6 @@ namespace sge
 {
 	static const unsigned int MAX_NUMBER_OF_ELEMENTS = 15;
 
-
 	struct VertexElement
 	{
 		size_t offset;
@@ -18,8 +17,6 @@ namespace sge
 	{
 		size_t count;
 		VertexElement elements[MAX_NUMBER_OF_ELEMENTS];
-
-		// TODO clean
 	};
 
 	struct VertexLayout
@@ -27,7 +24,5 @@ namespace sge
 		size_t count;
 		size_t stride;
 		VertexElement elements[MAX_NUMBER_OF_ELEMENTS];
-
-		// TODO clean
 	};
 }
