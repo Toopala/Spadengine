@@ -220,35 +220,77 @@ namespace sge
 		D3D11_INPUT_ELEMENT_DESC* ied = new D3D11_INPUT_ELEMENT_DESC[vertexLayoutDescription->count];
 
 		size_t positionElements = 0;
+		size_t normalElements = 0;
+		size_t binormalElements = 0;
 		size_t colorElements = 0;
+		size_t tangentElements = 0;
+		size_t texcoordElements = 0;
+		size_t slot = 0;
 
 		for (size_t i = 0; i < vertexLayoutDescription->count; i++)
 		{
-			// TODO DIRTY HAX 
-			// Add semantics!
-			// Three elements makes it a position ":D"
-			if (vertexLayoutDescription->elements[i] == 3)
+			switch (vertexLayoutDescription->elements[i].semantic)
 			{
+			case VertexSemantic::POSITION: 
 				ied[i] = {
-					"POSITION", 
-					positionElements++, 
-					DXGI_FORMAT_R32G32B32_FLOAT, 
-					0, 
+					"POSITION",
+					positionElements++,
+					DXGI_FORMAT_R32G32B32_FLOAT,
+					slot++,
 					D3D11_APPEND_ALIGNED_ELEMENT,
-					D3D11_INPUT_PER_VERTEX_DATA, 0 
+					D3D11_INPUT_PER_VERTEX_DATA, 0
 				};
-			}
-			// And four for color!
-			else if (vertexLayoutDescription->elements[i] == 4)
-			{
+				break;
+			case VertexSemantic::NORMAL:
+				ied[i] = {
+					"NORMAL",
+					normalElements++,
+					DXGI_FORMAT_R32G32B32_FLOAT,
+					slot++,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0
+				};
+				break;
+			case VertexSemantic::BINORMAL:
+				ied[i] = {
+					"BINORMAL",
+					binormalElements++,
+					DXGI_FORMAT_R32G32B32_FLOAT,
+					slot++,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0
+				};
+				break;
+			case VertexSemantic::COLOR:
 				ied[i] = {
 					"COLOR",
 					colorElements++,
 					DXGI_FORMAT_R32G32B32A32_FLOAT,
-					0,
+					slot++,
 					D3D11_APPEND_ALIGNED_ELEMENT,
 					D3D11_INPUT_PER_VERTEX_DATA, 0
 				};
+				break;
+			case VertexSemantic::TANGENT:
+				ied[i] = {
+					"TANGENT",
+					tangentElements++,
+					DXGI_FORMAT_R32G32B32_FLOAT,
+					slot++,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0
+				};
+				break;
+			case VertexSemantic::TEXCOORD:
+				ied[i] = {
+					"TEXCOORD",
+					texcoordElements++,
+					DXGI_FORMAT_R32G32_FLOAT,
+					slot++,
+					D3D11_APPEND_ALIGNED_ELEMENT,
+					D3D11_INPUT_PER_VERTEX_DATA, 0
+				};
+				break;
 			}
 		}
 
@@ -328,6 +370,7 @@ namespace sge
 		impl->context->VSSetShader(dx11Pipeline->vertexShader->vertexShader, 0, 0);
 		impl->context->PSSetShader(dx11Pipeline->pixelShader->pixelShader, 0, 0);
 		impl->context->IASetInputLayout(dx11Pipeline->inputLayout);
+		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
 	void GraphicsDevice::debindPipeline(Pipeline* pipeline)
@@ -350,23 +393,21 @@ namespace sge
 			&stride,
 			&offset
 		);
-		
-
 	}
 
 	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)
 	{
-
+		impl->context->IASetIndexBuffer(reinterpret_cast<DX11Buffer*>(buffer)->buffer, DXGI_FORMAT_R32_UINT, 0);
 	}
 
 	void GraphicsDevice::bindVertexUniformBuffer(Buffer* buffer, size_t slot)
 	{
-
+		impl->context->VSSetConstantBuffers(slot, 1, &reinterpret_cast<DX11Buffer*>(buffer)->buffer);
 	}
 
 	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
 	{
-
+		impl->context->PSSetConstantBuffers(slot, 1, &reinterpret_cast<DX11Buffer*>(buffer)->buffer);
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
@@ -401,13 +442,12 @@ namespace sge
 
 	void GraphicsDevice::draw(size_t count)
 	{
-		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		impl->context->Draw(count, 0);
 	}
 
 	void GraphicsDevice::drawIndexed(size_t count)
 	{
-
+		impl->context->DrawIndexed(count, 0, 0);
 	}
 
 	void GraphicsDevice::drawInstanced(size_t count, size_t instanceCount)

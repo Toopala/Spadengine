@@ -1,4 +1,5 @@
 #include "Core/Math.h"
+#include "Renderer/Enumerations.h"
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Pipeline.h"
@@ -164,15 +165,16 @@ int main(int argc, char** argv)
 		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
 		"}\n";
 
-	float width = 0.1f;
-	float height = 0.1f;
+	float width = 1.0f;
+	float height = 1.0f;
 
 
 	float vertexData[] =
 	{
-		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.45f, -0.5, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		-0.45f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		-width, height, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f,
+		width, -height, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
+		-width, -height, 0.0f,			1.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -182,17 +184,16 @@ int main(int argc, char** argv)
 	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
 	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	glm::mat4 VP = P*V;
-
-	glm::mat4 M = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
-
-	glm::mat4 MVP = VP*M;
-
-	sge::math::mat4 uniformData[] =
+	struct UniformData
 	{
-		MVP,
-		M
+		sge::math::mat4 PV;
+		sge::math::mat4 M;
 	};
+
+	UniformData uniformData;
+
+	uniformData.M = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
+	uniformData.PV = P * V;
 
 	//Assimp test
 	Model* model = new Model("cube.dae");
@@ -206,10 +207,17 @@ int main(int argc, char** argv)
 	};
 
 	// DX11 Layout
-	sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
+	//sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
 
 	// GL4 Layout
-	//sge::VertexLayoutDescription vertexLayoutDescription = { 5, { 3, 3, 3, 3, 2 } };
+	sge::VertexLayoutDescription vertexLayoutDescription = { 5, 
+	{
+		{ 0, 3, sge::VertexSemantic::POSITION },
+		{ 0, 3, sge::VertexSemantic::NORMAL },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 2, sge::VertexSemantic::TEXCOORD } 
+	}};
 
 	// DX11 Shaders
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
@@ -229,7 +237,7 @@ int main(int argc, char** argv)
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	// DX11 Buffers
-	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
 	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, sizeof(indexData));
 	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
@@ -248,9 +256,9 @@ int main(int argc, char** argv)
 	device.bindTexture(texture2, 1);
 
 	//device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
-	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
-	//device.copyData(indexBuffer, sizeof(indexData), indexData);
-	device.copyData(uniformBuffer, sizeof(uniformData), uniformData);
+	device.copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
+	device.copyData(indexBuffer, sizeof(indexData), indexData);
+	device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	SDL_Event event;
 
@@ -288,18 +296,11 @@ int main(int argc, char** argv)
 			}
 		}
 
-		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
-		M = sge::math::rotate(M, glm::radians(0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
-		
-		// Order must not be changed.
-		MVP = VP*M;
+		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 1.0f));
 
-		uniformData[0] = MVP;
-		uniformData[1] = M;
+		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-		device.copySubData(uniformBuffer, 0, sizeof(uniformData), uniformData);
-
-		device.draw(3);
+		device.draw(vertices->size());
 
 		device.swap();
 	}

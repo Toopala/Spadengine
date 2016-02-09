@@ -2,6 +2,16 @@
 
 namespace sge
 { 
+	enum class VertexSemantic
+	{
+		BINORMAL,
+		COLOR,
+		NORMAL,
+		POSITION,
+		TANGENT,
+		TEXCOORD
+	};
+
 	enum class ShaderType
 	{
 		VERTEX,
