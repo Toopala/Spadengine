@@ -12,6 +12,7 @@
 #include "Renderer/DX11/DX11Buffer.h"
 #include "Renderer/DX11/DX11Pipeline.h"
 #include "Renderer/DX11/DX11Shader.h"
+#include "Renderer/DX11/DX11Texture.h"
 #include "Renderer/DX11/DX11VertexLayout.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/VertexLayout.h"
@@ -280,13 +281,31 @@ namespace sge
 		dx11Pipeline->vertexLayout->header.stride = stride;
 		dx11Pipeline->vertexLayout->header.count = vertexLayoutDescription->count;
 
-		HRESULT result = impl->device->CreateInputLayout(
+		HRESULT result;
+		result = impl->device->CreateInputLayout(
 			ied,
 			vertexLayoutDescription->count,
 			dx11Pipeline->vertexShader->source,
 			dx11Pipeline->vertexShader->size,
 			&dx11Pipeline->vertexLayout->inputLayout
 		);
+
+		SGE_ASSERT(result == S_OK);
+
+		D3D11_SAMPLER_DESC sDesc;
+
+		ZeroMemory(&sDesc, sizeof(sDesc));
+
+		sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.MinLOD = -FLT_MAX;
+		sDesc.MaxLOD = FLT_MAX;
+
+		result = impl->device->CreateSamplerState(
+			&sDesc,
+			&dx11Pipeline->samplerState);
 
 		SGE_ASSERT(result == S_OK);
 
@@ -299,6 +318,7 @@ namespace sge
 
 		// TODO maybe these should be deleted somewhere else?
 		dx11Pipeline->vertexLayout->inputLayout->Release();
+		dx11Pipeline->samplerState->Release();
 		delete dx11Pipeline->vertexLayout;
 		delete dx11Pipeline;
 
@@ -344,21 +364,58 @@ namespace sge
 
 	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
 	{
-		return nullptr;
+		DX11Texture* dx11Texture = new DX11Texture();
+
+		D3D11_TEXTURE2D_DESC desc;
+		desc.Width = width;
+		desc.Height = height;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA data;
+		data.pSysMem = source;
+		data.SysMemPitch = static_cast<UINT>(width * 4);
+		data.SysMemSlicePitch = 0;
+
+		HRESULT result;
+
+		result = impl->device->CreateTexture2D(&desc, &data, &dx11Texture->texture);
+
+		SGE_ASSERT(result == S_OK);
+
+		result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->textureView);
+
+		SGE_ASSERT(result == S_OK);
+
+		return &dx11Texture->header;
 	}
 
 	void GraphicsDevice::deleteTexture(Texture* texture)
 	{
+		DX11Texture* dx11Texture = reinterpret_cast<DX11Texture*>(texture);
 
+		dx11Texture->texture->Release();
+		dx11Texture->textureView->Release();
+
+		delete dx11Texture;
+		texture = nullptr;
 	}
 
 	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
 	{
 		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
+		impl->context->IASetInputLayout(dx11Pipeline->vertexLayout->inputLayout);
 		impl->context->VSSetShader(dx11Pipeline->vertexShader->vertexShader, 0, 0);
 		impl->context->PSSetShader(dx11Pipeline->pixelShader->pixelShader, 0, 0);
-		impl->context->IASetInputLayout(dx11Pipeline->vertexLayout->inputLayout);
 		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		impl->context->PSSetSamplers(0, 1, &dx11Pipeline->samplerState);
 
 		impl->pipeline = dx11Pipeline;
 	}
@@ -401,7 +458,7 @@ namespace sge
 
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
-
+		impl->context->PSSetShaderResources(slot, 1, &reinterpret_cast<DX11Texture*>(texture)->textureView);
 	}
 
 	void GraphicsDevice::debindTexture(Texture* texture)

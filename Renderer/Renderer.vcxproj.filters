@@ -89,5 +89,8 @@
     <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Texture.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

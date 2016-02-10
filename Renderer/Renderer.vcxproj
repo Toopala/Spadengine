@@ -87,6 +87,7 @@
     <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h" />
     <ClInclude Include="Include\Renderer\DX11\DX11Pipeline.h" />
     <ClInclude Include="Include\Renderer\DX11\DX11Shader.h" />
+    <ClInclude Include="Include\Renderer\DX11\DX11Texture.h" />
     <ClInclude Include="Include\Renderer\Enumerations.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Buffer.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h" />

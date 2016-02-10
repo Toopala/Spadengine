@@ -313,6 +313,7 @@ int main(int argc, char** argv)
 	device.deleteShader(vertexShader);
 	device.deleteShader(pixelShader);
 	device.deleteTexture(texture);
+	device.deleteTexture(texture2);
 
 	device.deletePipeline(pipeline);
 
