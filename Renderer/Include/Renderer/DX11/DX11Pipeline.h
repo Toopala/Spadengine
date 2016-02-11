@@ -18,6 +18,7 @@ namespace sge
 		DX11Shader* pixelShader;
 		DX11VertexLayout* vertexLayout;
 		ID3D11SamplerState* samplerState;
+		ID3D11RasterizerState* rasterizerState;
 	};
 }
 

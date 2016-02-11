@@ -311,6 +311,18 @@ namespace sge
 
 		SGE_ASSERT(result == S_OK);
 
+		D3D11_RASTERIZER_DESC rDesc;
+
+		ZeroMemory(&rDesc, sizeof(rDesc));
+
+		rDesc.FillMode = D3D11_FILL_SOLID;
+		rDesc.CullMode = D3D11_CULL_BACK;
+		rDesc.FrontCounterClockwise = TRUE;
+
+		result = impl->device->CreateRasterizerState(
+			&rDesc,
+			&dx11Pipeline->rasterizerState);
+
 		return &dx11Pipeline->header;
 	}
 
@@ -418,6 +430,7 @@ namespace sge
 		impl->context->PSSetShader(dx11Pipeline->pixelShader->pixelShader, 0, 0);
 		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		impl->context->PSSetSamplers(0, 1, &dx11Pipeline->samplerState);
+		impl->context->RSSetState(dx11Pipeline->rasterizerState);
 
 		impl->pipeline = dx11Pipeline;
 	}

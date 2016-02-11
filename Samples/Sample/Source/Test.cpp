@@ -295,7 +295,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.01f), glm::vec3(0.0f, 1.0f, 1.0f));
+		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.05f), glm::vec3(0.5f, 1.0f, 0.5f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
