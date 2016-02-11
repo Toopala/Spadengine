@@ -298,10 +298,10 @@ namespace sge
 
 		ZeroMemory(&sDesc, sizeof(sDesc));
 
-		sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sDesc.MinLOD = -FLT_MAX;
 		sDesc.MaxLOD = FLT_MAX;
 
