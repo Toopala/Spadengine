@@ -36,12 +36,14 @@
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
+    <Import Project="..\Config\Properties\SDL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
+    <Import Project="..\Config\Properties\SDL.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -73,12 +75,18 @@
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\SystemManager.cpp" />
+    <ClCompile Include="Source\TestComponent.cpp" />
+    <ClCompile Include="Source\TestSystem.cpp" />
     <ClCompile Include="Source\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\SystemManager.h" />
+    <ClInclude Include="Include\Game\TestComponent.h" />
+    <ClInclude Include="Include\Game\TestSystem.h" />
     <ClInclude Include="Include\Game\TransformComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
