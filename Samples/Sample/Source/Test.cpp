@@ -254,7 +254,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 1.0f, 1.0f));
+		M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.2f, 0.1f));
 		
 		// Order must not be changed.
 		MVP = VP*M;

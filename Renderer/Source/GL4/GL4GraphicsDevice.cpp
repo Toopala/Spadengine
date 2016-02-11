@@ -75,6 +75,7 @@ namespace sge
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
 
 		
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
