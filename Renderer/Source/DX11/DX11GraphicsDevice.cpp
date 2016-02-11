@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <d3d11.h>
+#include <comdef.h>
 
 #pragma comment (lib, "d3d11.lib")
 
@@ -88,6 +89,11 @@ namespace sge
 				&featureLevel,
 				&context
 				);
+
+			_com_error err(result);
+			LPCTSTR errMsg = err.ErrorMessage();
+
+			std::cout << "DX11: " << errMsg << std::endl;
 
 			SGE_ASSERT(result == S_OK);
 
