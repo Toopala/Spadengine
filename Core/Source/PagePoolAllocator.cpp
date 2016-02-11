@@ -73,7 +73,7 @@ namespace sge
 		return pointer;
 	}
 	
-	// Deallocate used memory
+	// Deallocate space for memory
 	void PagePoolAllocator::deallocate(void *data)
 	{
 		PageHeader *page = NULL;
@@ -140,15 +140,5 @@ namespace sge
 		headerLocations.push_back(headerLocationInfo);
 
 		return page;
-	}
-	
-	void* PagePoolAllocator::operator new(size_t size)
-	{
-		return allocator.allocate(size);
-	}
-
-		void PagePoolAllocator::operator delete(void* ptr)
-	{
-		allocator.deallocate(ptr);
 	}
 }

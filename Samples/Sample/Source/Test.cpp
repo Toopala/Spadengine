@@ -26,25 +26,13 @@ public:
 		testia = a;
 		testib = b;
 		testic = c;
+		std::cout << "Constructed" << std::endl;
 	}
-	~MemoryTest(){
-		
-		std::cout << testia << " " << testib << " " << testic << std::endl;
+	~MemoryTest()
+	{
+		std::cout << "Destroyed!" << std::endl;
 	}
 	int testia, testib, testic;
-};
-
-class MemoryTest2
-{
-public:
-	MemoryTest2(){}
-	~MemoryTest2()
-	{
-		std::cout << "Destroyed!";
-	}
-
-private:
-	int testi = 1;
 };
 
 int main(int argc, char** argv)
@@ -224,22 +212,13 @@ int main(int argc, char** argv)
 	
 	
 	// Memory allocation test
-	MemoryTest *mt = (MemoryTest*)sge::allocator.allocate(sizeof(MemoryTest));
-	new (mt)MemoryTest(2,5,7);
-	MemoryTest *mt2 = (MemoryTest*)sge::allocator.operator new(sizeof(MemoryTest));
-	new(mt2)MemoryTest(4, 5, 6);
-	MemoryTest *mt3 = (MemoryTest*)sge::allocator.allocate(sizeof(mt3));
-	new(mt3)MemoryTest(10, 10, 10);
-	MemoryTest2 *mt4 = (MemoryTest2*)sge::allocator.operator new(sizeof(MemoryTest2));
-	new(mt4)MemoryTest2();
 
-	sge::allocator.operator delete(mt2);
+	MemoryTest *mt1 = sge::allocator.create<MemoryTest>(10, 10, 10);
+	sge::allocator.destroy<MemoryTest>(mt1);
 
+	MemoryTest *mt5 = sge::allocator.create<MemoryTest>(5,5,5);
+	sge::allocator.destroy<MemoryTest>(mt5);
 
-
-	std::cout << mt->testia << ", " << mt->testib << ", " << mt->testic << std::endl;
-	std::cout << mt2->testia << ", " << mt2->testib << ", " << mt2->testic << std::endl;
-	std::cout << mt3->testia << ", " << mt3->testib << ", " << mt3->testic << std::endl;
 	while (running)
 	{
 		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
