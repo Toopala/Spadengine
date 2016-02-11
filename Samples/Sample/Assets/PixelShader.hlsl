@@ -6,5 +6,6 @@ float4 main(
 	float4 position : SV_POSITION, 
 	float2 texcoords : TEXCOORD0) : SV_TARGET
 {
-	return sTexture.Sample(textureSampler, texcoords);
+	float4 color = sTexture.Sample(textureSampler, texcoords);
+	return color;
 }

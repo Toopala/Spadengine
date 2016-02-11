@@ -234,7 +234,7 @@ namespace sge
 
 		for (size_t i = 0; i < vertexLayoutDescription->count; i++)
 		{
-			ied[i].InputSlot = i;
+			ied[i].InputSlot = 0;
 			ied[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 			ied[i].InstanceDataStepRate = 0;
 			ied[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -242,12 +242,14 @@ namespace sge
 			switch (vertexLayoutDescription->elements[i].size)
 			{
 			case 2:
-				ied[i].Format = DXGI_FORMAT_R32G32_FLOAT; stride += 2; break;
+				ied[i].Format = DXGI_FORMAT_R32G32_FLOAT; break;
 			case 3:
-				ied[i].Format = DXGI_FORMAT_R32G32B32_FLOAT; stride += 3; break;
+				ied[i].Format = DXGI_FORMAT_R32G32B32_FLOAT; break;
 			case 4:
-				ied[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT; stride += 4; break;
+				ied[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 			}
+
+			stride += vertexLayoutDescription->elements[i].size;
 
 			switch (vertexLayoutDescription->elements[i].semantic)
 			{
@@ -297,9 +299,9 @@ namespace sge
 		ZeroMemory(&sDesc, sizeof(sDesc));
 
 		sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		sDesc.MinLOD = -FLT_MAX;
 		sDesc.MaxLOD = FLT_MAX;
 

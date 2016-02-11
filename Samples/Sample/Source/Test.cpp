@@ -171,10 +171,10 @@ int main(int argc, char** argv)
 
 	float vertexData[] =
 	{
-		-width, height, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f,
-		width, -height, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,
-		-width, -height, 0.0f,			1.0f, 1.0f, 1.0f, 1.0f
+		-width, height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		-width, -height, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.5f);
@@ -209,14 +209,14 @@ int main(int argc, char** argv)
 	// DX11 Layout
 	//sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
 
-	sge::VertexLayoutDescription vertexLayoutDescription = { 5, 
+	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
 		{ 0, 3, sge::VertexSemantic::NORMAL },
 		{ 0, 3, sge::VertexSemantic::TANGENT },
 		{ 0, 3, sge::VertexSemantic::TANGENT },
-		{ 0, 2, sge::VertexSemantic::TEXCOORD } 
-	}};
+		{ 0, 2, sge::VertexSemantic::TEXCOORD }
+	} };
 
 	// DX11 Shaders
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
 	sge::PagePoolAllocator *allocator = new sge::PagePoolAllocator;
 
 	MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	new (mt)MemoryTest(2,5);
+	new (mt)MemoryTest(2, 5);
 	MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
 	new (mt2)MemoryTest(7, 9);
 	MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
