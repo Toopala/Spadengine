@@ -91,6 +91,10 @@ namespace sge
 
 			SGE_ASSERT(result == S_OK);
 
+#ifdef _DEBUG
+			device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
+#endif
+
 			ID3D11Texture2D* backBuffer = nullptr;
 			result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
 
@@ -114,12 +118,18 @@ namespace sge
 
 		~Impl()
 		{
+			
 			swapChain->SetFullscreenState(false, nullptr);
 
 			swapChain->Release();
 			device->Release();
 			context->Release();
 			renderTargetView->Release();
+
+#ifdef _DEBUG
+			debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+			debug->Release();
+#endif
 		}
 
 		HDC hdc;
@@ -131,7 +141,7 @@ namespace sge
 		D3D_FEATURE_LEVEL featureLevel;
 		DXGI_SWAP_CHAIN_DESC sd;
 		D3D11_VIEWPORT viewport;
-
+		ID3D11Debug* debug;
 		DX11Pipeline* pipeline;
 	};
 
@@ -333,6 +343,7 @@ namespace sge
 		// TODO maybe these should be deleted somewhere else?
 		dx11Pipeline->vertexLayout->inputLayout->Release();
 		dx11Pipeline->samplerState->Release();
+		dx11Pipeline->rasterizerState->Release();
 		delete dx11Pipeline->vertexLayout;
 		delete dx11Pipeline;
 
