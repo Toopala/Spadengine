@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 
 	float width = 0.1f;
 	float height = 0.1f;
-
+	float alpha = 0.0f;
 
 	float vertexData[] =
 	{
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	};
 
 	//Assimp test
-	Model* model = new Model("cube.dae");
+	Model* model = new Model("apina.dae");
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
@@ -243,8 +243,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
-		M = sge::math::rotate(M, glm::radians(0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
+		M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 1.0f, 1.0f));
 		
 		// Order must not be changed.
 		MVP = VP*M;
@@ -257,6 +256,8 @@ int main(int argc, char** argv)
 		device.draw(vertices->size());
 
 		device.swap();
+
+		alpha += 0.01;
 	}
 
 	device.debindPipeline(pipeline);
