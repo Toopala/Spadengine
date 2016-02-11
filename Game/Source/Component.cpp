@@ -1,6 +1,6 @@
 #include "Game/Component.h"
 #include <assert.h>
-#include "Core\Assert.h"
+#include "Core/Assert.h"
 
 namespace sge
 {
