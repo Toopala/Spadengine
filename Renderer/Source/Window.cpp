@@ -1,5 +1,9 @@
 #include "Renderer/Window.h"
-#include "SDL/SDL.h"
+#ifdef _WIN32
+# include "SDL/SDL.h"
+#else
+# include "SDL2/SDL.h"
+#endif
 
 namespace sge
 {
