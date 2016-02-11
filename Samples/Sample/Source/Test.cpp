@@ -21,22 +21,30 @@
 class MemoryTest
 {
 public:
-	MemoryTest(int a, int b)
+	MemoryTest(int a, int b, int c)
 	{
 		testia = a;
 		testib = b;
+		testic = c;
 	}
 	~MemoryTest(){
-		std::cout << testia << " " << testib << std::endl;
+		
+		std::cout << testia << " " << testib << " " << testic << std::endl;
 	}
-	int testia, testib;
+	int testia, testib, testic;
 };
 
 class MemoryTest2
 {
 public:
 	MemoryTest2(){}
-	~MemoryTest2(){}
+	~MemoryTest2()
+	{
+		std::cout << "Destroyed!";
+	}
+
+private:
+	int testi = 1;
 };
 
 int main(int argc, char** argv)
@@ -213,22 +221,25 @@ int main(int argc, char** argv)
 
 	float temp = 0;
 
+	
+	
 	// Memory allocation test
-	sge::PagePoolAllocator *allocator = new sge::PagePoolAllocator;
+	MemoryTest *mt = (MemoryTest*)sge::allocator.allocate(sizeof(MemoryTest));
+	new (mt)MemoryTest(2,5,7);
+	MemoryTest *mt2 = (MemoryTest*)sge::allocator.operator new(sizeof(MemoryTest));
+	new(mt2)MemoryTest(4, 5, 6);
+	MemoryTest *mt3 = (MemoryTest*)sge::allocator.allocate(sizeof(mt3));
+	new(mt3)MemoryTest(10, 10, 10);
+	MemoryTest2 *mt4 = (MemoryTest2*)sge::allocator.operator new(sizeof(MemoryTest2));
+	new(mt4)MemoryTest2();
 
-	MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	new (mt)MemoryTest(2,5);
-	MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	new (mt2)MemoryTest(7, 9);
-	MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
-	new(mt3)MemoryTest(10, 10);
+	sge::allocator.operator delete(mt2);
 
-	std::cout << mt->testia << ", " << mt->testib << std::endl;
-	allocator->deallocate(mt);
-	allocator->deallocate(mt2);
-	std::cout << mt->testia << ", " << mt->testib << std::endl;
-	std::cout << mt2->testia << ", " << mt2->testib << std::endl;
-	std::cout << mt3->testia << ", " << mt3->testib << std::endl;
+
+
+	std::cout << mt->testia << ", " << mt->testib << ", " << mt->testic << std::endl;
+	std::cout << mt2->testia << ", " << mt2->testib << ", " << mt2->testic << std::endl;
+	std::cout << mt3->testia << ", " << mt3->testib << ", " << mt3->testic << std::endl;
 	while (running)
 	{
 		device.clear(0.5f, 0.0f, 0.5f, 1.0f);

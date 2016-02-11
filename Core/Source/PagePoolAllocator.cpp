@@ -1,14 +1,16 @@
-#include "Core\Memory\PagePoolAllocator.h"
+#include "Core/Memory/PagePoolAllocator.h"
 
 namespace sge
 {
+	PagePoolAllocator allocator;
+
 	PagePoolAllocator::PagePoolAllocator()
 	{
 
 	}
 	PagePoolAllocator::~PagePoolAllocator()
 	{
-
+		
 	}
 
 	// Allocate memory
@@ -92,13 +94,15 @@ namespace sge
 		SGE_ASSERT(page);
 
 		void* value = (void*)page->nextSlot;
-		*(void**)data = value;					//<------ WUT IS TIS!
+		*(void**)data = value;
 		//data = reinterpret_cast<void*>(value);
 
 		page->nextSlot = data;
 
 		++page->freeSpaceCount;
 		++page->slotsLeft;
+
+		
 	}
 
 	// Checks if there are pages with free room
@@ -136,5 +140,15 @@ namespace sge
 		headerLocations.push_back(headerLocationInfo);
 
 		return page;
+	}
+	
+	void* PagePoolAllocator::operator new(size_t size)
+	{
+		return allocator.allocate(size);
+	}
+
+		void PagePoolAllocator::operator delete(void* ptr)
+	{
+		allocator.deallocate(ptr);
 	}
 }
