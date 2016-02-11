@@ -1,8 +1,15 @@
+
 #ifdef OPENGL4
 
 #include <iostream>
 
-#include "SDL/SDL.h"
+#ifdef _WIN32
+# include "SDL/SDL.h"
+#else 
+# include "SDL2/SDL.h"
+#endif
+
+
 #include "glad/glad.h"
 
 #include "Renderer/GraphicsDevice.h"

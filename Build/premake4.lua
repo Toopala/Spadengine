@@ -27,12 +27,19 @@ solution "Spadengine"
 	project "Renderer"
 		kind "StaticLib"
 		language "C++"
+		defines {"OPENGL4"}
 		files { "../Renderer/**.cpp" }
 		linkoptions {"../Build/libglad.a"}
-		includedirs { "../Renderer/Include/",
-				"../ThirdParty/SDL/include/",
+		links { "SDL2"}
+		includedirs { "../Renderer/Include/",	
+				"../Core/Include",
 				"../ThirdParty/glad/Include/" }
-		
+
+	project "Game"
+		kind "StaticLib"
+		language "C++"
+		files {"../Game/**.cpp"}	
+		includedirs { "../Game/Include/"}
 
 	project "Sample"
 		kind "ConsoleApp"
@@ -40,10 +47,11 @@ solution "Spadengine"
 		files {"../Samples/Sample/**.cpp"}
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
+				"../Game/Include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
-		links { "SDL2", "Core", "Renderer", "glad", "dl" }
+		links { "SDL2", "Core", "Renderer", "glad", "dl", "assimp" }

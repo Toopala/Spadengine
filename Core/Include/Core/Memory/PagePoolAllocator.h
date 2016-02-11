@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdlib.h>
-#include "Core\Assert.h"
-#include "Core\Types.h"
+#include "Core/Assert.h"
+#include "Core/Types.h"
 #include <vector>
 #include <map>
 
@@ -47,11 +47,14 @@ namespace sge
 
 		void deallocate(void* data);
 
+		void* operator new(size_t);
+
+		void operator delete(void*);
 	private:
 		PageHeader *createNewPageHeader(size_t size);			// Creating a new page
 		PageHeader *findPageWithRoom(PageHeader *page);			// Check if there are same size of block in a different page
 		PageMap pageMap;
 		std::vector<HeaderLocationInfo> headerLocations;
 	};
-
+	extern PagePoolAllocator allocator;
 }
