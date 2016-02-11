@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 	};
 
 	//Assimp test
-	Model* model = new Model("apina.dae");
+	Model* model = new Model("cube.dae");
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
