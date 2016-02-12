@@ -1,11 +1,15 @@
 #include "Game/TestSystem.h"
 
-
-TestSystem::TestSystem()
+namespace sge
 {
-}
+
+	TestSystem::TestSystem()
+	{
+	}
 
 
-TestSystem::~TestSystem()
-{
+	TestSystem::~TestSystem()
+	{
+	}
+
 }
