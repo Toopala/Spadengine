@@ -21,11 +21,12 @@
 class MemoryTest
 {
 public:
-	MemoryTest(int a, int b, int c)
+	MemoryTest(int a, int b, int c, std::string d)
 	{
 		testia = a;
 		testib = b;
 		testic = c;
+		testid = d;
 		std::cout << "Constructed" << std::endl;
 	}
 	~MemoryTest()
@@ -33,6 +34,7 @@ public:
 		std::cout << "Destroyed!" << std::endl;
 	}
 	int testia, testib, testic;
+	std::string testid;
 };
 
 int main(int argc, char** argv)
@@ -213,10 +215,10 @@ int main(int argc, char** argv)
 	
 	// Memory allocation test
 
-	MemoryTest *mt1 = sge::allocator.create<MemoryTest>(10, 10, 10);
+	MemoryTest *mt1 = sge::allocator.create<MemoryTest>(10, 10, 10, "10");
 	sge::allocator.destroy<MemoryTest>(mt1);
 
-	MemoryTest *mt5 = sge::allocator.create<MemoryTest>(5,5,5);
+	MemoryTest *mt5 = sge::allocator.create<MemoryTest>(1,2,3,"4");
 	sge::allocator.destroy<MemoryTest>(mt5);
 
 	while (running)
