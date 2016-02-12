@@ -1,8 +1,12 @@
 #pragma once
-class TestSystem
-{
-public:
-	TestSystem();
-	~TestSystem();
-};
 
+namespace sge
+{
+	class TestSystem
+	{
+	public:
+		TestSystem();
+		~TestSystem();
+	};
+
+}

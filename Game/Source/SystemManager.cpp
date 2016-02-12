@@ -1,11 +1,15 @@
 #include "Game/SystemManager.h"
 
-
-SystemManager::SystemManager()
+namespace sge
 {
-}
+
+	SystemManager::SystemManager()
+	{
+	}
 
 
-SystemManager::~SystemManager()
-{
+	SystemManager::~SystemManager()
+	{
+	}
+
 }
