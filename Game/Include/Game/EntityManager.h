@@ -11,12 +11,12 @@ namespace sge
 		EntityManager();
 		~EntityManager();
 
-		Entity* createEntity();
-		Entity* createActor();
+		Entity* createEntity(); // Creates a basic entity
+		Entity* createActor(); // Example factory method
 
-		void setComponent(Entity* ent, Component* comp);
+		void setComponent(Entity* ent, Component* comp); // Wraps a method, explained in cpp
 		
-		template<class T>
+		template<class T> // Another wrapped function to remove a certain type of component from an entity
 		void removeComponent(Entity& ent)
 		{
 			ent.removeComponent<T>();
@@ -25,5 +25,3 @@ namespace sge
 	};
 }
 
-
-// http://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2011/06/6-1-2010.pdf

@@ -11,7 +11,7 @@ namespace sge
 	{
 	}
 
-	Entity* EntityManager::createEntity() // Creates an empty entity.
+	Entity* EntityManager::createEntity() // Creates and returns an empty entity.
 	{
 		return new Entity();
 	}

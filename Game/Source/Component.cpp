@@ -5,7 +5,7 @@ namespace sge
 {
 	Component::Component(Entity* ent) : parent(ent)
 	{
-		SGE_ASSERT(ent != nullptr);
+		SGE_ASSERT(ent != nullptr); // Ensure that we have an entity to work with
 	}
 
 
