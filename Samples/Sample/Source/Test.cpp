@@ -24,11 +24,12 @@
 class MemoryTest
 {
 public:
-	MemoryTest(int a, int b, int c)
+	MemoryTest(int a, int b, int c, std::string d)
 	{
 		testia = a;
 		testib = b;
 		testic = c;
+		testid = d;
 		std::cout << "Constructed" << std::endl;
 	}
 	~MemoryTest()
@@ -36,7 +37,51 @@ public:
 		std::cout << "Destroyed!" << std::endl;
 	}
 	int testia, testib, testic;
+	std::string testid;
 };
+
+namespace
+{
+	float lastX, lastY;
+	float yaw, pitch;
+	glm::vec3 cameraFront;
+	int mouseXpos, mouseYpos;
+	bool firstMouse = true;
+}
+
+// Mouse look sample
+void mouseLook(int mouseX, int mouseY)
+{
+	if (firstMouse)
+	{
+		lastX += mouseXpos;
+		lastY += mouseYpos;
+		firstMouse = false;
+	}
+
+	float xoffset = mouseX - lastX;
+	float yoffset = lastY - mouseY;
+	lastX = mouseX;
+	lastY = mouseY;
+
+	float sensitivity = 0.55f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	sge::math::vec3 front;
+	front.x = sge::math::cos(sge::math::radians(pitch)) * sge::math::cos(sge::math::radians(yaw));
+	front.y = sge::math::sin(sge::math::radians(pitch));
+	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
+	cameraFront = sge::math::normalize(front);
+}
 
 void loadTextShader(const std::string& path, std::vector<char>& data)
 {
@@ -82,9 +127,6 @@ int main(int argc, char** argv)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 
-	sge::math::vec2 vec;
-	std::cout << vec.x << ", " << vec.y << ", " << sge::math::haeSata() << std::endl;
-
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::GraphicsDevice device(window);
 
@@ -105,13 +147,13 @@ int main(int argc, char** argv)
 
 	// DX SHADERS
 
-	//loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
-	//loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
+	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
+	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
 
 	// OPENGL SHADERS
 
-	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
+	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -178,12 +220,11 @@ int main(int argc, char** argv)
 
 	// Memory allocation test
 
-	//MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	//new (mt)MemoryTest(2,5);
-	//MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	//new (mt2)MemoryTest(7, 9);
-	//MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
-	//new(mt3)MemoryTest(10, 10);
+	MemoryTest *mt1 = sge::allocator.create<MemoryTest>(10, 10, 10, "10");
+	sge::allocator.destroy<MemoryTest>(mt1);
+
+	MemoryTest *mt5 = sge::allocator.create<MemoryTest>(1, 2, 3, "4");
+	sge::allocator.destroy<MemoryTest>(mt5);
 
 	float alpha = 0.0f;
 
@@ -200,6 +241,18 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
+
+		// Mouse Look sample
+#ifdef _WIN32
+		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
+		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
+
+		mouseLook(mouseXpos, mouseYpos);
+		//SDL_WarpMouseInWindow(window.getSDLWindow(),window.getWidth()/2, window.getHeight()/2);
+#endif
+		V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		uniformData.PV = P*V;
 
 		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
 		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(1.0f, 1.0f, 1.0f));

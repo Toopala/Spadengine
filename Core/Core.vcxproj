@@ -18,7 +18,6 @@
     <ClInclude Include="Include\Core\Types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Math.cpp" />
     <ClCompile Include="Source\PagePoolAllocator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

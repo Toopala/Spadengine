@@ -56,6 +56,8 @@ dlldata.c
 *.svclog
 *.scc
 *.cso
+*.glsl
+*.reflect
 
 # Chutzpah Test files
 _Chutzpah*
