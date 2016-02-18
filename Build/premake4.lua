@@ -20,8 +20,8 @@ solution "Spadengine"
 
 	project "glad"
 		kind "StaticLib"
-		language "C"
-		files {"../ThirdParty/glad/**.c"}
+		language "C++"
+		files {"../ThirdParty/glad/Source/**.c"}
 		includedirs {"../ThirdParty/glad/Include/"}
 	
 	project "Renderer"
@@ -35,12 +35,15 @@ solution "Spadengine"
 				"../Core/Include",
 				"../ThirdParty/glad/Include/" }
 
+--[[
 	project "Game"
 		kind "StaticLib"
 		language "C++"
 		files {"../Game/**.cpp"}	
 		includedirs { "../Game/Include/",
-				"../Core/Include/"}
+				"../Core/Include/",
+				"../ThirdParty/glm/Include/"}
+--]]
 
 	project "Sample"
 		kind "ConsoleApp"
