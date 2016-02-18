@@ -46,10 +46,25 @@ namespace sge
 
 	void Spade::handleEvents()
 	{
-		
+		// Event manager stuff here
 	}
 
 	void Spade::update(float deltaTime)
+	{
+		accumulator += deltaTime;
+
+		while(accumulator >= step)
+		{
+			sceneManager.update(step);
+			accumulator -= step;
+
+			// inputs here
+		}
+
+		sceneManager.interpolate(accumulator / step);
+	}
+
+	void Spade::draw()
 	{
 
 	}
