@@ -30,6 +30,9 @@
     <ClInclude Include="Include\Core\Memory\PagePoolAllocator.h">
       <Filter>Header Files\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math.cpp">
