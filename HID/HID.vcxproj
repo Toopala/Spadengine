@@ -11,18 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2931F991-D439-40BC-B180-A805AEC2B9DC}</ProjectGuid>
-    <RootNamespace>Game</RootNamespace>
+    <ProjectGuid>{CA1DF7E6-8EA5-46A7-BFA5-B9A8D78EA5BC}</ProjectGuid>
+    <RootNamespace>HID</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -34,18 +34,18 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
-    <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
-    <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -74,24 +74,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Component.cpp" />
-    <ClCompile Include="Source\Entity.cpp" />
-    <ClCompile Include="Source\EntityManager.cpp" />
-    <ClCompile Include="Source\EventManager.cpp" />
-    <ClCompile Include="Source\SystemManager.cpp" />
-    <ClCompile Include="Source\TestComponent.cpp" />
-    <ClCompile Include="Source\TestSystem.cpp" />
-    <ClCompile Include="Source\TransformComponent.cpp" />
+    <ClInclude Include="Include\HID\KeyboardInput.h" />
+    <ClInclude Include="Include\HID\MouseInput.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Game\Component.h" />
-    <ClInclude Include="Include\Game\Entity.h" />
-    <ClInclude Include="Include\Game\EntityManager.h" />
-    <ClInclude Include="Include\Game\EventManager.h" />
-    <ClInclude Include="Include\Game\SystemManager.h" />
-    <ClInclude Include="Include\Game\TestComponent.h" />
-    <ClInclude Include="Include\Game\TestSystem.h" />
-    <ClInclude Include="Include\Game\TransformComponent.h" />
+    <ClCompile Include="Source\KeyboardInput.cpp" />
+    <ClCompile Include="Source\MouseInput.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
