@@ -191,7 +191,7 @@ int main(int argc, char** argv)
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
+	glm::mat4 P = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
 	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	glm::mat4 VP = P*V;
@@ -279,8 +279,10 @@ int main(int argc, char** argv)
 		}
 
 		// Mouse Look sample
+#ifdef _WIN32
 		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
 		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
+#endif
 		mouseLook(mouseXpos,mouseYpos);
 		glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
