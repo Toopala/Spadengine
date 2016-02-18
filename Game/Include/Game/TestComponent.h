@@ -1,8 +1,13 @@
 #pragma once
-class TestComponent
-{
-public:
-	TestComponent();
-	~TestComponent();
-};
 
+namespace sge
+{
+
+	class TestComponent
+	{
+	public:
+		TestComponent();
+		~TestComponent();
+	};
+
+}

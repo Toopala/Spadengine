@@ -1,11 +1,15 @@
 #include "Game/TestComponent.h"
 
-
-TestComponent::TestComponent()
+namespace sge
 {
-}
+
+	TestComponent::TestComponent()
+	{
+	}
 
 
-TestComponent::~TestComponent()
-{
+	TestComponent::~TestComponent()
+	{
+	}
+
 }

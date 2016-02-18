@@ -39,7 +39,8 @@ solution "Spadengine"
 		kind "StaticLib"
 		language "C++"
 		files {"../Game/**.cpp"}	
-		includedirs { "../Game/Include/"}
+		includedirs { "../Game/Include/",
+				"../Core/Include/"}
 
 	project "Sample"
 		kind "ConsoleApp"
