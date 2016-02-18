@@ -48,7 +48,7 @@ namespace sge
 	{
 		if (!gladLoadGL())
 		{
-			// TODO: Debug log
+			// TODO Debug log
 		}
 
 		int major, minor;
@@ -164,6 +164,8 @@ namespace sge
 		{
 			glGetProgramInfoLog(gl4Pipeline->program, 512, nullptr, infoLog);
 			std::cout << "ERROR: Program linking: " << std::endl << infoLog << std::endl;
+
+			glDeleteProgram(gl4Pipeline->program);
 		}
 		else
 		{
@@ -240,8 +242,14 @@ namespace sge
    		glGenTextures(1, &gl4Texture->id);
 		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
 
+		// TODO testing anisotropic filtering
+		float maxValue;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+		
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
 

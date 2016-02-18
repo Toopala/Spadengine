@@ -16,6 +16,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <algorithm>
 
 #include "Model.h"
 
@@ -40,6 +42,46 @@ public:
 	~MemoryTest2(){}
 };
 
+void loadTextShader(const std::string& path, std::vector<char>& data)
+{
+	std::ifstream file;
+
+	file.open(path, ios::in);
+
+	if (file.is_open())
+	{
+		std::cout << "Text shader opened!" << std::endl;
+
+		std::stringstream stream;
+		std::string str;
+
+		stream << file.rdbuf();
+
+		str = stream.str();
+
+		std::copy(str.begin(), str.end(), std::back_inserter(data));
+
+		data.push_back('\0');
+	}
+}
+
+void loadBinaryShader(const std::string& path, std::vector<char>& data)
+{
+	std::ifstream file;
+
+	file.open(path, ios::in | ios::ate | ios::binary);
+
+	if (file.is_open())
+	{
+		std::cout << "Binary shader opened!" << std::endl;
+		data.resize(static_cast<size_t>(file.tellg()));
+
+		file.seekg(0, ios::beg);
+		file.read(data.data(), data.size());
+		file.close();
+	}
+}
+
 int main(int argc, char** argv)
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -62,108 +104,18 @@ int main(int argc, char** argv)
 
 	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
-	// DX SHADERS
-
-	std::ifstream file;
-
-	file.open("Assets/Shaders/VertexShader.cso", ios::in | ios::ate | ios::binary);
-
+	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
-	if (file.is_open())
-	{
-		std::cout << "vShaderData opened!" << std::endl;
-		vShaderData.resize(static_cast<size_t>(file.tellg()));
+	// DX SHADERS
 
-		file.seekg(0, ios::beg);
-		file.read(vShaderData.data(), vShaderData.size());
-		file.close();
-	}
-
-	file.open("Assets/Shaders/PixelShader.cso", ios::in | ios::ate | ios::binary);
-
-	std::vector<char> pShaderData;
-
-	if (file.is_open())
-	{
-		std::cout << "pShaderData opened!" << std::endl;
-		pShaderData.resize(static_cast<size_t>(file.tellg()));
-
-		file.seekg(0, ios::beg);
-		file.read(pShaderData.data(), pShaderData.size());
-		file.close();
-	}
+	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
+	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
 
 	// OPENGL SHADERS
-	const char* VERTEX_SOURCE =
-		"#version 440\n"
 
-		"in vec3 inPosition;\n"
-		"in vec3 inNormal;\n"
-		"in vec3 inTangent;\n"
-		"in vec3 inBitangent;\n"
-		"in vec2 inTexcoords;\n"
-
-		"out vec2 texcoords;\n"
-		"out vec3 normals;\n"
-
-		"out vec3 TangentFragPos;\n"
-		"out vec3 TangentLightPos;\n"
-
-		"layout (std140, binding = 0) uniform MVPUniform\n"
-		"{\n"
-		"mat4 PV;\n"
-		"mat4 M;\n"
-		"};\n"
-
-		"void main()\n"
-		"{\n"
-		"	gl_Position = PV * M * vec4(inPosition, 1.0);\n"
-		"	vec3 FragPos = vec3(M * vec4(inPosition, 1.0));\n"
-		"	texcoords = inTexcoords;\n"
-		"	mat3 normalMatrix = transpose(inverse(mat3(M)));\n"
-		"	vec3 T = normalize(normalMatrix * inTangent);\n"
-		"	vec3 B = normalize(normalMatrix * inBitangent);	\n"
-		"	vec3 N = normalize(normalMatrix * inNormal);		\n"
-		"	mat3 TBN = transpose(mat3(T, B, N));	\n"
-		"	TangentFragPos = TBN * FragPos;			\n"
-		"	vec3 L = vec3(2.0, 3.0, 3.0); \n"
-		"	TangentLightPos = TBN * L;				\n"
-		"	normals = inNormal;\n"
-		"}\n";
-
-	const char* PIXEL_SOURCE =
-		"#version 440\n"
-
-		"in vec2 texcoords;\n"
-		"in vec3 normals;\n"
-
-		"in vec3 TangentLightPos;  \n"
-		"in vec3 TangentFragPos;   \n"
-
-		"out vec4 outColour;\n"
-
-		"layout(binding = 0) uniform sampler2D tex;\n"
-		"layout(binding = 1) uniform sampler2D tex2;\n"
-
-		"void main()\n"
-		"{\n"
-		"	vec3 normal = normalize(normals);															\n"
-		"	normal = texture(tex2, texcoords).rgb;													\n"
-		"	normal = normalize(normal * 2.0 - 1.0);													\n"
-		"																								\n"
-		"	vec3 color = texture(tex, texcoords).rgb;											\n"
-		"	vec3 ambient = 0.2*color;																	\n"
-		"																								\n"
-		"	vec3 ligthDirection = TangentLightPos - TangentFragPos;									\n"
-		"																								\n"
-		"	float distance = length(TangentLightPos - TangentFragPos);									\n"
-		"	float attenuation = 1.0 / (1.0 + 0.0000009 * distance + 0.0016 * (distance * distance));	\n"
-		"																								\n"
-		"	float diff = max(0.0, dot(normalize(normal), normalize(ligthDirection)));					\n"
-		"	vec3 diffuse = diff * color;																\n"
-		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
-		"}\n";
+	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
+	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -272,7 +224,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.01f), glm::vec3(0.5f, 1.0f, 0.5f));
+		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(0.5f, 1.0f, 0.5f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 

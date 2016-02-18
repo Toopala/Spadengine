@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "..\Core\Core.vcxproj", "{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}"
 EndProject
@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".git", ".git", "{7472663A-5
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shaders", "..\Shaders\Shaders.vcxproj", "{FD24E6AF-07AB-4CF5-B661-FB76A1EBF152}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{F4627AC8-D637-4994-958E-337AD8252E9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -96,5 +98,6 @@ Global
 		{CDA4E388-68CC-4D24-924C-F923070B1BB6} = {6869C5BC-4A8F-470E-9824-81277C9FD05D}
 		{2931F991-D439-40BC-B180-A805AEC2B9DC} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
 		{55FF5903-6658-47BC-B18E-99C10A4C8BEA} = {A2BEFDE2-FB8A-44A6-ABDD-C5F2886AE00F}
+		{FD24E6AF-07AB-4CF5-B661-FB76A1EBF152} = {F4627AC8-D637-4994-958E-337AD8252E9D}
 	EndGlobalSection
 EndGlobal
