@@ -105,86 +105,13 @@ int main(int argc, char** argv)
 
 	// DX SHADERS
 
-	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
-	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
+	//loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
+	//loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
 
 	// OPENGL SHADERS
 
-	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
-
-		"out vec2 texcoords;\n"
-		"out vec3 normals;\n"
-
-		"out vec3 TangentFragPos;\n"
-		"out vec3 TangentLightPos;\n"
-
-		"layout (std140, binding = 0) uniform MVPUniform\n"
-		"{\n"
-		"mat4 MVP;\n"
-		"mat4 M;\n"
-		"};\n"
-
-		"void main()\n"
-		"{\n"
-		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
-		"	vec3 FragPos = vec3(M * vec4(inPosition, 1.0));\n"
-		"	texcoords = inTexcoords;\n"
-		"	mat3 normalMatrix = transpose(inverse(mat3(M)));\n"
-		"	vec3 T = normalize(normalMatrix * inTangent);\n"
-		"	vec3 B = normalize(normalMatrix * inBitangent);	\n"
-		"	vec3 N = normalize(normalMatrix * inNormal);		\n"
-		"	mat3 TBN = transpose(mat3(T, B, N));	\n"
-		"	TangentFragPos = TBN * FragPos;			\n"
-		"	vec3 L = vec3(2.0, 3.0, 3.0); \n"
-		"	TangentLightPos = TBN * L;				\n"
-		"	normals = inNormal;\n"
-		"}\n";
-
-	const char* PIXEL_SOURCE =
-		"#version 440\n"
-
-		"in vec2 texcoords;\n"
-		"in vec3 normals;\n"
-
-		"in vec3 TangentLightPos;  \n"
-		"in vec3 TangentFragPos;   \n"
-
-		"out vec4 outColour;\n"
-
-		"layout(binding = 0) uniform sampler2D tex;\n"
-		"layout(binding = 1) uniform sampler2D tex2;\n"
-
-		"void main()\n"
-		"{\n"
-		"	vec3 normal = normalize(normals);															\n"
-		"	normal = texture(tex2, texcoords).rgb;													\n"
-		"	normal = normalize(normal * 2.0 - 1.0);													\n"
-		"																								\n"
-		"	vec3 color = texture(tex, texcoords).rgb;											\n"
-		"	vec3 ambient = 0.2*color;																	\n"
-		"																								\n"
-		"	vec3 ligthDirection = TangentLightPos - TangentFragPos;									\n"
-		"																								\n"
-		"	float distance = length(TangentLightPos - TangentFragPos);									\n"
-		"	float attenuation = 1.0 / (1.0 + 0.0000009 * distance + 0.0016 * (distance * distance));	\n"
-		"																								\n"
-		"	float diff = max(0.0, dot(normalize(normal), normalize(ligthDirection)));					\n"
-		"	vec3 diffuse = diff * color;																\n"
-		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
-		"}\n";
-
-	float width = 0.1f;
-	float height = 0.1f;
-
-
-	float vertexData[] =
-	{
-		width, 2 * height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-		2 * width, 2 * height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		2 * width, height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-	};
+	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
+	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -208,9 +135,6 @@ int main(int argc, char** argv)
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
 
-	// DX11 Layout
-	//sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
-
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
@@ -220,13 +144,8 @@ int main(int argc, char** argv)
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	// DX11 Shaders
 	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-
-	// GL4 Shaders
-	//sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, VERTEX_SOURCE, sizeof(VERTEX_SOURCE));
-	//sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, PIXEL_SOURCE, sizeof(PIXEL_SOURCE));
 
 	sge::Texture* texture = device.createTexture(w, h, data);
 	sge::Texture* texture2 = device.createTexture(w, h, data2);
@@ -237,14 +156,8 @@ int main(int argc, char** argv)
 	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-	// DX11 Buffers
 	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
 	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
-
-	// GL4 Buffers
-	//sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertices->size() * sizeof(Vertex)));
-	//sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, sizeof(indexData));
-	//sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
 	device.bindViewport(&viewport);
 	device.bindPipeline(pipeline);
@@ -263,16 +176,16 @@ int main(int argc, char** argv)
 
 	float temp = 0;
 
-	
-	
 	// Memory allocation test
 
-	MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	new (mt)MemoryTest(2,5);
-	MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
-	new (mt2)MemoryTest(7, 9);
-	MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
-	new(mt3)MemoryTest(10, 10);
+	//MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	//new (mt)MemoryTest(2,5);
+	//MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	//new (mt2)MemoryTest(7, 9);
+	//MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
+	//new(mt3)MemoryTest(10, 10);
+
+	float alpha = 0.0f;
 
 	while (running)
 	{
@@ -289,13 +202,7 @@ int main(int argc, char** argv)
 		}
 
 		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
-		M = sge::math::rotate(M, glm::radians(0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
-		
-		// Order must not be changed.
-		MVP = VP*M;
-
-		uniformData[0] = MVP;
-		uniformData[1] = M;
+		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
@@ -303,7 +210,7 @@ int main(int argc, char** argv)
 
 		device.swap();
 
-		alpha += 0.01;
+		alpha += 0.01f;
 	}
 
 	device.debindPipeline(pipeline);

@@ -76,12 +76,13 @@ namespace sge
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
-
 		
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
 		glEnable(GL_MULTISAMPLE);
+
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 
 	void GraphicsDevice::deinit()
@@ -119,6 +120,8 @@ namespace sge
 		case BufferUsage::STATIC: buffer->usage = GL_STATIC_DRAW; break;
 		}
 
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
+
 		return &buffer->header;
 	}
 
@@ -137,6 +140,7 @@ namespace sge
 		GL4Shader* gl4VertexShader = reinterpret_cast<GL4Shader*>(vertexShader);
 		GL4Shader* gl4PixelShader = reinterpret_cast<GL4Shader*>(pixelShader);
 
+		
 		SGE_ASSERT(glGetError() == GL_NO_ERROR);
 
 		glGenVertexArrays(1, &gl4Pipeline->vao);
@@ -255,16 +259,14 @@ namespace sge
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
