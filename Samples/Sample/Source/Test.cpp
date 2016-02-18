@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
@@ -247,15 +247,14 @@ int main(int argc, char** argv)
 		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
 		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
 
-		mouseLook(mouseXpos, mouseYpos);
+		//mouseLook(mouseXpos, mouseYpos);
 		//SDL_WarpMouseInWindow(window.getSDLWindow(),window.getWidth()/2, window.getHeight()/2);
 #endif
-		V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		V = sge::math::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		uniformData.PV = P*V;
 
-		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
-		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(1.0f, 1.0f, 1.0f));
+		uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.3f, 0.4f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
@@ -263,7 +262,7 @@ int main(int argc, char** argv)
 
 		device.swap();
 
-		alpha += 0.01f;
+		alpha += 0.001f;
 	}
 
 	device.debindPipeline(pipeline);
