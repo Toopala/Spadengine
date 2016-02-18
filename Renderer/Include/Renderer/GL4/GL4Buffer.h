@@ -1,5 +1,7 @@
 #ifdef OPENGL4
 
+#pragma once
+
 #include "glad/glad.h"
 
 #include "Renderer/Buffer.h"
@@ -13,7 +15,6 @@ namespace sge
 		GLuint id;
 		GLenum target;
 		GLenum usage;
-		GLuint size;
 	};
 }
 

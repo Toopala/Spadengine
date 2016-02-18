@@ -36,6 +36,9 @@
     <ClCompile Include="Source\DX11\DX11GraphicsDevice.cpp">
       <Filter>Source Files\DX11</Filter>
     </ClCompile>
+    <ClCompile Include="Include\Renderer\DX11\DX11VertexLayout.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Renderer\Window.h">
@@ -76,6 +79,18 @@
     </ClInclude>
     <ClInclude Include="Include\Renderer\GL4\GL4Texture.h">
       <Filter>Header Files\GL4</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Shader.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Pipeline.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h">
+      <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11Texture.h">
+      <Filter>Header Files\DX11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,5 +6,6 @@ namespace sge
 {
 	struct Buffer
 	{
+		size_t size;
 	};
 }
