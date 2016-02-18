@@ -18,6 +18,6 @@ namespace sge
 	{
 		SGE_ASSERT(comp != nullptr); 
 
-		components.push_back(comp);
+		components.push_back(comp); // Add a component to the entity's component vector
 	}
 }

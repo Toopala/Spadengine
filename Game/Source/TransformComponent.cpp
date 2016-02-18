@@ -13,4 +13,9 @@ namespace sge
 	{
 	}
 
+	void TransformComponent::update()
+	{
+		//asasdasdasd
+	}
+
 }

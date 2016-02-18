@@ -37,6 +37,7 @@
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -45,6 +46,7 @@
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -87,6 +89,7 @@
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\SceneManager.h" />
     <ClInclude Include="Include\Game\EventManager.h" />
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />

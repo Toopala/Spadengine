@@ -74,6 +74,9 @@
     <ClInclude Include="Include\Game\TestComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Game\SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Include\Game\EventManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>

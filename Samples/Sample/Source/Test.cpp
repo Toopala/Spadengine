@@ -37,6 +37,49 @@ public:
 	std::string testid;
 };
 
+namespace
+{
+	float lastX, lastY;
+	float yaw, pitch;
+	glm::vec3 cameraFront;
+	int mouseXpos, mouseYpos;
+	bool firstMouse = true;
+}
+
+// Mouse look sample
+void mouseLook(int mouseX, int mouseY)
+{
+	if (firstMouse)
+	{
+		lastX = mouseXpos;
+		lastY = mouseYpos;
+		firstMouse = false;
+	}
+
+	float xoffset = mouseX - lastX;
+	float yoffset = lastY - mouseY;
+	lastX = mouseX;
+	lastY = mouseY;
+
+	float sensitivity = 0.55f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	sge::math::vec3 front;
+	front.x = sge::math::cos(sge::math::radians(pitch)) * sge::math::cos(sge::math::radians(yaw));
+	front.y = sge::math::sin(sge::math::radians(pitch));
+	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
+	cameraFront = sge::math::normalize(front);
+}
+
 int main(int argc, char** argv)
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -145,10 +188,10 @@ int main(int argc, char** argv)
 	};
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
+	glm::mat4 P = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
 	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	glm::mat4 VP = P*V;
@@ -234,6 +277,16 @@ int main(int argc, char** argv)
 				break;
 			}
 		}
+
+		// Mouse Look sample
+#ifdef _WIN32
+		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
+		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
+#endif
+		mouseLook(mouseXpos,mouseYpos);
+		glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		glm::mat4 VP = P*V;
 
 		M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.2f, 0.1f));
 		
