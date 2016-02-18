@@ -1,5 +1,5 @@
 #include "Game/Entity.h"
-#include <cassert>
+#include "Core/Assert.h"
 #include <iostream>
 
 namespace sge
@@ -16,8 +16,8 @@ namespace sge
 
 	void Entity::setComponent(Component* comp)
 	{
-		assert(comp != nullptr); 
+		SGE_ASSERT(comp != nullptr); 
 
-		components.push_back(comp);
+		components.push_back(comp); // Add a component to the entity's component vector
 	}
 }

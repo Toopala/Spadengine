@@ -113,7 +113,80 @@ int main(int argc, char** argv)
 	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
 	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.5f);
+		"out vec2 texcoords;\n"
+		"out vec3 normals;\n"
+
+		"out vec3 TangentFragPos;\n"
+		"out vec3 TangentLightPos;\n"
+
+		"layout (std140, binding = 0) uniform MVPUniform\n"
+		"{\n"
+		"mat4 MVP;\n"
+		"mat4 M;\n"
+		"};\n"
+
+		"void main()\n"
+		"{\n"
+		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
+		"	vec3 FragPos = vec3(M * vec4(inPosition, 1.0));\n"
+		"	texcoords = inTexcoords;\n"
+		"	mat3 normalMatrix = transpose(inverse(mat3(M)));\n"
+		"	vec3 T = normalize(normalMatrix * inTangent);\n"
+		"	vec3 B = normalize(normalMatrix * inBitangent);	\n"
+		"	vec3 N = normalize(normalMatrix * inNormal);		\n"
+		"	mat3 TBN = transpose(mat3(T, B, N));	\n"
+		"	TangentFragPos = TBN * FragPos;			\n"
+		"	vec3 L = vec3(2.0, 3.0, 3.0); \n"
+		"	TangentLightPos = TBN * L;				\n"
+		"	normals = inNormal;\n"
+		"}\n";
+
+	const char* PIXEL_SOURCE =
+		"#version 440\n"
+
+		"in vec2 texcoords;\n"
+		"in vec3 normals;\n"
+
+		"in vec3 TangentLightPos;  \n"
+		"in vec3 TangentFragPos;   \n"
+
+		"out vec4 outColour;\n"
+
+		"layout(binding = 0) uniform sampler2D tex;\n"
+		"layout(binding = 1) uniform sampler2D tex2;\n"
+
+		"void main()\n"
+		"{\n"
+		"	vec3 normal = normalize(normals);															\n"
+		"	normal = texture(tex2, texcoords).rgb;													\n"
+		"	normal = normalize(normal * 2.0 - 1.0);													\n"
+		"																								\n"
+		"	vec3 color = texture(tex, texcoords).rgb;											\n"
+		"	vec3 ambient = 0.2*color;																	\n"
+		"																								\n"
+		"	vec3 ligthDirection = TangentLightPos - TangentFragPos;									\n"
+		"																								\n"
+		"	float distance = length(TangentLightPos - TangentFragPos);									\n"
+		"	float attenuation = 1.0 / (1.0 + 0.0000009 * distance + 0.0016 * (distance * distance));	\n"
+		"																								\n"
+		"	float diff = max(0.0, dot(normalize(normal), normalize(ligthDirection)));					\n"
+		"	vec3 diffuse = diff * color;																\n"
+		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
+		"}\n";
+
+	float width = 0.1f;
+	float height = 0.1f;
+
+
+	float vertexData[] =
+	{
+		width, 2 * height, 0.0f, 0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		2 * width, 2 * height, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		2 * width, height, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		width, height, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+	};
+
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -194,11 +267,12 @@ int main(int argc, char** argv)
 	
 	// Memory allocation test
 
-	MemoryTest *mt1 = sge::allocator.create<MemoryTest>(10, 10, 10);
-	sge::allocator.destroy<MemoryTest>(mt1);
-
-	MemoryTest *mt5 = sge::allocator.create<MemoryTest>(5,5,5);
-	sge::allocator.destroy<MemoryTest>(mt5);
+	MemoryTest *mt = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	new (mt)MemoryTest(2,5);
+	MemoryTest *mt2 = (MemoryTest*)allocator->allocate(sizeof(MemoryTest));
+	new (mt2)MemoryTest(7, 9);
+	MemoryTest *mt3 = (MemoryTest*)allocator->allocate(sizeof(mt3));
+	new(mt3)MemoryTest(10, 10);
 
 	while (running)
 	{
@@ -214,7 +288,14 @@ int main(int argc, char** argv)
 			}
 		}
 
-		uniformData.M = sge::math::rotate(uniformData.M, glm::radians(0.1f), glm::vec3(0.5f, 1.0f, 0.5f));
+		// If placing M (model matrix) into equation then no need for increasing alpha (for angle) or translate location. These functions now add to the previous result.  
+		M = sge::math::rotate(M, glm::radians(0.5f), glm::vec3(1.0f, 1.0f, 1.0f));
+		
+		// Order must not be changed.
+		MVP = VP*M;
+
+		uniformData[0] = MVP;
+		uniformData[1] = M;
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 

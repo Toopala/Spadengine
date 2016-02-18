@@ -37,6 +37,8 @@
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\glm.props" />
+    <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -44,6 +46,8 @@
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\glm.props" />
+    <Import Project="..\Config\Properties\HID.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -75,6 +79,7 @@
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
+    <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\SystemManager.cpp" />
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
@@ -84,10 +89,13 @@
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\SceneManager.h" />
+    <ClInclude Include="Include\Game\EventManager.h" />
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />
     <ClInclude Include="Include\Game\TestSystem.h" />
     <ClInclude Include="Include\Game\TransformComponent.h" />
+    <ClInclude Include="Include\Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

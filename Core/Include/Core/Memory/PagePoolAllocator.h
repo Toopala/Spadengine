@@ -47,41 +47,11 @@ namespace sge
 
 		void deallocate(void* data);
 
-		template <typename T>
-		T* create()
-		{
-			T* obj = (T*)allocate(sizeof(T*));
-			new (obj)T();
-
-			return obj;
-		}
-
-		// TODO: find a way to make 1 method than can check
-		//the number of variables in constructor
-
-		template <typename T, typename P1>
-		T* create(P1 p1)
+		template <typename T, typename... Args>
+		T* create(Args... args)
 		{
 			T *obj = (T*)allocate(sizeof(T*));
-			new (obj)T(p1);
-
-			return obj;
-		}
-		
-		template <typename T, typename P1, typename P2>
-		T* create(P1 p1, P2 p2)
-		{
-			T *obj = (T*)allocate(sizeof(T*));
-			new (obj)T(p1, p2);
-
-			return obj;
-		}
-
-		template <typename T, typename P1, typename P2, typename P3>
-		T* create(P1 p1, P2 p2, P3 p3)
-		{
-			T *obj = (T*)allocate(sizeof(T*));
-			new (obj)T(p1, p2, p3);
+			new (obj)T(args...);
 
 			return obj;
 		}

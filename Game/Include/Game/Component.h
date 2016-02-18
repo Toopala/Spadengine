@@ -9,9 +9,11 @@ namespace sge
 	{
 	public:
 		Component(Entity* ent);
+		
 		virtual ~Component();
+		virtual void update() = 0; // Systems use this function to update their respective components
 
-		Entity* getParent()
+		Entity* getParent() // Returns the "owning" entity of the component
 		{
 			return parent;
 		}

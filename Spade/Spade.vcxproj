@@ -10,24 +10,13 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\Core\Assert.h" />
-    <ClInclude Include="Include\Core\Math.h" />
-    <ClInclude Include="Include\Core\Memory\PagePoolAllocator.h" />
-    <ClInclude Include="Include\Core\Random.h" />
-    <ClInclude Include="Include\Core\Types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\Math.cpp" />
-    <ClCompile Include="Source\PagePoolAllocator.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}</ProjectGuid>
-    <RootNamespace>Core</RootNamespace>
+    <ProjectGuid>{F8AAE0FA-FE4E-4D97-94A3-7E43B5A0DD33}</ProjectGuid>
+    <RootNamespace>Spade</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -45,14 +34,25 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\Config\Properties\Game.props" />
+    <Import Project="..\Config\Properties\Renderer.props" />
+    <Import Project="..\Config\Properties\glad.props" />
     <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\stb_image.props" />
+    <Import Project="..\Config\Properties\assimpDebug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\Config\Properties\Game.props" />
+    <Import Project="..\Config\Properties\glad.props" />
     <Import Project="..\Config\Properties\glm.props" />
+    <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
+    <Import Project="..\Config\Properties\stb_image.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -61,10 +61,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,8 +79,15 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Spade.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Spade.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

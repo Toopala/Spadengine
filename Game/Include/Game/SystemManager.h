@@ -1,8 +1,13 @@
 #pragma once
-class SystemManager
+
+namespace sge
 {
-public:
-	SystemManager();
-	~SystemManager();
-};
+
+	class SystemManager
+	{
+	public:
+		SystemManager();
+		~SystemManager();
+	};
+}
 
