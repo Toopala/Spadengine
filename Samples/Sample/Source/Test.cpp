@@ -112,13 +112,13 @@ int main(int argc, char** argv)
 
 		"layout (std140, binding = 0) uniform MVPUniform\n"
 		"{\n"
-		"mat4 MVP;\n"
+		"mat4 PV;\n"
 		"mat4 M;\n"
 		"};\n"
 
 		"void main()\n"
 		"{\n"
-		"	gl_Position = MVP * vec4(inPosition, 1.0);\n"
+		"	gl_Position = PV * M * vec4(inPosition, 1.0);\n"
 		"	vec3 FragPos = vec3(M * vec4(inPosition, 1.0));\n"
 		"	texcoords = inTexcoords;\n"
 		"	mat3 normalMatrix = transpose(inverse(mat3(M)));\n"
@@ -165,18 +165,6 @@ int main(int argc, char** argv)
 		"	outColour = vec4(diffuse*attenuation + ambient*attenuation, 1.0);			   \n"
 		"}\n";
 
-	float width = 1.0f;
-	float height = 1.0f;
-
-
-	float vertexData[] =
-	{
-		-width, height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		width, height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		-width, -height, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
-	};
-
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 6.5f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -188,9 +176,7 @@ int main(int argc, char** argv)
 	{
 		sge::math::mat4 PV;
 		sge::math::mat4 M;
-	};
-
-	UniformData uniformData;
+	} uniformData;
 
 	uniformData.M = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f));
 	uniformData.PV = P * V;
@@ -200,11 +186,6 @@ int main(int argc, char** argv)
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
-
-	unsigned int indexData[] =
-	{
-		0, 1, 2, 0, 2, 3
-	};
 
 	// DX11 Layout
 	//sge::VertexLayoutDescription vertexLayoutDescription = { 2, { 3, 4 } };
@@ -237,7 +218,6 @@ int main(int argc, char** argv)
 
 	// DX11 Buffers
 	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
-	sge::Buffer* indexBuffer = device.createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, sizeof(indexData));
 	sge::Buffer* uniformBuffer = device.createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
 	// GL4 Buffers
@@ -249,14 +229,11 @@ int main(int argc, char** argv)
 	device.bindPipeline(pipeline);
 
 	device.bindVertexBuffer(vertexBuffer);
-	device.bindIndexBuffer(indexBuffer);
 	device.bindVertexUniformBuffer(uniformBuffer, 0);
 	device.bindTexture(texture, 0);
 	device.bindTexture(texture2, 1);
 
-	//device.copyData(vertexBuffer, vertices->size() * sizeof(Vertex), vertices->data());
 	device.copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
-	device.copyData(indexBuffer, sizeof(indexData), indexData);
 	device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	SDL_Event event;
@@ -306,7 +283,6 @@ int main(int argc, char** argv)
 
 	device.debindPipeline(pipeline);
 
-	device.deleteBuffer(indexBuffer);
 	device.deleteBuffer(vertexBuffer);
 	device.deleteBuffer(uniformBuffer);
 

@@ -15,13 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Test.cpp">
+    <FxCompile Include="Source\PixelShader.hlsl">
       <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    </FxCompile>
+    <FxCompile Include="Source\VertexShader.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

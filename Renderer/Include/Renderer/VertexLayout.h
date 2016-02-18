@@ -4,6 +4,7 @@
 
 namespace sge
 {
+	// TODO Why 15?
 	static const unsigned int MAX_NUMBER_OF_ELEMENTS = 15;
 
 	struct VertexElement

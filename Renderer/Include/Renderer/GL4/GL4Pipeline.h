@@ -17,9 +17,6 @@ namespace sge
 
 		GLuint program;
 		GLuint vao;
-		
-		// Test. These are indexes for uniform block locations.
-		GLuint* uniformBlocks;
 	};
 }
 

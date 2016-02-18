@@ -17,6 +17,7 @@
 #include "Renderer/DX11/DX11VertexLayout.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/VertexLayout.h"
+#include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
 namespace sge
@@ -110,16 +111,6 @@ namespace sge
 			context->OMSetRenderTargets(1, &renderTargetView, nullptr);
 			backBuffer->Release();
 
-			ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-
-			viewport.Width = static_cast<FLOAT>(window.getWidth());
-			viewport.Height = static_cast<FLOAT>(window.getHeight());
-			viewport.MinDepth = 0.0f;
-			viewport.MaxDepth = 1.0f;
-			viewport.TopLeftX = 0;
-			viewport.TopLeftY = 0;
-
-			context->RSSetViewports(1, &viewport);
 		}
 
 		~Impl()
@@ -146,7 +137,6 @@ namespace sge
 		ID3D11RenderTargetView* renderTargetView;
 		D3D_FEATURE_LEVEL featureLevel;
 		DXGI_SWAP_CHAIN_DESC sd;
-		D3D11_VIEWPORT viewport;
 		ID3D11Debug* debug;
 		DX11Pipeline* pipeline;
 	};
@@ -485,7 +475,17 @@ namespace sge
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
 	{
+		D3D11_VIEWPORT d11Viewport;
+		ZeroMemory(&d11Viewport, sizeof(D3D11_VIEWPORT));
 
+		d11Viewport.Width = static_cast<FLOAT>(viewport->width);
+		d11Viewport.Height = static_cast<FLOAT>(viewport->height);
+		d11Viewport.MinDepth = 0.0f;
+		d11Viewport.MaxDepth = 1.0f;
+		d11Viewport.TopLeftX = static_cast<FLOAT>(viewport->x);
+		d11Viewport.TopLeftY = static_cast<FLOAT>(viewport->y);
+
+		impl->context->RSSetViewports(1, &d11Viewport);
 	}
 
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)

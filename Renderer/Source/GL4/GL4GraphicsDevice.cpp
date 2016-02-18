@@ -73,8 +73,7 @@ namespace sge
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
-		glEnable(GL_MULTISAMPLE);
-		
+		glEnable(GL_MULTISAMPLE);		
 	}
 
 	void GraphicsDevice::deinit()
@@ -130,26 +129,30 @@ namespace sge
 		GL4Shader* gl4VertexShader = reinterpret_cast<GL4Shader*>(vertexShader);
 		GL4Shader* gl4PixelShader = reinterpret_cast<GL4Shader*>(pixelShader);
 
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
+
 		glGenVertexArrays(1, &gl4Pipeline->vao);
 		glBindVertexArray(gl4Pipeline->vao);
 
 		GLint success;
 		GLchar infoLog[512];
 
-		gl4Pipeline->vertexLayout.elements = new VertexElement[vertexLayoutDescription->count];
 		gl4Pipeline->vertexLayout.count = vertexLayoutDescription->count;
 
 		size_t stride = 0;
 
 		for (size_t i = 0; i < gl4Pipeline->vertexLayout.count; i++)
 		{
-			gl4Pipeline->vertexLayout.elements[i] = { stride, vertexLayoutDescription->elements[i] };
-			stride += vertexLayoutDescription->elements[i];
+			gl4Pipeline->vertexLayout.elements[i].size = vertexLayoutDescription->elements[i].size;
+			gl4Pipeline->vertexLayout.elements[i].offset = stride;
+			stride += vertexLayoutDescription->elements[i].size;
 		}
 
 		gl4Pipeline->vertexLayout.stride = stride;
 
 		gl4Pipeline->program = glCreateProgram();
+
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
 
 		glAttachShader(gl4Pipeline->program, gl4VertexShader->id);
 		glAttachShader(gl4Pipeline->program, gl4PixelShader->id);
@@ -169,28 +172,14 @@ namespace sge
 
 		GLint numberOfUniformBlocks = 0;
 
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
+
 		glGetProgramInterfaceiv(gl4Pipeline->program, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numberOfUniformBlocks);
 
-		gl4Pipeline->uniformBlocks = new GLuint[numberOfUniformBlocks];
-
-		for (GLint i = 0; i < numberOfUniformBlocks; i++)
-		{
-			const GLenum props[] = { GL_BLOCK_INDEX };
-
-			GLint index;
-			GLchar name[512];
-			GLsizei size;
-
-			glGetProgramResourceiv(gl4Pipeline->program, GL_UNIFORM, i, 1, props, 1, nullptr, &index);
-			glGetProgramResourceName(gl4Pipeline->program, GL_UNIFORM_BLOCK, i, 512, &size, name);
-
-			std::cout << "Found uniform block: " << name << " at index " << index << std::endl;
-
-			glUniformBlockBinding(gl4Pipeline->program, gl4Pipeline->uniformBlocks[index], index);
-		}
+		SGE_ASSERT(glGetError() == GL_NO_ERROR);
 
 		std::cout << "Active uniform blocks: " << numberOfUniformBlocks << std::endl;
-
+		
 		glBindVertexArray(0);
 
 		return &gl4Pipeline->header;
@@ -201,8 +190,6 @@ namespace sge
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
 		glDeleteProgram(gl4Pipeline->program);
 		glDeleteVertexArrays(1, &gl4Pipeline->vao);
-
-		delete [] gl4Pipeline->uniformBlocks;
 
 		delete gl4Pipeline;
 		pipeline = nullptr;
