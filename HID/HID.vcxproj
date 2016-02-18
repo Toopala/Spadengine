@@ -10,24 +10,13 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\Core\Assert.h" />
-    <ClInclude Include="Include\Core\Math.h" />
-    <ClInclude Include="Include\Core\Memory\PagePoolAllocator.h" />
-    <ClInclude Include="Include\Core\Random.h" />
-    <ClInclude Include="Include\Core\Types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\Math.cpp" />
-    <ClCompile Include="Source\PagePoolAllocator.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}</ProjectGuid>
-    <RootNamespace>Core</RootNamespace>
+    <ProjectGuid>{CA1DF7E6-8EA5-46A7-BFA5-B9A8D78EA5BC}</ProjectGuid>
+    <RootNamespace>HID</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -46,12 +35,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\glm.props" />
+    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\glm.props" />
+    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\Config\Properties\Renderer.props" />
     <Import Project="..\Config\Properties\SDL.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -61,7 +54,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(AdditionalIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -81,6 +73,14 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\HID\KeyboardInput.h" />
+    <ClInclude Include="Include\HID\MouseInput.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\KeyboardInput.cpp" />
+    <ClCompile Include="Source\MouseInput.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -9,6 +9,8 @@ namespace sge
 	public:
 		TransformComponent(Entity* ent);
 		~TransformComponent();
+
+		void update();
 	};
 
 }
