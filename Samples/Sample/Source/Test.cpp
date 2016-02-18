@@ -51,8 +51,8 @@ void mouseLook(int mouseX, int mouseY)
 {
 	if (firstMouse)
 	{
-		lastX = mouseXpos;
-		lastY = mouseYpos;
+		lastX += mouseXpos;
+		lastY += mouseYpos;
 		firstMouse = false;
 	}
 
@@ -282,8 +282,10 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
 		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
-#endif
+
 		mouseLook(mouseXpos,mouseYpos);
+		//SDL_WarpMouseInWindow(window.getSDLWindow(),window.getWidth()/2, window.getHeight()/2);
+#endif
 		glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		glm::mat4 VP = P*V;
