@@ -6,10 +6,8 @@ namespace sge
 {
 	Spade::Spade() : running(true), accumulator(0.0f), step(0.0f)
 	{
-		
-
-		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-		device = new GraphicsDevice(*window);
+		mouseInput = new sge::MouseInput();
+		eventManager = new EventManager(mouseInput);
 	}
 
 	Spade::~Spade()
@@ -20,6 +18,8 @@ namespace sge
 	void Spade::init()
 	{
 		std::cout << "Spade init says hello" << std::endl;
+		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
+		device = new GraphicsDevice(*window);		
 		device->init();
 		step = 1.0f / 60.0f;
 	}
@@ -28,6 +28,7 @@ namespace sge
 	{
 		std::cout << "Spade quit says hello" << std::endl;
 		device->deinit();
+		delete mouseInput;
 	}	
 	
 	void Spade::run(Scene* scene)
@@ -55,7 +56,12 @@ namespace sge
 
 	void Spade::handleEvents()
 	{
-		// Event manager stuff here
+		if (eventManager->userQuit())
+		{
+			running = false;
+		}
+
+		eventManager->update();
 	}
 
 	void Spade::update(float deltaTime)
@@ -67,7 +73,7 @@ namespace sge
 			sceneManager.update(step);
 			accumulator -= step;
 
-			// inputs here
+			mouseInput->update();
 		}
 
 		sceneManager.interpolate(accumulator / step);

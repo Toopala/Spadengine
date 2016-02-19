@@ -2,7 +2,7 @@
 
 namespace sge
 {
-	EventManager::EventManager(MouseInput* mInput) : quitState(false) 
+	EventManager::EventManager(MouseInput* mInput) : quitState(false), mouseInput(mInput)
 	{
 
 	}
@@ -14,6 +14,11 @@ namespace sge
 	void EventManager::update()
 	{
 		processInput();
+	}
+
+	bool EventManager::userQuit()
+	{
+		return false;
 	}
 
 	void EventManager::processInput()

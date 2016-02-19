@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Game\Scene.h"
-#include "Spade\Spade.h"
+#include "Game/Scene.h"
+#include "Spade/Spade.h"
 
 namespace sge
 {
@@ -17,5 +17,6 @@ namespace sge
 
 	private:
 		Spade* engine;
+		int mouseX, mouseY;
 	};
 };

@@ -6,6 +6,7 @@
 #include "Game/SceneManager.h"
 #include "Renderer/GraphicsDevice.h"
 #include "SDL/SDL.h"
+#include "Game/EventManager.h"
 
 namespace sge
 {
@@ -33,6 +34,7 @@ namespace sge
 			return step;
 		}
 
+		sge::MouseInput* mouseInput;
 	private:
 		void handleEvents();
 		void update(float deltaTime);
@@ -42,6 +44,7 @@ namespace sge
 		sge::GraphicsDevice* device;
 		sge::Window* window;
 		sge::SceneManager sceneManager;
+		sge::EventManager* eventManager;
 
 		bool running;
 		float step;
