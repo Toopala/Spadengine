@@ -249,7 +249,7 @@ int main(int argc, char** argv)
 
 		// Mouse Look sample
 #ifdef _WIN32
-		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
+		SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
 
 		mouseLook(mouseXpos, mouseYpos);
 #endif
