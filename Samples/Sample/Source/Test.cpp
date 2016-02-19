@@ -145,15 +145,13 @@ int main(int argc, char** argv)
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
-	// DX SHADERS
-
+#ifdef DIRECTX11
 	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
 	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
-
-	// OPENGL SHADERS
-
-	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+#elif OPENGL4
+	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
+	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+#endif
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -245,7 +243,6 @@ int main(int argc, char** argv)
 		// Mouse Look sample
 #ifdef _WIN32
 		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
-		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
 
 		//mouseLook(mouseXpos, mouseYpos);
 		//SDL_WarpMouseInWindow(window.getSDLWindow(),window.getWidth()/2, window.getHeight()/2);

@@ -1,7 +1,7 @@
-
 #ifdef OPENGL4
 
 #include <iostream>
+#include <string>
 
 #ifdef _WIN32
 # include "SDL/SDL.h"
@@ -24,6 +24,27 @@
 
 namespace sge
 {
+	void checkError()
+	{
+		GLenum err = GL_NO_ERROR;
+
+		while ((err = glGetError()) != GL_NO_ERROR)
+		{
+			std::string error;
+
+			switch (err)
+			{
+			case GL_INVALID_OPERATION: error = "INVALID OPERATION"; break;
+			case GL_INVALID_ENUM: error = "INVALID ENUM"; break;
+			case GL_INVALID_VALUE: error = "INVALID VALUE"; break;
+			case GL_OUT_OF_MEMORY: error = "OUT OF MEMORY"; break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID FRAMEBUFFER OPERATION"; break;
+			}
+
+			std::cout << "GL ERROR: (" << err << ") " << error << std::endl;
+		}
+	}
+
 	struct GraphicsDevice::Impl
 	{
 		Impl(Window& window) :
@@ -58,31 +79,15 @@ namespace sge
 			// TODO Debug log
 		}
 
-		int major, minor;
-
-		glGetIntegerv(GL_MAJOR_VERSION, &major);
-		glGetIntegerv(GL_MINOR_VERSION, &minor);
-
-		std::cout << "RUNNING OPENGL " << major << "." << minor << std::endl;
-
-		int max;
-
-		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max);
-
-		std::cout << "MAX UNIFORM BUFFER BINDINGS: " << max << std::endl;
-
 		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
-		
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
 		glEnable(GL_MULTISAMPLE);
 
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
+		checkError();
 	}
 
 	void GraphicsDevice::deinit()
@@ -99,6 +104,8 @@ namespace sge
 	{
 		glClearColor(r, g, b, a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		checkError();
 	}
 
 	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage, size_t size)
@@ -120,7 +127,7 @@ namespace sge
 		case BufferUsage::STATIC: buffer->usage = GL_STATIC_DRAW; break;
 		}
 
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
+		checkError();
 
 		return &buffer->header;
 	}
@@ -130,6 +137,9 @@ namespace sge
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 
 		glDeleteBuffers(1, &gl4Buffer->id);
+
+		checkError();
+
 		delete gl4Buffer;
 		buffer = nullptr;
 	}
@@ -139,9 +149,6 @@ namespace sge
 		GL4Pipeline* gl4Pipeline = new GL4Pipeline();
 		GL4Shader* gl4VertexShader = reinterpret_cast<GL4Shader*>(vertexShader);
 		GL4Shader* gl4PixelShader = reinterpret_cast<GL4Shader*>(pixelShader);
-
-		
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
 
 		glGenVertexArrays(1, &gl4Pipeline->vao);
 		glBindVertexArray(gl4Pipeline->vao);
@@ -164,8 +171,6 @@ namespace sge
 
 		gl4Pipeline->program = glCreateProgram();
 
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
-
 		glAttachShader(gl4Pipeline->program, gl4VertexShader->id);
 		glAttachShader(gl4Pipeline->program, gl4PixelShader->id);
 		glLinkProgram(gl4Pipeline->program);
@@ -175,26 +180,14 @@ namespace sge
 		if (!success)
 		{
 			glGetProgramInfoLog(gl4Pipeline->program, 512, nullptr, infoLog);
-			std::cout << "ERROR: Program linking: " << std::endl << infoLog << std::endl;
+			std::cout << "GL ERROR: Program linking: " << std::endl << infoLog << std::endl;
 
 			glDeleteProgram(gl4Pipeline->program);
 		}
-		else
-		{
-			std::cout << "ERROR: No errors :D in program linking" << std::endl;
-		}
-
-		GLint numberOfUniformBlocks = 0;
-
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
-
-		glGetProgramInterfaceiv(gl4Pipeline->program, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numberOfUniformBlocks);
-
-		SGE_ASSERT(glGetError() == GL_NO_ERROR);
-
-		std::cout << "Active uniform blocks: " << numberOfUniformBlocks << std::endl;
 
 		glBindVertexArray(0);
+
+		checkError();
 
 		return &gl4Pipeline->header;
 	}
@@ -204,6 +197,8 @@ namespace sge
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
 		glDeleteProgram(gl4Pipeline->program);
 		glDeleteVertexArrays(1, &gl4Pipeline->vao);
+
+		checkError();
 
 		delete gl4Pipeline;
 		pipeline = nullptr;
@@ -229,12 +224,10 @@ namespace sge
 		if (!success)
 		{
 			glGetShaderInfoLog(shader->id, 512, nullptr, infoLog);
-			std::cout << "ERROR: Shader compilation: " << std::endl << infoLog << std::endl;
+			std::cout << "GL ERROR: Shader compilation: " << std::endl << infoLog << std::endl;
 		}
-		else
-		{
-			std::cout << "ERROR: No errors "":D""" << std::endl;
-		}
+
+		checkError();
 
 		return &shader->header;
 	}
@@ -243,6 +236,9 @@ namespace sge
 	{
 		GL4Shader* gl4Shader = reinterpret_cast<GL4Shader*>(shader);
 		glDeleteShader(gl4Shader->id);
+
+		checkError();
+
 		delete gl4Shader;
 		shader = nullptr;
 	}
@@ -255,6 +251,7 @@ namespace sge
 		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
 
 		// TODO testing anisotropic filtering
+		// TODO check for anisotropy support
 		float maxValue;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
@@ -270,6 +267,8 @@ namespace sge
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		checkError();
+
 		return &gl4Texture->header;
 	}
 
@@ -277,6 +276,9 @@ namespace sge
 	{
 		GL4Texture* gl4Texture = reinterpret_cast<GL4Texture*>(texture);
 		glDeleteTextures(1, &gl4Texture->id);
+
+		checkError();
+
 		delete gl4Texture;
 		texture = nullptr;
 	}
@@ -287,6 +289,8 @@ namespace sge
 		glUseProgram(gl4Pipeline->program);
 		glBindVertexArray(gl4Pipeline->vao);
 
+		checkError();
+
 		impl->pipeline = gl4Pipeline;
 	}
 
@@ -295,6 +299,8 @@ namespace sge
 		glUseProgram(0);
 		glBindVertexArray(0);
 
+		checkError();
+
 		impl->pipeline = nullptr;
 	}
 
@@ -302,6 +308,8 @@ namespace sge
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBindBuffer(gl4Buffer->target, gl4Buffer->id);
+
+		checkError();
 	}
 
 	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
@@ -322,6 +330,8 @@ namespace sge
 				impl->pipeline->vertexLayout.stride * sizeof(GLfloat), 
 				(void*)(impl->pipeline->vertexLayout.elements[i].offset * sizeof(GLfloat)));
 		}
+
+		checkError();
 	}
 
 	void GraphicsDevice::bindIndexBuffer(Buffer* buffer)
@@ -338,6 +348,8 @@ namespace sge
 		bindBuffer(buffer);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
+
+		checkError();
 	}
 
 	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
@@ -347,23 +359,31 @@ namespace sge
 		bindBuffer(buffer);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
+
+		checkError();
 	}
 
 	void GraphicsDevice::bindViewport(Viewport* viewport)
 	{
 		glViewport(viewport->x, viewport->y, viewport->width, viewport->height);
+
+		checkError();
 	}
 
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id);
+
+		checkError();
 	}
 
 	void GraphicsDevice::debindTexture(Texture* texture)
 	{
 		glActiveTexture(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		checkError();
 	}
 
 	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)
@@ -377,26 +397,36 @@ namespace sge
 	{
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferSubData(gl4Buffer->target, offset, size, data);
+
+		checkError();
 	}
 
 	void GraphicsDevice::draw(size_t count)
 	{
 		glDrawArrays(GL_TRIANGLES, 0, count);
+
+		checkError();
 	}
 
 	void GraphicsDevice::drawIndexed(size_t count)
 	{
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		checkError();
 	}
 
 	void GraphicsDevice::drawInstanced(size_t count, size_t instanceCount)
 	{
 		glDrawArraysInstanced(GL_TRIANGLES, 0, count, instanceCount);
+
+		checkError();
 	}
 
 	void GraphicsDevice::drawInstancedIndexed(size_t count, size_t instanceCount)
 	{
 		glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr, instanceCount);
+
+		checkError();
 	}
 }
 
