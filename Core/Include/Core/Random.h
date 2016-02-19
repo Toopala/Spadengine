@@ -20,7 +20,14 @@ namespace sge
 
 	int random(int min, int max) // Generates random int from range min-max
 	{
-		return min + rand() % max - min + 1;
+		if (min < max)
+		{
+			return min + rand() % max - min + 1;
+		}
+		else
+		{
+			return max + rand() % min - max + 1;
+		}
 	}
 
 	template <typename T>
