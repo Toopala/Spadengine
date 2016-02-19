@@ -41,7 +41,6 @@ namespace sge
 		void enableRelativeMousePosition();
 		void disableRelativeMousePosition();
 
-	protected:
 		void pressButton(unsigned int button);
 		void releaseButton(unsigned int button);
 		void setMousePosition(int x, int y);

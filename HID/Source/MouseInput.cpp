@@ -8,30 +8,79 @@ namespace sge
 	}
 	MouseInput::~MouseInput()
 	{
+
 	}
 
 	void MouseInput::update()
 	{
+		//update previousButtonMap
+		for (auto& it : buttonMap)
+		{
+			previousButtonMap[it.first] = it.second;
+		}
 
+		//Reset mouse wheel position
+		mouseWheelYPosition = 0;
+
+		//Update prevMousePosition
+		prevMousePosition.x = mousePosition.x;
+		prevMousePosition.y = mousePosition.y;
 	}
 
 	bool MouseInput::buttonIsPressed(MouseButton button)
 	{
+		auto it = buttonMap.find(button);
+		if (it != buttonMap.end())
+		{
+			return it->second;
+		}
+		return false;
+	}
+
+	bool MouseInput::buttonWasPressed(MouseButton button)
+	{
+		if (buttonIsPressed(button) == true && buttonWasDown(button) == false)
+		{
+			return true;
+		}
 		return false;
 	}
 
 	bool MouseInput::buttonWasReleased(MouseButton button)
 	{
+		if (buttonIsPressed(button) == false && buttonWasDown(button) == true)
+		{
+			return true;
+		}
 		return false;
 	}
 
 	bool MouseInput::mouseWheelWasMoved(MouseWheel direction)
 	{
-		return false;
+		if (direction < 0)
+		{
+			if (mouseWheelYPosition < 0)
+			{
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			if (mouseWheelYPosition > 0)
+			{
+				return true;
+			}
+			return false;
+		}
 	}
 
 	bool MouseInput::mouseWasMoved()
 	{
+		if (mousePosition.x != prevMousePosition.x || mousePosition.y != prevMousePosition.y)
+		{
+			return true;
+		}
 		return false;
 	}
 
@@ -78,7 +127,8 @@ namespace sge
 
 	void MouseInput::setMousePosition(int x, int y)
 	{
-		
+		mousePosition.x = x;
+		mousePosition.y = y;
 	}
 
 	void MouseInput::moveMouseWheel(int y)
