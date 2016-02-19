@@ -7,7 +7,7 @@
 #pragma comment (lib, "d3d11.lib")
 
 #include <iostream>
-#include "SDL/SDL_syswm.h"
+#include "SDL2/SDL_syswm.h"
 
 #include "Core/Assert.h"
 #include "Renderer/DX11/DX11Buffer.h"

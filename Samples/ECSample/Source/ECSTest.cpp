@@ -2,7 +2,7 @@
 #include "Game/TransformComponent.h"
 #include "Game/TestComponent.h"
 #include "Game/TestSystem.h"
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "Core/Math.h"
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
