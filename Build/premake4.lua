@@ -29,21 +29,42 @@ solution "Spadengine"
 		language "C++"
 		defines {"OPENGL4"}
 		files { "../Renderer/**.cpp" }
-		linkoptions {"../Build/libglad.a"}
-		links { "SDL2"}
 		includedirs { "../Renderer/Include/",	
 				"../Core/Include",
 				"../ThirdParty/glad/Include/" }
+		links { "SDL2", "glad"}
 
---[[
+
+	project "HID"
+		kind "StaticLib"
+		language "C++"
+		files { "../HID/**.cpp" }
+		includedirs {"../HID/Include/",
+				"../ThirdParty/glm/include/" }
+		links { "SDL2" }
+
+
 	project "Game"
 		kind "StaticLib"
 		language "C++"
 		files {"../Game/**.cpp"}	
 		includedirs { "../Game/Include/",
 				"../Core/Include/",
-				"../ThirdParty/glm/Include/"}
---]]
+				"../HID/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/SDL/include/" }
+		links { "SDL2", "Core", "HID" }
+
+	project "Spade"
+		kind "StaticLib"
+		language "C++"
+		files { "../Spade/**.cpp" }
+		includedirs { "../Spade/Include",
+				"../Renderer/Include",
+				"../Game/Include",
+				"../ThirdParty/glm/include/",
+				"../HID/Include"}
+		links { "Renderer" }
 
 	project "Sample"
 		kind "ConsoleApp"
@@ -58,4 +79,4 @@ solution "Spadengine"
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
-		links { "SDL2", "Core", "Renderer", "glad", "dl", "assimp" }
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp" }

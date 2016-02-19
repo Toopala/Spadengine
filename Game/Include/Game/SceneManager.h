@@ -1,5 +1,5 @@
 #pragma once
-#include "Game\Scene.h"
+#include "Game/Scene.h"
 #include <vector>
 
 namespace sge

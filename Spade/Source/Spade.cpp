@@ -1,6 +1,6 @@
 #pragma once
-#include "Spade\Spade.h"
-#include "Game\Scene.h"
+#include "Spade/Spade.h"
+#include "Game/Scene.h"
 
 namespace sge
 {
