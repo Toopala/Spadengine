@@ -11,5 +11,7 @@ namespace sge
 		virtual void interpolate(float alpha) = 0;
 		virtual void draw() = 0;
 		
+		void begin();
+		void end();
 	};
 }
