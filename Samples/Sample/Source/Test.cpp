@@ -268,7 +268,11 @@ int main(int argc, char** argv)
 
 		device.swap();
 
+#ifdef DIRECTX11
 		alpha += 0.001f;
+#else
+		alpha += 0.01f;
+#endif		
 	}
 
 	device.debindPipeline(pipeline);

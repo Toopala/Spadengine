@@ -17,27 +17,22 @@ namespace sge
 
 	bool MouseInput::buttonIsPressed(MouseButton button)
 	{
-
+		return false;
 	}
 
 	bool MouseInput::buttonWasReleased(MouseButton button)
 	{
-
-	}
-
-	bool MouseInput::buttonWasReleased(MouseButton button)
-	{
-
+		return false;
 	}
 
 	bool MouseInput::mouseWheelWasMoved(MouseWheel direction)
 	{
-
+		return false;
 	}
 
 	bool MouseInput::mouseWasMoved()
 	{
-
+		return false;
 	}
 
 	void MouseInput::getRelativeMouseState(int* x, int*y)
