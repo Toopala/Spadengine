@@ -16,12 +16,22 @@ namespace sge
 		~Spade();
 
 		void init();
-		void run();
+		void run(Scene* scene);
 		void stop(){ running = false; }
 
 		void quit();
 
 		const GraphicsDevice& getDevice(){ return *device; }
+
+		SceneManager& getSceneManager()
+		{
+			return sceneManager;
+		}
+
+		const float getStep() const
+		{
+			return step;
+		}
 
 	private:
 		void handleEvents();

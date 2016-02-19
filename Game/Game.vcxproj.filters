@@ -25,17 +25,26 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{ac29a20f-d066-4e9f-bed1-adcded1af45f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{9c2af861-bebb-46e8-8433-bbde1fec1163}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{70b2c36b-44df-47d0-96fc-fc644aa4334b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{8d6d46d7-2fd2-46a2-bcac-9bc6e8a20b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{0319348d-3e53-4ae5-b4d4-0e1758a46663}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{3624dbee-bf54-4bbd-b15b-8358d38786ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{74fab670-6a52-40be-b01a-4786b78c6191}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\EntityManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\TransformComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -49,19 +58,28 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\EventManager.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EntityManager.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\InputComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Game\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\EntityManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Game\TransformComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -74,13 +92,27 @@
     <ClInclude Include="Include\Game\TestComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\SceneManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\Game\Component.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\EventManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\Game\SceneManager.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\EventManager.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\Entity.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\EntityManager.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\InputComponent.h">
+      <Filter>Header Files\Components</Filter>
+    <ClInclude Include="Include\Game\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

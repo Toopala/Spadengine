@@ -12,9 +12,12 @@ namespace sge
 		~TestComponent();
 
 		void update(); // Every component derived from the Component base class needs to include this method;
+		sge::math::vec2& getPosition();
+		void setPosition(const sge::math::vec2& newPos);
+
 	private:
 		int counter; // Debug variables
-		sge::math::vec2 paska;
+		sge::math::vec2 position;
 		
 	};
 

@@ -10,7 +10,7 @@ namespace sge
 	class EventManager
 		{
 		public:
-			EventManager();
+			EventManager(MouseInput* mouseInput);
 			~EventManager();
 
 			void update();
@@ -19,7 +19,10 @@ namespace sge
 
 		private:
 			void processInput();
-
 			bool quitState;
+
+			//sge::KeyboardInput* keyboardInput;
+			sge::MouseInput* mouseInput;
+			
 	};
 }
