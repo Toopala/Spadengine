@@ -2,7 +2,7 @@
 
 namespace sge
 {
-	EventManager::EventManager() : quitState(false)
+	EventManager::EventManager(KeyboardInput* kbInput, MouseInput* mInput) : quitState(false) 
 	{
 
 	}
