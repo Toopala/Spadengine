@@ -3,12 +3,8 @@
 #include <iostream>
 #include <string>
 
-#ifdef _WIN32
-# include "SDL/SDL.h"
-#else 
-# include "SDL2/SDL.h"
-#endif
 
+#include "SDL2/SDL.h"
 
 #include "glad/glad.h"
 

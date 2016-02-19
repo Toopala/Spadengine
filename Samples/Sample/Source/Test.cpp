@@ -6,7 +6,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 #include "Renderer/Viewport.h"
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 

@@ -5,7 +5,7 @@
 #include "Renderer/Window.h"
 #include "Game/SceneManager.h"
 #include "Renderer/GraphicsDevice.h"
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "Game/EventManager.h"
 
 namespace sge

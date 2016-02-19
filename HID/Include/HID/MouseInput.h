@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL/SDL_mouse.h"
+#include "SDL2/SDL_mouse.h"
 #include "glm/glm.hpp"
 #include <unordered_map>
 

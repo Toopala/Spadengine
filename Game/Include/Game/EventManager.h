@@ -1,5 +1,5 @@
 #pragma once
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include "HID/KeyboardInput.h"
 #include "HID/MouseInput.h"
 
