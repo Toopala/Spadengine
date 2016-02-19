@@ -2,7 +2,7 @@
 
 namespace sge
 {
-	EventManager::EventManager(KeyboardInput* kbInput, MouseInput* mInput) : quitState(false) 
+	EventManager::EventManager(MouseInput* mInput) : quitState(false) 
 	{
 
 	}
@@ -32,12 +32,16 @@ namespace sge
 
 				//Mouse
 			case SDL_MOUSEBUTTONDOWN:
+				mouseInput->pressButton(inputEvent.button.button);
 				break;
 			case SDL_MOUSEBUTTONUP:
+				mouseInput->releaseButton(inputEvent.button.button);
 				break;
 			case SDL_MOUSEMOTION:
+				mouseInput->setMousePosition(inputEvent.motion.x, inputEvent.motion.y);
 				break;
 			case SDL_MOUSEWHEEL:
+				mouseInput->moveMouseWheel(inputEvent.wheel.y);
 				break;
 
 				//Gamepad
