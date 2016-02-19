@@ -72,6 +72,12 @@
     <ClCompile Include="Source\InputComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\TransformComponent.h">
@@ -106,6 +112,8 @@
     </ClInclude>
     <ClInclude Include="Include\Game\InputComponent.h">
       <Filter>Header Files\Components</Filter>
+    <ClInclude Include="Include\Game\Scene.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
