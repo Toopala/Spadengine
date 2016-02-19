@@ -23,6 +23,11 @@ namespace sge
 		std::cout << "test scene update rolling" << std::endl;
 		engine->mouseInput->getRelativeMouseState(&mouseX, &mouseY);
 		std::cout << mouseX << " - " << mouseY << std::endl;
+		if (engine->mouseInput->buttonIsPressed(MOUSE_BUTTON_LEFT))
+		{
+			// Proper way to shutdown the program?
+			engine->stop();
+		}
 	}
 
 	void TestScene::draw()

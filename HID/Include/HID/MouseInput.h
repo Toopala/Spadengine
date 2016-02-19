@@ -6,21 +6,23 @@
 
 namespace sge
 {
+	enum MouseButton
+	{
+		MOUSE_BUTTON_LEFT = SDL_BUTTON_LEFT,
+		MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
+		MOUSE_BUTTON_RIGHT = SDL_BUTTON_RIGHT,
+		MOUSE_BUTTON_X1 = SDL_BUTTON_X1,
+		MOUSE_BUTTON_X2 = SDL_BUTTON_X2
+	};
+	enum MouseWheel
+	{
+		MOUSE_WHEEL_UP = 1,
+		MOUSE_WHEEL_DOWN = -1
+	};
+
 	class MouseInput
 	{
-		enum MouseButton
-		{
-			MOUSE_BUTTON_LEFT = SDL_BUTTON_LEFT,
-			MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
-			MOUSE_BUTTON_RIGHT = SDL_BUTTON_RIGHT,
-			MOUSE_BUTTON_X1 = SDL_BUTTON_X1,
-			MOUSE_BUTTON_X2 = SDL_BUTTON_X2
-		};
-		enum MouseWheel
-		{
-			MOUSE_WHEEL_UP = 1,
-			MOUSE_WHEEL_DOWN = -1
-		};
+		
 
 	public:
 		MouseInput();

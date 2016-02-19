@@ -18,7 +18,7 @@ namespace sge
 
 	bool EventManager::userQuit()
 	{
-		return false;
+		return quitState;
 	}
 
 	void EventManager::processInput()
