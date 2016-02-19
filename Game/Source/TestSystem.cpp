@@ -15,15 +15,24 @@ namespace sge
 	void TestSystem::update() // Call update on all components governed by this system
 	{
 		system("cls");
-		for (int i = 0; i < comps.size(); i++)
+		for (int i = 0; i < comps1.size(); i++)
 		{
-			comps[i]->update(); // Uses the virtual update that all components have
+			comps1[i]->update(); // Uses the virtual update that all components have
+		}
+		for (int i = 0; i < comps2.size(); i++)
+		{
+			comps2[i]->update(); // Uses the virtual update that all components have
 		}
 	}
 
-	void TestSystem::addComponent(TestComponent* comp)
+	void TestSystem::addTestComponent(TestComponent* comp)
 	{
-		comps.push_back(comp); // Adds a component to the system's container
+		comps1.push_back(comp); // Adds a component to the system's container
+	}
+
+	void TestSystem::addInputComponent(InputComponent* comp)
+	{
+		comps2.push_back(comp); // Adds a component to the system's container
 	}
 
 }

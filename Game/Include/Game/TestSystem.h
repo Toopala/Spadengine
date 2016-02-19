@@ -1,5 +1,6 @@
 #pragma once
 #include "TestComponent.h"
+#include "InputComponent.h"
 #include <vector>
 
 namespace sge
@@ -11,11 +12,12 @@ namespace sge
 		~TestSystem();
 
 		void update();
-		void addComponent(TestComponent* comp);
-
+		void addTestComponent(TestComponent* comp);
+		void addInputComponent(InputComponent* comp);
 
 	private:
-		std::vector<TestComponent*> comps;
+		std::vector<TestComponent*> comps1;
+		std::vector<InputComponent*> comps2;
 	};
 
 }

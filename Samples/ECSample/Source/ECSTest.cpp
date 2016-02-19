@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
 	SDL_Event event;
 
-	sge::Window window("The test to end all tests.", 0, 0, 800, 600);
+	sge::Window window("The test to end all tests.", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
 	sge::GraphicsDevice device(window);
 	device.init();
 
@@ -35,17 +35,14 @@ int main(int argc, char** argv)
 	EManager->setComponent(player1, new sge::TestComponent(player1));
 	EManager->setComponent(player2, new sge::TestComponent(player2));
 
+	EManager->setComponent(player1, new sge::InputComponent(player2));
 
 	// Give the testsystem some components to work with
 
-	testSystem->addComponent(player1->getComponent<sge::TestComponent>());
-	testSystem->addComponent(player2->getComponent<sge::TestComponent>());
+	testSystem->addTestComponent(player1->getComponent<sge::TestComponent>());
+	testSystem->addTestComponent(player2->getComponent<sge::TestComponent>());
 
-
-	// sge::TestComponent* comp = player1->getComponent<sge::TestComponent>();
-
-	sge::math::vec2(1.0f, 2.0f);
-
+	testSystem->addInputComponent(player1->getComponent<sge::InputComponent>());
 
 	// Looooop
 
@@ -78,6 +75,8 @@ int main(int argc, char** argv)
 
 	EManager->removeComponent<sge::TestComponent>(*player1);
 	EManager->removeComponent<sge::TestComponent>(*player2);
+
+	EManager->removeComponent<sge::InputComponent>(*player1);
 
 	device.deinit();
 
