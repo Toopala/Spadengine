@@ -51,6 +51,12 @@
     <ClCompile Include="Source\EventManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Entity.h">
@@ -80,7 +86,7 @@
     <ClInclude Include="Include\Game\EventManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Scene.h">
+    <ClInclude Include="Include\Game\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
