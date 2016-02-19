@@ -46,6 +46,7 @@ namespace
 	float yaw, pitch;
 	glm::vec3 cameraFront;
 	int mouseXpos, mouseYpos;
+	int mousseX, mousseY;
 	bool firstMouse = true;
 }
 
@@ -59,12 +60,15 @@ void mouseLook(int mouseX, int mouseY)
 		firstMouse = false;
 	}
 
-	float xoffset = mouseX - lastX;
-	float yoffset = lastY - mouseY;
-	lastX = mouseX;
-	lastY = mouseY;
+	mousseX += mouseX;
+	mousseY += mouseY;
 
-	float sensitivity = 0.55f;
+	float xoffset = mousseX - lastX;
+	float yoffset = lastY - mousseY;
+	lastX = mousseX;
+	lastY = mousseY;
+
+	float sensitivity = 0.15f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
@@ -147,19 +151,19 @@ int main(int argc, char** argv)
 
 	// DX SHADERS
 
-	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
-	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
+	//loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
+	//loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
 
 	// OPENGL SHADERS
 
-	//loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	//loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
+	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	glm::mat4 P = glm::perspective(glm::radians(66.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
+	glm::mat4 P = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.f);
 	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	struct UniformData
@@ -228,6 +232,9 @@ int main(int argc, char** argv)
 
 	float alpha = 0.0f;
 
+	// For mouselook test
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	while (running)
 	{
 		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
@@ -244,11 +251,10 @@ int main(int argc, char** argv)
 
 		// Mouse Look sample
 #ifdef _WIN32
-		SDL_GetGlobalMouseState(&mouseXpos, &mouseYpos);
+		SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
 		std::cout << mouseXpos << " - " << mouseYpos << std::endl;
 
-		//mouseLook(mouseXpos, mouseYpos);
-		//SDL_WarpMouseInWindow(window.getSDLWindow(),window.getWidth()/2, window.getHeight()/2);
+		mouseLook(mouseXpos, mouseYpos);
 #endif
 		V = sge::math::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
