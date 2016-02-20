@@ -22,16 +22,36 @@
 
 namespace sge
 {
+	void checkError(HRESULT result)
+	{
+		if (result != S_OK)
+		{
+			_com_error err(result);
+			LPCTSTR errMsg = err.ErrorMessage();
+
+			std::cout << "DX ERROR: " << errMsg << std::endl;
+
+			SGE_ASSERT(false);
+		}
+	}
+
 	struct GraphicsDevice::Impl
 	{
 		Impl(Window& window) : 
+			window(window),
 			hdc(nullptr), 
 			hwnd(nullptr),
-			device(nullptr),
-			context(nullptr),
-			swapChain(nullptr),
-			renderTargetView(nullptr)
+			device(NULL),
+			context(NULL),
+			swapChain(NULL),
+			renderTargetView(NULL),
+			debug(NULL),
+			pipeline(nullptr),
+			backBufferTexture(NULL),
+			depthStencilBuffer(NULL),
+			depthStencilView(NULL)
 		{
+			// Get windows handle from SDL.
 			SDL_SysWMinfo info;
 
 			SDL_VERSION(&info.version);
@@ -44,101 +64,28 @@ namespace sge
 				{
 					hwnd = info.info.win.window;
 					hdc = info.info.win.hdc;
-				}
+				} break;
 				default: break;
 				}
 			}
-
-			std::cout << "SDL version " << 
-				static_cast<int>(info.version.major) << "." << 
-				static_cast<int>(info.version.minor) << "." << 
-				static_cast<int>(info.version.patch) << std::endl;
-
-			ZeroMemory(&sd, sizeof(sd));
-
-			sd.BufferCount = 1;
-			sd.BufferDesc.Width = window.getWidth();
-			sd.BufferDesc.Height = window.getHeight();
-			sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			sd.BufferDesc.RefreshRate.Numerator = 60;
-			sd.BufferDesc.RefreshRate.Denominator = 1;
-			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-			sd.OutputWindow = hwnd;
-			sd.SampleDesc.Count = 4;
-			sd.SampleDesc.Quality = 0;
-			sd.Windowed = true;
-			sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-			D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
-			UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-
-#ifdef _DEBUG
-			flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-			HRESULT result = D3D11CreateDeviceAndSwapChain(
-				nullptr,
-				D3D_DRIVER_TYPE_HARDWARE,
-				nullptr,
-				D3D11_CREATE_DEVICE_DEBUG,
-				&featureLevels,
-				1,
-				D3D11_SDK_VERSION,
-				&sd,
-				&swapChain,
-				&device,
-				&featureLevel,
-				&context
-				);
-
-			_com_error err(result);
-			LPCTSTR errMsg = err.ErrorMessage();
-
-			std::cout << "DX11: " << errMsg << std::endl;
-
-			SGE_ASSERT(result == S_OK);
-
-#ifdef _DEBUG
-			device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&debug));
-#endif
-
-			ID3D11Texture2D* backBuffer = nullptr;
-			result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
-
-			SGE_ASSERT(result == S_OK);
-
-			device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
-			context->OMSetRenderTargets(1, &renderTargetView, nullptr);
-			backBuffer->Release();
-
 		}
 
 		~Impl()
 		{
-			
-			swapChain->SetFullscreenState(false, nullptr);
-
-			swapChain->Release();
-			device->Release();
-			context->Release();
-			renderTargetView->Release();
-
-#ifdef _DEBUG
-			debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-			debug->Release();
-#endif
 		}
 
+		Window& window;
 		HDC hdc;
 		HWND hwnd;
 		ID3D11Device* device;
 		ID3D11DeviceContext* context;
 		IDXGISwapChain* swapChain;
 		ID3D11RenderTargetView* renderTargetView;
-		D3D_FEATURE_LEVEL featureLevel;
-		DXGI_SWAP_CHAIN_DESC sd;
 		ID3D11Debug* debug;
 		DX11Pipeline* pipeline;
+		ID3D11Texture2D* backBufferTexture;
+		ID3D11Texture2D* depthStencilBuffer;
+		ID3D11DepthStencilView* depthStencilView;
 	};
 
 	GraphicsDevice::GraphicsDevice(Window& window) :
@@ -154,11 +101,112 @@ namespace sge
 	void GraphicsDevice::init()
 	{
 
+		// Create device and swap chain.
+		DXGI_SWAP_CHAIN_DESC swapChainDesc;
+		D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
+		D3D_FEATURE_LEVEL featureLevel;
+		HRESULT result;
+		UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+
+		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+
+		swapChainDesc.BufferCount = 1;
+		swapChainDesc.BufferDesc.Width = impl->window.getWidth();
+		swapChainDesc.BufferDesc.Height = impl->window.getHeight();
+		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapChainDesc.OutputWindow = impl->hwnd;
+		swapChainDesc.SampleDesc.Count = 4;
+		swapChainDesc.SampleDesc.Quality = 0;
+		swapChainDesc.Windowed = TRUE;
+		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+#ifdef _DEBUG
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+		result = D3D11CreateDeviceAndSwapChain(
+			NULL,
+			D3D_DRIVER_TYPE_HARDWARE,
+			NULL,
+			D3D11_CREATE_DEVICE_DEBUG,
+			&featureLevels,
+			1,
+			D3D11_SDK_VERSION,
+			&swapChainDesc,
+			&impl->swapChain,
+			&impl->device,
+			&featureLevel,
+			&impl->context
+			);
+
+		checkError(result);
+
+#ifdef _DEBUG
+		// Get pointer to debug.
+		impl->device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&impl->debug));
+#endif
+
+		// Create depth-stencil buffer.
+		D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+		depthStencilDesc.Width = swapChainDesc.BufferDesc.Width;
+		depthStencilDesc.Height = swapChainDesc.BufferDesc.Height;
+		depthStencilDesc.MipLevels = 1;
+		depthStencilDesc.ArraySize = 1;
+		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.SampleDesc.Count = 4;
+		depthStencilDesc.SampleDesc.Quality = 0;
+		depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depthStencilDesc.CPUAccessFlags = 0;
+		depthStencilDesc.MiscFlags = 0;
+
+		result = impl->device->CreateTexture2D(&depthStencilDesc, NULL, &impl->depthStencilBuffer);
+
+		checkError(result);
+
+		// Create depth-stencil view.
+		result = impl->device->CreateDepthStencilView(impl->depthStencilBuffer, NULL, &impl->depthStencilView);
+
+		checkError(result);
+
+		// Create backbuffer.
+		// TODO implement render targerts!
+		result = impl->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&impl->backBufferTexture);
+
+		checkError(result);
+
+		// Create render target view.
+		result = impl->device->CreateRenderTargetView(impl->backBufferTexture, NULL, &impl->renderTargetView);
+
+		checkError(result);
+
+		impl->context->OMSetRenderTargets(1, &impl->renderTargetView, impl->depthStencilView);
 	}
 
 	void GraphicsDevice::deinit()
 	{
+		// Set fullscreen to false before releasing the swap chain.
+		impl->swapChain->SetFullscreenState(FALSE, NULL);
 
+		impl->renderTargetView->Release();
+		impl->backBufferTexture->Release();
+		impl->depthStencilBuffer->Release();
+		impl->depthStencilView->Release();
+
+		impl->swapChain->Release();
+		impl->context->Release();
+		impl->device->Release();
+
+#ifdef _DEBUG
+		impl->debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		impl->debug->Release();
+#endif
 	}
 
 	void GraphicsDevice::swap()
@@ -203,7 +251,7 @@ namespace sge
 
 		bd.ByteWidth = size;
 
-		impl->device->CreateBuffer(&bd, nullptr, &dx11Buffer->buffer);
+		impl->device->CreateBuffer(&bd, NULL, &dx11Buffer->buffer);
 
 		dx11Buffer->header.size = size;
 
@@ -214,6 +262,7 @@ namespace sge
 	{
 		DX11Buffer* dx11Buffer = reinterpret_cast<DX11Buffer*>(buffer);
 		dx11Buffer->buffer->Release();
+
 		delete dx11Buffer;
 		buffer = nullptr;
 	}
@@ -227,7 +276,10 @@ namespace sge
 
 		dx11Pipeline->vertexLayout = new DX11VertexLayout();
 
-		D3D11_INPUT_ELEMENT_DESC* ied = new D3D11_INPUT_ELEMENT_DESC[vertexLayoutDescription->count];
+		// TODO split different initialization steps to individual functions
+
+		// Create input layout for the pipeline.
+		D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc = new D3D11_INPUT_ELEMENT_DESC[vertexLayoutDescription->count];
 
 		size_t positionElements = 0;
 		size_t normalElements = 0;
@@ -240,19 +292,19 @@ namespace sge
 
 		for (size_t i = 0; i < vertexLayoutDescription->count; i++)
 		{
-			ied[i].InputSlot = 0;
-			ied[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-			ied[i].InstanceDataStepRate = 0;
-			ied[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			inputLayoutDesc[i].InputSlot = 0;
+			inputLayoutDesc[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			inputLayoutDesc[i].InstanceDataStepRate = 0;
+			inputLayoutDesc[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 			switch (vertexLayoutDescription->elements[i].size)
 			{
 			case 2:
-				ied[i].Format = DXGI_FORMAT_R32G32_FLOAT; break;
+				inputLayoutDesc[i].Format = DXGI_FORMAT_R32G32_FLOAT; break;
 			case 3:
-				ied[i].Format = DXGI_FORMAT_R32G32B32_FLOAT; break;
+				inputLayoutDesc[i].Format = DXGI_FORMAT_R32G32B32_FLOAT; break;
 			case 4:
-				ied[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+				inputLayoutDesc[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 			}
 
 			stride += vertexLayoutDescription->elements[i].size;
@@ -260,28 +312,28 @@ namespace sge
 			switch (vertexLayoutDescription->elements[i].semantic)
 			{
 			case VertexSemantic::POSITION: 
-				ied[i].SemanticName = "POSITION";
-				ied[i].SemanticIndex = positionElements++;
+				inputLayoutDesc[i].SemanticName = "POSITION";
+				inputLayoutDesc[i].SemanticIndex = positionElements++;
 				break;
 			case VertexSemantic::NORMAL:
-				ied[i].SemanticName = "NORMAL";
-				ied[i].SemanticIndex = normalElements++;
+				inputLayoutDesc[i].SemanticName = "NORMAL";
+				inputLayoutDesc[i].SemanticIndex = normalElements++;
 				break;
 			case VertexSemantic::BINORMAL:
-				ied[i].SemanticName = "BINORMAL";
-				ied[i].SemanticIndex = binormalElements++;
+				inputLayoutDesc[i].SemanticName = "BINORMAL";
+				inputLayoutDesc[i].SemanticIndex = binormalElements++;
 				break;
 			case VertexSemantic::COLOR:
-				ied[i].SemanticName = "COLOR";
-				ied[i].SemanticIndex = colorElements++;
+				inputLayoutDesc[i].SemanticName = "COLOR";
+				inputLayoutDesc[i].SemanticIndex = colorElements++;
 				break;
 			case VertexSemantic::TANGENT:
-				ied[i].SemanticName = "TANGENT";
-				ied[i].SemanticIndex = tangentElements++;
+				inputLayoutDesc[i].SemanticName = "TANGENT";
+				inputLayoutDesc[i].SemanticIndex = tangentElements++;
 				break;
 			case VertexSemantic::TEXCOORD:
-				ied[i].SemanticName = "TEXCOORD";
-				ied[i].SemanticIndex = texcoordElements++;
+				inputLayoutDesc[i].SemanticName = "TEXCOORD";
+				inputLayoutDesc[i].SemanticIndex = texcoordElements++;
 				break;
 			}
 		}
@@ -291,43 +343,102 @@ namespace sge
 
 		HRESULT result;
 		result = impl->device->CreateInputLayout(
-			ied,
+			inputLayoutDesc,
 			vertexLayoutDescription->count,
 			dx11Pipeline->vertexShader->source,
 			dx11Pipeline->vertexShader->size,
 			&dx11Pipeline->vertexLayout->inputLayout
 		);
 
-		SGE_ASSERT(result == S_OK);
+		checkError(result);
 
-		D3D11_SAMPLER_DESC sDesc;
+		// Create sampler state.
+		D3D11_SAMPLER_DESC samplerDesc;
 
-		ZeroMemory(&sDesc, sizeof(sDesc));
+		ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 
-		sDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-		sDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		sDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		sDesc.MinLOD = -FLT_MAX;
-		sDesc.MaxLOD = FLT_MAX;
+		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MipLODBias = 0;
+		samplerDesc.MaxAnisotropy = 16;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		samplerDesc.BorderColor[0] = 1.0f;
+		samplerDesc.BorderColor[1] = 1.0f;
+		samplerDesc.BorderColor[2] = 1.0f;
+		samplerDesc.BorderColor[3] = 1.0f;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
 
 		result = impl->device->CreateSamplerState(
-			&sDesc,
+			&samplerDesc,
 			&dx11Pipeline->samplerState);
 
-		SGE_ASSERT(result == S_OK);
+		checkError(result);
 
-		D3D11_RASTERIZER_DESC rDesc;
+		// Create rasterizer state.
+		D3D11_RASTERIZER_DESC rasterizerDesc;
 
-		ZeroMemory(&rDesc, sizeof(rDesc));
+		ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 
-		rDesc.FillMode = D3D11_FILL_SOLID;
-		rDesc.CullMode = D3D11_CULL_BACK;
-		rDesc.FrontCounterClockwise = TRUE;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.FrontCounterClockwise = TRUE;
 
 		result = impl->device->CreateRasterizerState(
-			&rDesc,
+			&rasterizerDesc,
 			&dx11Pipeline->rasterizerState);
+
+		checkError(result);
+
+		// Create depth-stencil state.
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+
+		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+		depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.DepthEnable = FALSE;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+		depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.StencilEnable = TRUE;
+		depthStencilDesc.StencilReadMask = 0xFF;
+		depthStencilDesc.StencilWriteMask = 0xFF;
+
+		result = impl->device->CreateDepthStencilState(
+			&depthStencilDesc, 
+			&dx11Pipeline->depthStencilState);
+
+		checkError(result);
+
+		// Create blend state.
+		D3D11_BLEND_DESC blendDesc;
+
+		ZeroMemory(&blendDesc, sizeof(blendDesc));
+
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+
+		result = impl->device->CreateBlendState(
+			&blendDesc, 
+			&dx11Pipeline->blendState);
+		
+		checkError(result);
 
 		return &dx11Pipeline->header;
 	}
@@ -336,10 +447,12 @@ namespace sge
 	{
 		DX11Pipeline* dx11Pipeline = reinterpret_cast<DX11Pipeline*>(pipeline);
 
-		// TODO maybe these should be deleted somewhere else?
 		dx11Pipeline->vertexLayout->inputLayout->Release();
 		dx11Pipeline->samplerState->Release();
 		dx11Pipeline->rasterizerState->Release();
+		dx11Pipeline->depthStencilState->Release();
+		dx11Pipeline->blendState->Release();
+
 		delete dx11Pipeline->vertexLayout;
 		delete dx11Pipeline;
 
@@ -354,12 +467,12 @@ namespace sge
 		switch (type)
 		{
 		case ShaderType::VERTEX: 
-			result = impl->device->CreateVertexShader(source, size, nullptr, &dx11Shader->vertexShader); break;
+			result = impl->device->CreateVertexShader(source, size, NULL, &dx11Shader->vertexShader); break;
 		case ShaderType::PIXEL: 
-			result = impl->device->CreatePixelShader(source, size, nullptr, &dx11Shader->pixelShader); break;
+			result = impl->device->CreatePixelShader(source, size, NULL, &dx11Shader->pixelShader); break;
 		}
 
-		SGE_ASSERT(result == S_OK);
+		checkError(result);
 
 		dx11Shader->header.type = type;
 		dx11Shader->source = source;
@@ -387,33 +500,37 @@ namespace sge
 	{
 		DX11Texture* dx11Texture = new DX11Texture();
 
-		D3D11_TEXTURE2D_DESC desc;
-		desc.Width = width;
-		desc.Height = height;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
+		D3D11_TEXTURE2D_DESC textureDesc;
+		HRESULT result = S_OK;
+
+		ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = source;
 		data.SysMemPitch = static_cast<UINT>(width * 4);
 		data.SysMemSlicePitch = 0;
 
-		HRESULT result;
+		result = impl->device->CreateTexture2D(&textureDesc, &data, &dx11Texture->texture);
 
-		result = impl->device->CreateTexture2D(&desc, &data, &dx11Texture->texture);
-
-		SGE_ASSERT(result == S_OK);
+		checkError(result);
 
 		result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->textureView);
 
-		SGE_ASSERT(result == S_OK);
+		checkError(result);
+
+		impl->context->GenerateMips(dx11Texture->textureView);
 
 		return &dx11Texture->header;
 	}
@@ -438,6 +555,8 @@ namespace sge
 		impl->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		impl->context->PSSetSamplers(0, 1, &dx11Pipeline->samplerState);
 		impl->context->RSSetState(dx11Pipeline->rasterizerState);
+		impl->context->OMSetDepthStencilState(dx11Pipeline->depthStencilState, 0);
+		impl->context->OMSetBlendState(dx11Pipeline->blendState, NULL, 0xffffffff);
 
 		impl->pipeline = dx11Pipeline;
 	}

@@ -231,7 +231,10 @@ int main(int argc, char** argv)
 	float alpha = 0.0f;
 
 	// For mouselook test
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	bool useMouse = false;
+
+	if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	while (running)
 	{
@@ -244,18 +247,27 @@ int main(int argc, char** argv)
 			case SDL_QUIT:
 				running = false;
 				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					running = false;
+				}
+				break;
 			}
 		}
-
-		// Mouse Look sample
+//
+//		// Mouse Look sample
+		if (useMouse)
+		{
 #ifdef _WIN32
-		SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
+			SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
 
-		mouseLook(mouseXpos, mouseYpos);
+			mouseLook(mouseXpos, mouseYpos);
 #endif
-		V = sge::math::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+			V = sge::math::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		uniformData.PV = P*V;
+			uniformData.PV = P*V;
+		}
 
 		uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.3f, 0.4f));
 
