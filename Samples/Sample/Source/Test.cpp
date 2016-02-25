@@ -297,7 +297,7 @@ int main(int argc, char** argv)
 
 		while (accumulator >= step)
 		{
-			uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(1.0f, 0.3f, 0.4f));
+			uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(0.0f, 0.0f, 1.0f));
 
 			accumulator -= step;
 		}

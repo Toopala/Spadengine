@@ -56,8 +56,8 @@
     <Import Project="..\..\Config\Properties\glad.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\Core.props" />
-    <Import Project="..\..\Config\Properties\assimpDebug.props" />
     <Import Project="..\..\Config\Properties\Spade.props" />
+    <Import Project="..\..\Config\Properties\assimpRelease.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />

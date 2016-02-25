@@ -75,6 +75,12 @@ namespace sge
 			// TODO Debug log
 		}
 
+		int major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+		std::cout << "Using OpenGL version " << major << "." << minor << std::endl;
+
 		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);

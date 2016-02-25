@@ -53,6 +53,7 @@
     <Import Project="..\..\Config\Properties\Resources.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\stb_image.props" />
+    <Import Project="..\..\Config\Properties\assimpRelease.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
