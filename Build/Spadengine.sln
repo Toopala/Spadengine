@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "..\Core\Core.vcxproj", "{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}"
 EndProject
@@ -80,6 +80,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneSample", "..\Samples\S
 		{F8AAE0FA-FE4E-4D97-94A3-7E43B5A0DD33} = {F8AAE0FA-FE4E-4D97-94A3-7E43B5A0DD33}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resources", "..\Resources\Resources.vcxproj", "{C8955BED-3381-4D2B-888F-CE5366802F6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -126,6 +128,10 @@ Global
 		{885D5D76-95FB-4C0F-9E48-E843B999AED1}.Debug|Win32.Build.0 = Debug|Win32
 		{885D5D76-95FB-4C0F-9E48-E843B999AED1}.Release|Win32.ActiveCfg = Release|Win32
 		{885D5D76-95FB-4C0F-9E48-E843B999AED1}.Release|Win32.Build.0 = Release|Win32
+		{C8955BED-3381-4D2B-888F-CE5366802F6F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8955BED-3381-4D2B-888F-CE5366802F6F}.Debug|Win32.Build.0 = Debug|Win32
+		{C8955BED-3381-4D2B-888F-CE5366802F6F}.Release|Win32.ActiveCfg = Release|Win32
+		{C8955BED-3381-4D2B-888F-CE5366802F6F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,5 +147,6 @@ Global
 		{F8AAE0FA-FE4E-4D97-94A3-7E43B5A0DD33} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
 		{CA1DF7E6-8EA5-46A7-BFA5-B9A8D78EA5BC} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
 		{885D5D76-95FB-4C0F-9E48-E843B999AED1} = {A2BEFDE2-FB8A-44A6-ABDD-C5F2886AE00F}
+		{C8955BED-3381-4D2B-888F-CE5366802F6F} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
 	EndGlobalSection
 EndGlobal

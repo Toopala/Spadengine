@@ -9,6 +9,8 @@
 #include "SDL2/SDL.h"
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
+#include "Resources/ResourceManager.h"
+#include "Resources/Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -133,6 +135,18 @@ int main(int argc, char** argv)
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::GraphicsDevice device(window);
+
+	// Resource test
+
+	ResourceManager resMgr;
+	Handle<Texture> texHandle;
+
+	texHandle = resMgr.load<Texture>("assets/kuha.png");
+	resMgr.printResources();
+	resMgr.release(texHandle);
+	resMgr.printResources();
+
+	// --------------
 
 	device.init();
 
