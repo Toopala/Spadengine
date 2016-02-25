@@ -248,12 +248,22 @@ int main(int argc, char** argv)
 
 	bool useMouse = false;
 
+	float deltaTime = 0.0f;
+	float newTime = 0.0f;
+	float accumulator = 0.0f;
+	float step = 1.0f / 60.0f;
+	float currentTime = SDL_GetTicks() / 1000.0f;
+	
 	if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	while (running)
 	{
-		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
+		newTime = SDL_GetTicks() / 1000.0f;
+		deltaTime = std::min(newTime - currentTime, 0.25f);
+		currentTime = newTime;
 
+		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
+		
 		while (SDL_PollEvent(&event))
 		{
 			switch (event.type)
@@ -283,19 +293,20 @@ int main(int argc, char** argv)
 			uniformData.PV = P*V;
 		}
 
-		uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.3f, 0.4f));
+		accumulator += deltaTime;
+
+		while (accumulator >= step)
+		{
+			uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(1.0f, 0.3f, 0.4f));
+
+			accumulator -= step;
+		}
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 		device.draw(vertices->size());
 
 		device.swap();
-
-#ifdef DIRECTX11
-		alpha += 0.001f;
-#else
-		alpha += 0.01f;
-#endif		
 	}
 
 	device.debindPipeline(pipeline);
