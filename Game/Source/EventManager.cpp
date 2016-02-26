@@ -2,7 +2,8 @@
 
 namespace sge
 {
-	EventManager::EventManager(MouseInput* mInput) : quitState(false), mouseInput(mInput)
+	EventManager::EventManager(MouseInput* mouseInput, KeyboardInput* keyboardInput, GamepadInput* gamepadInput)
+	: quitState(false)
 	{
 
 	}
@@ -31,8 +32,10 @@ namespace sge
 			{
 				//Keyboard
 			case SDL_KEYDOWN:
+				keyboardInput->pressKey(inputEvent.button.button);
 				break;
 			case SDL_KEYUP:
+				keyboardInput->releaseKey(inputEvent.button.which);
 				break;
 
 				//Mouse
