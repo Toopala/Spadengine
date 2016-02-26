@@ -1,12 +1,13 @@
 #include "Resources/TextureResource.h"
 
+
 namespace sge
 {
-	TextureResource::TextureResource(const std::string& resourcePath) : sge::Resource(resourcePath)
+	TextureResource::TextureResource(const std::string& resourcePath, Spade* engine) : sge::Resource(resourcePath), engine(engine)
 	{
 		path = resourcePath;
 		unsigned char* data = stbi_load(resourcePath.c_str(), &width, &height, &comp, STBI_rgb_alpha);
-		//device.createTexture(width, height, data);
+		this->texture = engine->getDevice().createTexture(width, height, data);
 		stbi_image_free(data);
 
 		std::cout << "Texture loaded succesfully!" << std::endl;
@@ -32,5 +33,25 @@ namespace sge
 	std::string TextureResource::getPath()
 	{
 		return path;
+	}
+
+	std::string TextureResource::getTypeName()
+	{
+		return typeName;
+	}
+
+	void TextureResource::setTypename(const std::string& typeName)
+	{
+		this-> typeName = typeName;
+	}
+	
+	unsigned int TextureResource::getId()
+	{
+		return id;
+	}
+
+	Texture* TextureResource::getTexture()
+	{
+		return texture;
 	}
 }

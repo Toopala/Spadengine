@@ -12,7 +12,7 @@
 #include "SDL2/SDL.h"
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
-#include "Resources/ResourceManager.h"
+//#include "Resources/ResourceManager.h"
 #include "Resources/TextureResource.h"
 
 #include "stb_image.h"
@@ -184,13 +184,13 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	sge::ResourceManager resMgr;
-	sge::Handle<sge::TextureResource> texHandle;
-
-	texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
-	resMgr.printResources();
-	resMgr.release(texHandle);
-	resMgr.printResources();
+	//sge::ResourceManager resMgr;
+	//sge::Handle<sge::TextureResource> texHandle;
+	//
+	//texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
+	//resMgr.printResources();
+	//resMgr.release(texHandle);
+	//resMgr.printResources();
 
 	// --------------
 

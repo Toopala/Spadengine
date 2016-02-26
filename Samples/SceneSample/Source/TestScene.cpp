@@ -25,8 +25,8 @@ void TestScene::mouseLook(int mouseX, int mouseY)
 {
 	if (firstMouse)
 	{
-		lastX += mouseXpos;
-		lastY += mouseYpos;
+		lastX += mouseX;
+		lastY += mouseY;
 		firstMouse = false;
 	}
 
@@ -110,13 +110,14 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 
 	int w, h, n;
 
+	/*
 	unsigned char* data = stbi_load("../Assets/rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image rockwall_diffuse_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
 	unsigned char* data2 = stbi_load("../Assets/rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
 
-	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
+	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;*/
 
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
@@ -140,7 +141,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	uniformData.PV = P * V;
 
 	//Assimp test
-	Model* model = new Model("../Assets/cube.dae");
+	Model* model = new Model("../Assets/suzanne.dae", engine);
 
 	vertices = model->getVerticeArray();
 	indices = model->getIndexArray();
@@ -157,11 +158,14 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	vertexShader = engine->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	pixelShader = engine->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	texture = engine->getDevice().createTexture(w, h, data);
-	texture2 = engine->getDevice().createTexture(w, h, data2);
+	//texture = engine->getDevice().createTexture(w, h, data);
+	//texture2 = engine->getDevice().createTexture(w, h, data2);
+	//
+	//stbi_image_free(data);
+	//stbi_image_free(data2);
 
-	stbi_image_free(data);
-	stbi_image_free(data2);
+	texture = model->getDiffuseTexture();
+	texture2 = model->getNormalTexture();
 
 	pipeline = engine->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };

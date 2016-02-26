@@ -58,20 +58,40 @@ class Model
 public:
 	/*  Functions   */
 	// Constructor, expects a filepath to a 3D model.
-	Model(char* path)
+	Model(char* path, sge::Spade* engine) : engine(engine)
 	{
 		this->loadModel(path);
 	}
 
 	std::vector<Vertex>* getVerticeArray(){ return &meshes[0].vertices; }
 	std::vector<unsigned int>* getIndexArray() { return &meshes[0].indices; }
+	sge::Texture* getDiffuseTexture()
+	{ 
+		for (int i = 0; i < meshes[0].textures.size(); i++)
+		{
+			if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
+			{
+				return meshes[0].textures[i].getTexture();
+			}
+		}
+	}
+	sge::Texture* getNormalTexture()
+	{ 
+		for (int i = 0; i < meshes[0].textures.size(); i++)
+		{
+			if (meshes[0].textures[i].getTypeName() == "texture_normal")
+			{
+				return meshes[0].textures[i].getTexture();
+			}
+		}
+	}
 
 private:
 	/*  Model Data  */
 	std::vector<Mesh> meshes;
 	std::string directory;
 	std::vector<sge::TextureResource> textures_loaded; // Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-
+	sge::Spade* engine;
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 	void loadModel(std::string path)
@@ -207,7 +227,9 @@ private:
 				// If texture hasn't been loaded already, load it
 				std::string temp(str.C_Str());
 				temp = "../Assets/" + temp;
-				sge::TextureResource* texture = new sge::TextureResource(temp);
+				sge::TextureResource* texture = new sge::TextureResource(temp, engine);
+				texture->setTypename(typeName);
+				textures.push_back(*texture);
 				this->textures_loaded.push_back(*texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
 			}
 		}
