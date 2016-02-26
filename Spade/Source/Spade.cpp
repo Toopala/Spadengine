@@ -32,7 +32,10 @@ namespace sge
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 		device = new GraphicsDevice(*window);
 		mouseInput = new sge::MouseInput();
-		eventManager = new EventManager(mouseInput);
+		keyboardInput = new sge::KeyboardInput();
+		gamepadInput = new sge::GamepadInput();
+		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
+		sceneManager = new SceneManager();
 	}
 
 	Spade::~Spade()
@@ -53,8 +56,12 @@ namespace sge
 	void Spade::quit()
 	{
 		std::cout << "Spade quit says hello" << std::endl;
+
+		delete sceneManager;
 		device->deinit();
 		delete mouseInput;
+		delete keyboardInput;
+		delete gamepadInput;
 
 		SDL_Quit();
 	}	
@@ -65,8 +72,8 @@ namespace sge
 		float newTime = 0.0f;
 		float currentTime = SDL_GetTicks() / 1000.0f;
 
-		sceneManager.change(scene);
-		sceneManager.handleScenes();
+		sceneManager->change(scene);
+		sceneManager->handleScenes();
 
 		while (running)
 		{
@@ -78,7 +85,7 @@ namespace sge
 			update(deltaTime);
 			draw();
 
-			sceneManager.handleScenes();
+			sceneManager->handleScenes();
 		}
 	}
 
@@ -98,17 +105,17 @@ namespace sge
 
 		while(accumulator >= step)
 		{
-			sceneManager.update(step);
+			sceneManager->update(step);
 			accumulator -= step;
 
 			mouseInput->update();
 		}
 
-		sceneManager.interpolate(accumulator / step);
+		sceneManager->interpolate(accumulator / step);
 	}
 
 	void Spade::draw()
 	{
-		sceneManager.draw();
+		sceneManager->draw();
 	}
 };

@@ -2,7 +2,8 @@
 
 namespace sge
 {
-	EventManager::EventManager(MouseInput* mInput) : quitState(false), mouseInput(mInput)
+	EventManager::EventManager(MouseInput* mInput, KeyboardInput* kbInput, GamepadInput* gpInput)
+		: quitState(false), mouseInput(mInput), keyboardInput(kbInput), gamepadInput(gpInput)
 	{
 
 	}
@@ -31,8 +32,10 @@ namespace sge
 			{
 				//Keyboard
 			case SDL_KEYDOWN:
+				keyboardInput->pressKey(inputEvent.button.button);
 				break;
 			case SDL_KEYUP:
+				keyboardInput->releaseKey(inputEvent.button.which);
 				break;
 
 				//Mouse
@@ -51,14 +54,19 @@ namespace sge
 
 				//Gamepad
 			case SDL_CONTROLLERBUTTONDOWN:
+				gamepadInput->pressButton(inputEvent.cbutton.button, inputEvent.cbutton.which);
 				break;
 			case SDL_CONTROLLERBUTTONUP:
+				gamepadInput->releaseButton(inputEvent.cbutton.button, inputEvent.cbutton.which);
 				break;
 			case SDL_CONTROLLERAXISMOTION:
+				gamepadInput->axisMotion(inputEvent.caxis.axis, inputEvent.caxis.value, inputEvent.caxis.which);
 				break;
 			case SDL_CONTROLLERDEVICEADDED:
+				gamepadInput->addDevice(inputEvent.cdevice.which);
 				break;
 			case SDL_CONTROLLERDEVICEREMOVED:
+				gamepadInput->removeDevice(inputEvent.cdevice.which);
 				break;
 
 				//QUIT

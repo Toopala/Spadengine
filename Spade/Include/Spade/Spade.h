@@ -22,9 +22,9 @@ namespace sge
 
 		void quit();
 
-		const GraphicsDevice& getDevice(){ return *device; }
+		GraphicsDevice& getDevice() { return *device; }
 
-		SceneManager& getSceneManager()
+		SceneManager* getSceneManager()
 		{
 			return sceneManager;
 		}
@@ -35,6 +35,8 @@ namespace sge
 		}
 
 		sge::MouseInput* mouseInput;
+		sge::KeyboardInput* keyboardInput;
+		sge::GamepadInput* gamepadInput;
 	private:
 		void handleEvents();
 		void update(float deltaTime);
@@ -43,7 +45,7 @@ namespace sge
 
 		sge::GraphicsDevice* device;
 		sge::Window* window;
-		sge::SceneManager sceneManager;
+		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
 
 		bool running;

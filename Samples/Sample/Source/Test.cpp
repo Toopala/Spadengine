@@ -13,9 +13,7 @@
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 #include "Resources/ResourceManager.h"
-#include "Resources/Texture.h"
-
-#define STB_IMAGE_IMPLEMENTATION
+#include "Resources/TextureResource.h"
 
 #include "stb_image.h"
 
@@ -186,10 +184,10 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	ResourceManager resMgr;
-	Handle<Texture> texHandle;
+	sge::ResourceManager resMgr;
+	sge::Handle<sge::TextureResource> texHandle;
 
-	texHandle = resMgr.load<Texture>("assets/kuha.png");
+	texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
 	resMgr.printResources();
 	resMgr.release(texHandle);
 	resMgr.printResources();
@@ -200,11 +198,11 @@ int main(int argc, char** argv)
 
 	int w, h, n;
 
-	unsigned char* data = stbi_load("rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
+	unsigned char* data = stbi_load("../Assets/rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image rockwall_diffuse_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
-	unsigned char* data2 = stbi_load("rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
+	unsigned char* data2 = stbi_load("../Assets/rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
@@ -212,11 +210,11 @@ int main(int argc, char** argv)
 	std::vector<char> vShaderData;
 
 #ifdef DIRECTX11
-	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
-	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
+	loadBinaryShader("../Assets/Shaders/VertexShader.cso", vShaderData);
+	loadBinaryShader("../Assets/Shaders/PixelShader.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+	loadTextShader("../Assets/Shaders/VertexShader.glsl", vShaderData);
+	loadTextShader("../Assets/Shaders/PixelShader.glsl", pShaderData);
 #endif
 
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -236,7 +234,7 @@ int main(int argc, char** argv)
 	uniformData.PV = P * V;
 
 	//Assimp test
-	Model* model = new Model("cube.dae");
+	Model* model = new Model("../Assets/cube.dae");
 
 	std::vector<Vertex>* vertices = model->getVerticeArray();
 	std::vector<unsigned int>* indices = model->getIndexArray();
@@ -345,8 +343,8 @@ int main(int argc, char** argv)
 
 		while (accumulator >= step)
 		{
-
-			angle += speed;
+			// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
+			uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
 
 			accumulator -= step;
 		}
@@ -358,6 +356,8 @@ int main(int argc, char** argv)
 		device.draw(vertices->size());
 
 		device.swap();
+
+		alpha += 0.005;
 	}
 
 	device.debindPipeline(pipeline);

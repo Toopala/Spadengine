@@ -33,30 +33,32 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\spadengine.props" />
     <Import Project="..\..\Config\Properties\SDL.props" />
     <Import Project="..\..\Config\Properties\Renderer.props" />
     <Import Project="..\..\Config\Properties\HID.props" />
+    <Import Project="..\..\Config\Properties\Resources.props" />
     <Import Project="..\..\Config\Properties\glm.props" />
     <Import Project="..\..\Config\Properties\glad.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\Core.props" />
-    <Import Project="..\..\Config\Properties\assimpDebug.props" />
     <Import Project="..\..\Config\Properties\Spade.props" />
+    <Import Project="..\..\Config\Properties\stb_image.props" />
+    <Import Project="..\..\Config\Properties\assimpDebug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\spadengine.props" />
     <Import Project="..\..\Config\Properties\SDL.props" />
     <Import Project="..\..\Config\Properties\Renderer.props" />
+    <Import Project="..\..\Config\Properties\Resources.props" />
     <Import Project="..\..\Config\Properties\HID.props" />
     <Import Project="..\..\Config\Properties\glm.props" />
     <Import Project="..\..\Config\Properties\glad.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\Core.props" />
     <Import Project="..\..\Config\Properties\Spade.props" />
+    <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpRelease.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -89,9 +91,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Model.cpp" />
     <ClCompile Include="Source\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Model.h" />
     <ClInclude Include="Include\TestScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
