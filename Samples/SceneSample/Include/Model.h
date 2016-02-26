@@ -194,10 +194,7 @@ private:
 			for (unsigned int j = 0; j < textures_loaded.size(); j++)
 			{
 				aiString tempStr;
-				for (int i = 0; i < textures_loaded[j].getPath().size(); i++)
-				{
-					//tempStr[i] = textures_loaded[j].getPath()[i];
-				}
+				tempStr.Set(&textures_loaded[j].getPath()[i]);
 				if (tempStr == str)
 				{
 					textures.push_back(textures_loaded[j]);
@@ -206,9 +203,12 @@ private:
 				}
 			}
 			if (!skip)
-			{   // If texture hasn't been loaded already, load it
-				//sge::TextureResource* texture = new sge::TextureResource("")
-				//this->textures_loaded.push_back(texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+			{   
+				// If texture hasn't been loaded already, load it
+				std::string temp(str.C_Str());
+				temp = "../Assets/" + temp;
+				sge::TextureResource* texture = new sge::TextureResource(temp);
+				this->textures_loaded.push_back(*texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
 			}
 		}
 		return textures;
