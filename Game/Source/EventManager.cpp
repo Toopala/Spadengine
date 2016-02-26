@@ -51,14 +51,19 @@ namespace sge
 
 				//Gamepad
 			case SDL_CONTROLLERBUTTONDOWN:
+				gamepadInput->pressButton(inputEvent.cbutton.button, inputEvent.cbutton.which);
 				break;
 			case SDL_CONTROLLERBUTTONUP:
+				gamepadInput->releaseButton(inputEvent.cbutton.button, inputEvent.cbutton.which);
 				break;
 			case SDL_CONTROLLERAXISMOTION:
+				gamepadInput->axisMotion(inputEvent.caxis.axis, inputEvent.caxis.value, inputEvent.caxis.which);
 				break;
 			case SDL_CONTROLLERDEVICEADDED:
+				gamepadInput->addDevice(inputEvent.cdevice.which);
 				break;
 			case SDL_CONTROLLERDEVICEREMOVED:
+				gamepadInput->removeDevice(inputEvent.cdevice.which);
 				break;
 
 				//QUIT
