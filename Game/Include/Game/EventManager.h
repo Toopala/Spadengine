@@ -11,7 +11,7 @@ namespace sge
 	class EventManager
 		{
 		public:
-			EventManager(MouseInput* mouseInput);
+			EventManager(MouseInput* mouseInput, KeyboardInput* keyboardInput, GamepadInput* gamepadInput);
 			~EventManager();
 
 			void update();
@@ -22,7 +22,7 @@ namespace sge
 			void processInput();
 			bool quitState;
 
-			//sge::KeyboardInput* keyboardInput;
+			sge::KeyboardInput* keyboardInput;
 			sge::MouseInput* mouseInput;
 			sge::GamepadInput* gamepadInput;
 			
