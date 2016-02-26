@@ -22,7 +22,7 @@ namespace sge
 
 		void quit();
 
-		const GraphicsDevice& getDevice(){ return *device; }
+		GraphicsDevice& getDevice() { return *device; }
 
 		SceneManager& getSceneManager()
 		{
