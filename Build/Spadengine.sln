@@ -86,20 +86,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resources", "..\Resources\R
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{EFAD0CBC-78E5-46FE-97F3-686A612CF25A}"
 	ProjectSection(SolutionItems) = preProject
-		..\Samples\Assets\apina.dae = ..\Samples\Assets\apina.dae
 		..\Samples\Assets\cube.dae = ..\Samples\Assets\cube.dae
-		..\Samples\Assets\cube_diffuse_normal.mtl = ..\Samples\Assets\cube_diffuse_normal.mtl
-		..\Samples\Assets\cube_diffuse_normal.obj = ..\Samples\Assets\cube_diffuse_normal.obj
-		..\Samples\Assets\cube_simple.dae = ..\Samples\Assets\cube_simple.dae
-		..\Samples\Assets\cube_simple.obj = ..\Samples\Assets\cube_simple.obj
-		..\Samples\Assets\plane.dae = ..\Samples\Assets\plane.dae
 		..\Samples\Assets\rockwall_diffuse_map.png = ..\Samples\Assets\rockwall_diffuse_map.png
 		..\Samples\Assets\rockwall_normal_map.png = ..\Samples\Assets\rockwall_normal_map.png
 		..\Samples\Assets\spade.png = ..\Samples\Assets\spade.png
-		..\Samples\Assets\torusUvmappedlowpoly.mtl = ..\Samples\Assets\torusUvmappedlowpoly.mtl
-		..\Samples\Assets\torusUvmappedlowpoly.obj = ..\Samples\Assets\torusUvmappedlowpoly.obj
-		..\Samples\Assets\uvsphere.mtl = ..\Samples\Assets\uvsphere.mtl
-		..\Samples\Assets\uvsphere.obj = ..\Samples\Assets\uvsphere.obj
+		..\Samples\Assets\suzanne.dae = ..\Samples\Assets\suzanne.dae
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{E8DCEB19-A2CD-40EA-A9FC-F37B991BD876}"

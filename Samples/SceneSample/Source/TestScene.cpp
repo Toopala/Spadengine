@@ -225,7 +225,7 @@ void TestScene::update(float step)
 	}
 
 	// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
-	uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 1.0f, 1.0f));
+	uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.2f, 0.1f));
 
 	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
 	{
