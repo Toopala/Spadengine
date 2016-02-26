@@ -112,11 +112,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 
 	int w, h, n;
 
-	unsigned char* data = stbi_load("rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
+	unsigned char* data = stbi_load("../Assets/rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image rockwall_diffuse_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
-	unsigned char* data2 = stbi_load("rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
+	unsigned char* data2 = stbi_load("../Assets/rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
 
 	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;
 
@@ -124,11 +124,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	std::vector<char> vShaderData;
 
 #ifdef DIRECTX11
-	loadBinaryShader("Assets/Shaders/VertexShader.cso", vShaderData);
-	loadBinaryShader("Assets/Shaders/PixelShader.cso", pShaderData);
+	loadBinaryShader("../Assets/Shaders/VertexShader.cso", vShaderData);
+	loadBinaryShader("../Assets/Shaders/PixelShader.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("Assets/Shaders/VertexShader.glsl", vShaderData);
-	loadTextShader("Assets/Shaders/PixelShader.glsl", pShaderData);
+	loadTextShader("../Assets/Shaders/VertexShader.glsl", vShaderData);
+	loadTextShader("../Assets/Shaders/PixelShader.glsl", pShaderData);
 #endif
 
 	cameraPos = glm::vec3(0.0f, 0.0f, 4.5f);
@@ -142,7 +142,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	uniformData.PV = P * V;
 
 	//Assimp test
-	Model* model = new Model("cube.dae");
+	Model* model = new Model("../Assets/cube.dae");
 
 	vertices = model->getVerticeArray();
 	indices = model->getIndexArray();
@@ -206,10 +206,6 @@ TestScene::~TestScene()
 	engine->getDevice().deleteTexture(texture2);
 
 	engine->getDevice().deletePipeline(pipeline);
-
-	engine->getDevice().deinit();
-
-	SDL_Quit();
 }
 
 void TestScene::update(float step)

@@ -24,7 +24,7 @@ namespace sge
 
 		GraphicsDevice& getDevice() { return *device; }
 
-		SceneManager& getSceneManager()
+		SceneManager* getSceneManager()
 		{
 			return sceneManager;
 		}
@@ -43,7 +43,7 @@ namespace sge
 
 		sge::GraphicsDevice* device;
 		sge::Window* window;
-		sge::SceneManager sceneManager;
+		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
 
 		bool running;

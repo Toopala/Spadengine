@@ -84,6 +84,38 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneSample", "..\Samples\S
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resources", "..\Resources\Resources.vcxproj", "{C8955BED-3381-4D2B-888F-CE5366802F6F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{EFAD0CBC-78E5-46FE-97F3-686A612CF25A}"
+	ProjectSection(SolutionItems) = preProject
+		..\Samples\Assets\apina.dae = ..\Samples\Assets\apina.dae
+		..\Samples\Assets\cube.dae = ..\Samples\Assets\cube.dae
+		..\Samples\Assets\cube_diffuse_normal.mtl = ..\Samples\Assets\cube_diffuse_normal.mtl
+		..\Samples\Assets\cube_diffuse_normal.obj = ..\Samples\Assets\cube_diffuse_normal.obj
+		..\Samples\Assets\cube_simple.dae = ..\Samples\Assets\cube_simple.dae
+		..\Samples\Assets\cube_simple.obj = ..\Samples\Assets\cube_simple.obj
+		..\Samples\Assets\plane.dae = ..\Samples\Assets\plane.dae
+		..\Samples\Assets\rockwall_diffuse_map.png = ..\Samples\Assets\rockwall_diffuse_map.png
+		..\Samples\Assets\rockwall_normal_map.png = ..\Samples\Assets\rockwall_normal_map.png
+		..\Samples\Assets\spade.png = ..\Samples\Assets\spade.png
+		..\Samples\Assets\torusUvmappedlowpoly.mtl = ..\Samples\Assets\torusUvmappedlowpoly.mtl
+		..\Samples\Assets\torusUvmappedlowpoly.obj = ..\Samples\Assets\torusUvmappedlowpoly.obj
+		..\Samples\Assets\uvsphere.mtl = ..\Samples\Assets\uvsphere.mtl
+		..\Samples\Assets\uvsphere.obj = ..\Samples\Assets\uvsphere.obj
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{E8DCEB19-A2CD-40EA-A9FC-F37B991BD876}"
+	ProjectSection(SolutionItems) = preProject
+		..\Samples\Assets\Shaders\PixelShader.cso = ..\Samples\Assets\Shaders\PixelShader.cso
+		..\Samples\Assets\Shaders\PixelShader.glsl = ..\Samples\Assets\Shaders\PixelShader.glsl
+		..\Samples\Assets\Shaders\VertexShader.cso = ..\Samples\Assets\Shaders\VertexShader.cso
+		..\Samples\Assets\Shaders\VertexShader.glsl = ..\Samples\Assets\Shaders\VertexShader.glsl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{2D135035-A1F2-49DD-A9EA-1F1503AB9576}"
+	ProjectSection(SolutionItems) = preProject
+		..\Samples\Assets\Shaders\old\PixelShader.glsl = ..\Samples\Assets\Shaders\old\PixelShader.glsl
+		..\Samples\Assets\Shaders\old\VertexShader.glsl = ..\Samples\Assets\Shaders\old\VertexShader.glsl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -150,5 +182,8 @@ Global
 		{CA1DF7E6-8EA5-46A7-BFA5-B9A8D78EA5BC} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
 		{885D5D76-95FB-4C0F-9E48-E843B999AED1} = {A2BEFDE2-FB8A-44A6-ABDD-C5F2886AE00F}
 		{C8955BED-3381-4D2B-888F-CE5366802F6F} = {96AE7320-EBF7-42D2-AE09-6D5D6301C27E}
+		{EFAD0CBC-78E5-46FE-97F3-686A612CF25A} = {A2BEFDE2-FB8A-44A6-ABDD-C5F2886AE00F}
+		{E8DCEB19-A2CD-40EA-A9FC-F37B991BD876} = {EFAD0CBC-78E5-46FE-97F3-686A612CF25A}
+		{2D135035-A1F2-49DD-A9EA-1F1503AB9576} = {E8DCEB19-A2CD-40EA-A9FC-F37B991BD876}
 	EndGlobalSection
 EndGlobal
