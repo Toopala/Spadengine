@@ -10,7 +10,7 @@
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 #include "Resources/ResourceManager.h"
-#include "Resources/Texture.h"
+#include "Resources/TextureResource.h"
 
 #include "stb_image.h"
 
@@ -136,10 +136,10 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	ResourceManager resMgr;
-	Handle<Texture> texHandle;
+	sge::ResourceManager resMgr;
+	sge::Handle<sge::TextureResource> texHandle;
 
-	texHandle = resMgr.load<Texture>("assets/kuha.png");
+	texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
 	resMgr.printResources();
 	resMgr.release(texHandle);
 	resMgr.printResources();
@@ -295,7 +295,8 @@ int main(int argc, char** argv)
 
 		while (accumulator >= step)
 		{
-			uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(0.0f, 0.0f, 1.0f));
+			// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
+			uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
 
 			accumulator -= step;
 		}
@@ -305,6 +306,8 @@ int main(int argc, char** argv)
 		device.draw(vertices->size());
 
 		device.swap();
+
+		alpha += 0.005;
 	}
 
 	device.debindPipeline(pipeline);

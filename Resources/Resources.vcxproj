@@ -34,12 +34,14 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\stb_image.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
+    <Import Project="..\Config\Properties\glm.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\stb_image.props" />
   </ImportGroup>
@@ -74,13 +76,13 @@
     <ClInclude Include="Include\Resources\HandleManager.h" />
     <ClInclude Include="Include\Resources\Resource.h" />
     <ClInclude Include="Include\Resources\ResourceManager.h" />
-    <ClInclude Include="Include\Resources\Texture.h" />
+    <ClInclude Include="Include\Resources\TextureResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Resource.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\StbImageImplementation.cpp" />
-    <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\TextureResource.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

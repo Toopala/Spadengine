@@ -12,7 +12,4 @@ namespace sge
 	Component::~Component()
 	{
 	}
-
-	
-
 }
