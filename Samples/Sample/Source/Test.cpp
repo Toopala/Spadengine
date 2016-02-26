@@ -10,7 +10,7 @@
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 #include "Resources/ResourceManager.h"
-#include "Resources/Texture.h"
+#include "Resources/TextureResource.h"
 
 #include "stb_image.h"
 
@@ -137,9 +137,9 @@ int main(int argc, char** argv)
 	// Resource test
 
 	sge::ResourceManager resMgr;
-	sge::Handle<sge::TextureSource> texHandle;
+	sge::Handle<sge::TextureResource> texHandle;
 
-	texHandle = resMgr.load<sge::TextureSource>("Assets/spade.png");
+	texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
 	resMgr.printResources();
 	resMgr.release(texHandle);
 	resMgr.printResources();

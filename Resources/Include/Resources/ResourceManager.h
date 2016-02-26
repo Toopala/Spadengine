@@ -3,7 +3,7 @@
 #include <cassert>
 #include <unordered_map>
 #include "Resources/Resource.h"
-#include "Resources/Texture.h"
+#include "Resources/TextureResource.h"
 #include "Resources/Handle.h"
 
 namespace sge
