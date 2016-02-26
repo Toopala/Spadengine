@@ -1,14 +1,15 @@
 #pragma once
-#include "Resource.h"
+#include "Resources/Resource.h"
 
-
-class Texture : public Resource
+namespace sge
 {
-public:
-	Texture(const std::string& resourcePath);
+	class TextureSource : public Resource
+	{
+	public:
+		TextureSource(const std::string& resourcePath);
 
-	~Texture();
+		~TextureSource();
 
-	void bind();
-};
-
+		void bind();
+	};
+}

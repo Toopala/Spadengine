@@ -138,10 +138,10 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	ResourceManager resMgr;
-	Handle<Texture> texHandle;
+	sge::ResourceManager resMgr;
+	sge::Handle<sge::TextureSource> texHandle;
 
-	texHandle = resMgr.load<Texture>("assets/kuha.png");
+	texHandle = resMgr.load<sge::TextureSource>("Assets/spade.png");
 	resMgr.printResources();
 	resMgr.release(texHandle);
 	resMgr.printResources();

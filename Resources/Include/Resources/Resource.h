@@ -2,20 +2,23 @@
 #include <iostream>
 #include <string>
 
-class Resource
+namespace sge
 {
-	friend class ResourceManager;
-public:
-	Resource(const std::string& resourcePath);
-	~Resource();
+	class Resource
+	{
+		friend class ResourceManager;
+	public:
+		Resource(const std::string& resourcePath);
+		~Resource();
 
-	std::string& getResourcePath();
-	int getReferenceCount();
+		std::string& getResourcePath();
+		int getReferenceCount();
 
-protected:
+	protected:
 
-	std::string resourcePath;
-	int references;
-	void increaseRef();
-	void decreaseRef();
-};
+		std::string resourcePath;
+		int references;
+		void increaseRef();
+		void decreaseRef();
+	};
+}
