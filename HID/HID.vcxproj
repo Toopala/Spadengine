@@ -76,10 +76,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\HID\GamepadInput.h" />
     <ClInclude Include="Include\HID\KeyboardInput.h" />
     <ClInclude Include="Include\HID\MouseInput.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GamepadInput.cpp" />
     <ClCompile Include="Source\KeyboardInput.cpp" />
     <ClCompile Include="Source\MouseInput.cpp" />
   </ItemGroup>

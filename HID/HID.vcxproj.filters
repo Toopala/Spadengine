@@ -21,12 +21,18 @@
     <ClInclude Include="Include\HID\MouseInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\HID\GamepadInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\KeyboardInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\MouseInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GamepadInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
