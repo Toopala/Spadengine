@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Math.h"
 #include "SDL2/SDL_mouse.h"
 #include "glm/glm.hpp"
 #include <unordered_map>
@@ -54,8 +55,8 @@ namespace sge
 		std::unordered_map<unsigned int, bool> buttonMap;
 		std::unordered_map<unsigned int, bool> previousButtonMap;
 		
-		glm::ivec2 mousePosition;
-		glm::ivec2 prevMousePosition = glm::ivec2(-1, -1);
+		math::ivec2 mousePosition;
+		math::ivec2 prevMousePosition = math::ivec2(-1, -1);
 		int mouseWheelYPosition = 0;
 	};
 }
