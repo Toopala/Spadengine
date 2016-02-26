@@ -16,8 +16,6 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 
-#include <iostream>
-
 //--------------------------------
 // Copied functions
 
@@ -63,7 +61,7 @@ void TestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
 	std::ifstream file;
 
-	file.open(path, ios::in);
+	file.open(path, std::ios::in);
 
 	if (file.is_open())
 	{
@@ -86,14 +84,14 @@ void TestScene::loadBinaryShader(const std::string& path, std::vector<char>& dat
 {
 	std::ifstream file;
 
-	file.open(path, ios::in | ios::ate | ios::binary);
+	file.open(path, std::ios::in | std::ios::ate | std::ios::binary);
 
 	if (file.is_open())
 	{
 		std::cout << "Binary shader opened!" << std::endl;
 		data.resize(static_cast<size_t>(file.tellg()));
 
-		file.seekg(0, ios::beg);
+		file.seekg(0, std::ios::beg);
 		file.read(data.data(), data.size());
 		file.close();
 	}

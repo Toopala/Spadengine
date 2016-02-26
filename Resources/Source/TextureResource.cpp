@@ -4,6 +4,7 @@ namespace sge
 {
 	TextureResource::TextureResource(const std::string& resourcePath) : sge::Resource(resourcePath)
 	{
+		path = resourcePath;
 		unsigned char* data = stbi_load(resourcePath.c_str(), &width, &height, &comp, STBI_rgb_alpha);
 		//device.createTexture(width, height, data);
 		stbi_image_free(data);
@@ -26,5 +27,10 @@ namespace sge
 	sge::math::ivec2 TextureResource::getSize()
 	{
 		return sge::math::ivec2(width, height);
+	}
+
+	std::string TextureResource::getPath()
+	{
+		return path;
 	}
 }

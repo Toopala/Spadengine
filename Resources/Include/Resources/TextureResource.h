@@ -15,7 +15,10 @@ namespace sge
 		void bind();
 		sge::math::ivec2 getSize();
 
+		std::string getPath();
 	private:
 		int width, height, comp;
+		std::string path;
+
 	};
 }
