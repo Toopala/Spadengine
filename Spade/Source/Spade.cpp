@@ -32,7 +32,9 @@ namespace sge
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 		device = new GraphicsDevice(*window);
 		mouseInput = new sge::MouseInput();
-		eventManager = new EventManager(mouseInput);
+		keyboardInput = new sge::KeyboardInput();
+		gamepadInput = new sge::GamepadInput();
+		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
 		sceneManager = new SceneManager();
 	}
 
@@ -58,6 +60,8 @@ namespace sge
 		delete sceneManager;
 		device->deinit();
 		delete mouseInput;
+		delete keyboardInput;
+		delete gamepadInput;
 
 		SDL_Quit();
 	}	

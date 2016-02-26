@@ -35,6 +35,8 @@ namespace sge
 		}
 
 		sge::MouseInput* mouseInput;
+		sge::KeyboardInput* keyboardInput;
+		sge::GamepadInput* gamepadInput;
 	private:
 		void handleEvents();
 		void update(float deltaTime);

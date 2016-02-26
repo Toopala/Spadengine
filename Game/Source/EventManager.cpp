@@ -2,8 +2,8 @@
 
 namespace sge
 {
-	EventManager::EventManager(MouseInput* mouseInput, KeyboardInput* keyboardInput, GamepadInput* gamepadInput)
-	: quitState(false)
+	EventManager::EventManager(MouseInput* mInput, KeyboardInput* kbInput, GamepadInput* gpInput)
+		: quitState(false), mouseInput(mInput), keyboardInput(kbInput), gamepadInput(gpInput)
 	{
 
 	}

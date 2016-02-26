@@ -2,6 +2,15 @@
 
 namespace sge
 {
+	KeyboardInput::KeyboardInput()
+	{
+
+	}
+	KeyboardInput::~KeyboardInput()
+	{
+
+	}
+
 	void KeyboardInput::update()
 	{
 		// update previousKeyMap from keyMap
