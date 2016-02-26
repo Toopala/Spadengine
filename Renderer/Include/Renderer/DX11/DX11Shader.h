@@ -18,6 +18,7 @@ namespace sge
 		};
 
 		// TODO super hax
+		// Create shader resource and a handle to it
 		const char* source;
 		size_t size;
 	};

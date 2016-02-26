@@ -39,6 +39,9 @@
     <ClCompile Include="Include\Renderer\DX11\DX11VertexLayout.h">
       <Filter>Header Files\DX11</Filter>
     </ClCompile>
+    <ClCompile Include="Source\RenderQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Renderer\Window.h">
@@ -91,6 +94,15 @@
     </ClInclude>
     <ClInclude Include="Include\Renderer\DX11\DX11Texture.h">
       <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\RenderQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\RenderCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\RenderData.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
