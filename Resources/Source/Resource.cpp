@@ -1,33 +1,35 @@
 #include "Resources/Resource.h"
 
-
-Resource::Resource(const std::string& resourcePath)
+namespace sge
 {
-	this->resourcePath = resourcePath;
-	references = 0;
-}
+	Resource::Resource(const std::string& resourcePath)
+	{
+		this->resourcePath = resourcePath;
+		references = 0;
+	}
 
 
-Resource::~Resource()
-{
-}
+	Resource::~Resource()
+	{
+	}
 
-std::string& Resource::getResourcePath()
-{
-	return resourcePath;
-}
+	std::string& Resource::getResourcePath()
+	{
+		return resourcePath;
+	}
 
-int Resource::getReferenceCount()
-{
-	return references;
-}
+	int Resource::getReferenceCount()
+	{
+		return references;
+	}
 
-void Resource::increaseRef()
-{
-	references++;
-}
+	void Resource::increaseRef()
+	{
+		references++;
+	}
 
-void Resource::decreaseRef()
-{
-	references--;
+	void Resource::decreaseRef()
+	{
+		references--;
+	}
 }
