@@ -53,10 +53,10 @@ namespace sge
 	void Spade::quit()
 	{
 		std::cout << "Spade quit says hello" << std::endl;
-		device->deinit();
+		//device->deinit();
 		delete mouseInput;
 
-		SDL_Quit();
+		//SDL_Quit();
 	}	
 	
 	void Spade::run(Scene* scene)

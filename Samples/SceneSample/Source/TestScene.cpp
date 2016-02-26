@@ -18,8 +18,10 @@
 
 #include <iostream>
 
-
+//--------------------------------
 // Copied functions
+
+
 // Mouse look sample
 void TestScene::mouseLook(int mouseX, int mouseY)
 {
@@ -96,7 +98,8 @@ void TestScene::loadBinaryShader(const std::string& path, std::vector<char>& dat
 		file.close();
 	}
 }
-// Copied functions
+// Copied functions ends
+//--------------------------------
 
 TestScene::TestScene(sge::Spade* engine) : engine(engine)
 {
@@ -205,16 +208,16 @@ TestScene::~TestScene()
 	engine->getDevice().deletePipeline(pipeline);
 
 	engine->getDevice().deinit();
+
+	SDL_Quit();
 }
 
 void TestScene::update(float step)
-{
-	engine->mouseInput->getRelativeMouseState(&mouseX, &mouseY);
-		
+{		
 	if (useMouse)
 	{
 #ifdef _WIN32
-		SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
+		engine->mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
 
 		mouseLook(mouseXpos, mouseYpos);
 #endif
@@ -223,17 +226,22 @@ void TestScene::update(float step)
 		uniformData.PV = P*V;
 	}
 
-	uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(0.0f, 0.0f, 1.0f));
+	// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
+	uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
 	{
 		// Proper way to shutdown the program?
 		engine->stop();
 	}
+
+	alpha += 0.005;
 }
 
 void TestScene::draw()
 {
+	engine->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
+
 	engine->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	engine->getDevice().draw(vertices->size());

@@ -295,7 +295,8 @@ int main(int argc, char** argv)
 
 		while (accumulator >= step)
 		{
-			uniformData.M = sge::math::rotate(uniformData.M, 0.05f, glm::vec3(0.0f, 0.0f, 1.0f));
+			// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
+			uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
 
 			accumulator -= step;
 		}
@@ -305,6 +306,8 @@ int main(int argc, char** argv)
 		device.draw(vertices->size());
 
 		device.swap();
+
+		alpha += 0.005;
 	}
 
 	device.debindPipeline(pipeline);

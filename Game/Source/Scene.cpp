@@ -15,11 +15,11 @@ namespace sge
 
 	void Scene::begin()
 	{
-		std::cout << "Scene begin says hello" << std::endl;
+		
 	}
 
 	void Scene::end()
 	{
-		std::cout << "Scene end says hello" << std::endl;
+		
 	}
 };
