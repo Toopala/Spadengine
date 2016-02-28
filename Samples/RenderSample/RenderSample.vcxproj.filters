@@ -15,17 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Source\PixelShader.hlsl">
+    <ClCompile Include="Source\Main.cpp">
       <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Source\VertexShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Source\SimplePixelShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Source\SimpleVertexShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
+    </ClCompile>
   </ItemGroup>
 </Project>

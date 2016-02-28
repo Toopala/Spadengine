@@ -11,18 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6065B0DE-BA1F-4764-9ED3-A333D2863748}</ProjectGuid>
-    <RootNamespace>Renderer</RootNamespace>
+    <ProjectGuid>{EEAA8950-3E9F-402F-B874-D44B65566CF1}</ProjectGuid>
+    <RootNamespace>RenderSample</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -33,18 +33,27 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\Properties\spadengine.props" />
-    <Import Project="..\Config\Properties\glad.props" />
-    <Import Project="..\Config\Properties\SDL.props" />
-    <Import Project="..\Config\Properties\assimpDebug.props" />
-    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\..\Config\Properties\spadengine.props" />
+    <Import Project="..\..\Config\Properties\SDL.props" />
+    <Import Project="..\..\Config\Properties\glm.props" />
+    <Import Project="..\..\Config\Properties\glad.props" />
+    <Import Project="..\..\Config\Properties\assimpDebug.props" />
+    <Import Project="..\..\Config\Properties\stb_image.props" />
+    <Import Project="..\..\Config\Properties\Core.props" />
+    <Import Project="..\..\Config\Properties\Resources.props" />
+    <Import Project="..\..\Config\Properties\Renderer.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\Config\Properties\spadengine.props" />
-    <Import Project="..\Config\Properties\glad.props" />
-    <Import Project="..\Config\Properties\SDL.props" />
-    <Import Project="..\Config\Properties\Core.props" />
+    <Import Project="..\..\Config\Properties\spadengine.props" />
+    <Import Project="..\..\Config\Properties\SDL.props" />
+    <Import Project="..\..\Config\Properties\glm.props" />
+    <Import Project="..\..\Config\Properties\glad.props" />
+    <Import Project="..\..\Config\Properties\assimpRelease.props" />
+    <Import Project="..\..\Config\Properties\stb_image.props" />
+    <Import Project="..\..\Config\Properties\Core.props" />
+    <Import Project="..\..\Config\Properties\Resources.props" />
+    <Import Project="..\..\Config\Properties\Renderer.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -57,7 +66,6 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -72,38 +80,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Include\Renderer\DX11\DX11VertexLayout.h" />
-    <ClCompile Include="Source\DX11\DX11GraphicsDevice.cpp" />
-    <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp" />
-    <ClCompile Include="Source\Renderer.cpp" />
-    <ClCompile Include="Source\RenderQueue.cpp" />
-    <ClCompile Include="Source\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\Renderer\Buffer.h" />
-    <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h" />
-    <ClInclude Include="Include\Renderer\DX11\DX11Pipeline.h" />
-    <ClInclude Include="Include\Renderer\DX11\DX11Shader.h" />
-    <ClInclude Include="Include\Renderer\DX11\DX11Texture.h" />
-    <ClInclude Include="Include\Renderer\Enumerations.h" />
-    <ClInclude Include="Include\Renderer\GL4\GL4Buffer.h" />
-    <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h" />
-    <ClInclude Include="Include\Renderer\GL4\GL4Shader.h" />
-    <ClInclude Include="Include\Renderer\GL4\GL4Texture.h" />
-    <ClInclude Include="Include\Renderer\GraphicsDevice.h" />
-    <ClInclude Include="Include\Renderer\Pipeline.h" />
-    <ClInclude Include="Include\Renderer\RenderCommand.h" />
-    <ClInclude Include="Include\Renderer\RenderData.h" />
-    <ClInclude Include="Include\Renderer\Renderer.h" />
-    <ClInclude Include="Include\Renderer\RenderQueue.h" />
-    <ClInclude Include="Include\Renderer\Shader.h" />
-    <ClInclude Include="Include\Renderer\Texture.h" />
-    <ClInclude Include="Include\Renderer\VertexLayout.h" />
-    <ClInclude Include="Include\Renderer\Viewport.h" />
-    <ClInclude Include="Include\Renderer\Window.h" />
+    <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

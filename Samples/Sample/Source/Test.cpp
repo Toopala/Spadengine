@@ -3,9 +3,6 @@
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Pipeline.h"
-#include "Renderer/RenderCommand.h"
-#include "Renderer/RenderData.h"
-#include "Renderer/RenderQueue.h"
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 #include "Renderer/Viewport.h"
@@ -138,45 +135,8 @@ void loadBinaryShader(const std::string& path, std::vector<char>& data)
 	}
 }
 
-sge::RenderCommand createCommand(uint64 data, uint64 fullscreenLayer, uint64 translucent, uint64 viewport, uint64 viewportLayer, uint64 command)
-{
-	sge::RenderCommand com;
-	com.data = data;
-	com.fullscreenLayer = fullscreenLayer;
-	com.translucent = translucent;
-	com.viewport = viewport;
-	com.viewportLayer = viewportLayer;
-	com.command = command;
-
-	return com;
-}
-
 int main(int argc, char** argv)
 {
-	sge::RenderQueue queue;
-
-	queue.begin();
-
-	queue.push(createCommand(124124123, 0, 0, 0, 0, 0), nullptr);
-	queue.push(createCommand(124123, 1, 0, 0, 0, 1), nullptr);
-	queue.push(createCommand(124124123, 3, 0, 0, 0, 1), nullptr);
-	queue.push(createCommand(112623123, 2, 0, 0, 0, 0), nullptr);
-	queue.push(createCommand(75673452146356345, 1, 0, 0, 0, 1), nullptr);
-	queue.push(createCommand(75675, 0, 0, 0, 0, 0), nullptr);
-	queue.end();
-
-	queue.sort();
-
-	sge::Queue comQueue = queue.getQueue();
-
-	for (auto command : comQueue)
-	{
-		sge::RenderCommand vittu;
-		vittu.bits = command.first;
-
-		std::cout << "COMMAND: " << vittu.fullscreenLayer << " " << vittu.data << " " << command.second << std::endl;
-	}
-
 	SDL_Init(SDL_INIT_VIDEO);
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);

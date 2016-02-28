@@ -1,27 +1,42 @@
 #pragma once
 
-#include <unordered_map>
+#include <vector>
 
+#include "Core/Assert.h"
 #include "Renderer/RenderCommand.h"
 
 namespace sge
 {
 	struct RenderData;
 
-	using Queue = std::unordered_map<uint64, const RenderData*>;
+	// TODO std::pair works but is it the fastest method? 
+	using Queue = std::vector<std::pair<RenderCommand, const RenderData*>>;
 
 	class RenderQueue
 	{
 	public:
+		RenderQueue(size_t size);
+
 		void begin();
 		void end();
-		const Queue& getQueue() { return queue; }
 		void sort();
-		void push(const RenderCommand command, const RenderData* data)
+
+		inline const Queue& getQueue() const
+		{ 
+			return queue; 
+		}
+		
+		inline void push(const RenderCommand command, const RenderData* data)
 		{
-			queue[command.bits] = data;
+			if (!acceptingCommands)
+			{
+				return;
+			}
+
+			queue.emplace_back(std::make_pair(command, data));
 		}
 	private:
 		Queue queue;
+		bool acceptingCommands;
 	};
 }

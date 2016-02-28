@@ -12,5 +12,5 @@ cd ..
 :: Lets create the glsl shaders for the
 
 for %%f in ("./Shaders/Compiled/*") do (
-	.\HLSLcc.exe -lang=300 -in="./Shaders/Compiled/%%~f" -out="./Shaders/Compiled/%%~nf.glsl" -reflect="./Shaders/Compiled/%%~nf.reflect"
+	.\HLSLcc.exe -lang=440 -in="./Shaders/Compiled/%%~f" -out="./Shaders/Compiled/%%~nf.glsl" -reflect="./Shaders/Compiled/%%~nf.reflect"
 )
