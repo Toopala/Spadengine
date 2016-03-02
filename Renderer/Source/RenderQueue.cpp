@@ -26,10 +26,15 @@ namespace sge
 
 	void RenderQueue::sort()
 	{
-		std::sort(queue.begin(), queue.end(), 
+		std::sort(std::begin(queue), std::end(queue), 
 			[](const std::pair<RenderCommand, const RenderData*>& lhs, const std::pair<RenderCommand, const RenderData*>& rhs)
 		{
 			return lhs.first.bits < rhs.first.bits;
 		});
+	}
+
+	void RenderQueue::clear()
+	{
+		queue.clear();
 	}
 }

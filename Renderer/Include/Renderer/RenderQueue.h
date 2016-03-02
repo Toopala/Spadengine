@@ -9,17 +9,19 @@ namespace sge
 {
 	struct RenderData;
 
-	// TODO std::pair works but is it the fastest method? 
-	using Queue = std::vector<std::pair<RenderCommand, const RenderData*>>;
 
 	class RenderQueue
 	{
 	public:
+		// TODO std::pair works but is it the fastest method? 
+		using Queue = std::vector<std::pair<RenderCommand, const RenderData*>>;
+
 		RenderQueue(size_t size);
 
 		void begin();
 		void end();
 		void sort();
+		void clear();
 
 		inline const Queue& getQueue() const
 		{ 
