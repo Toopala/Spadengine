@@ -90,29 +90,28 @@ int main(int argc, char** argv)
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::Renderer renderer(window);
+
+	renderer.init();
+
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
 #ifdef DIRECTX11
-	loadBinaryShader("../Assets/Shaders/SimpleVertexShader.cso", vShaderData);
-	loadBinaryShader("../Assets/Shaders/SimplePixelShader.cso", pShaderData);
+	loadBinaryShader("../../Shaders/Compiled/SimpleVertexShader.cso", vShaderData);
+	loadBinaryShader("../../Shaders/Compiled/SimplePixelShader.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("../Assets/Shaders/SimpleVertexShader.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/SimplePixelShader.glsl", pShaderData);
+	loadTextShader("../../Shaders/Compiled/SimpleVertexShader.glsl", vShaderData);
+	loadTextShader("../../Shaders/Compiled/SimplePixelShader.glsl", pShaderData);
 #endif
 
 	// TODO add uniform buffers so you can use one vertex data for multiple primitives.
+	float width = 256.0f;
+	float height = 256.0f;
 
 	float vertexData[] = {
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-	};
-
-	float vertexData2[] = {
-		0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		0.0f, height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		width, -height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 	};
 
 	// TODO load layout description from external file (shader.reflect).
@@ -135,8 +134,6 @@ int main(int argc, char** argv)
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
 	sge::Buffer* vertexBuffer = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
-	sge::Buffer* vertexBuffer2 = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData2));
-
 
 	renderer.getDevice().bindViewport(&viewport);
 	renderer.getDevice().bindPipeline(pipeline);
@@ -144,21 +141,21 @@ int main(int argc, char** argv)
 	renderer.getDevice().bindVertexBuffer(vertexBuffer);
 	renderer.getDevice().copyData(vertexBuffer, sizeof(vertexData), vertexData);
 
-	renderer.getDevice().bindVertexBuffer(vertexBuffer2);
-	renderer.getDevice().copyData(vertexBuffer2, sizeof(vertexData2), vertexData2);
-
 
 	// TODO plan a simple (and smart) way to generate these commands.
 	// Maybe we could generate it directly from renderdata?
+	// These draw the triangle described in the vertex buffer to a given destination.
 
 	sge::RenderData renderData;
 	sge::RenderData renderData2;
 
 	renderData.buffers.emplace_back(vertexBuffer);
 	renderData.count = 3;
+	renderData.pos = { 1280.0f/2, 720.0f/2, 0.0f };
 
-	renderData2.buffers.emplace_back(vertexBuffer2);
+	renderData2.buffers.emplace_back(vertexBuffer);
 	renderData2.count = 3;
+	renderData2.pos = { 256.0f, 256.0f, 0.0f };
 
 	// Loop
 	SDL_Event event;
@@ -196,12 +193,13 @@ int main(int argc, char** argv)
 	renderer.getDevice().debindPipeline(pipeline);
 
 	renderer.getDevice().deleteBuffer(vertexBuffer);
-	renderer.getDevice().deleteBuffer(vertexBuffer2);
 
 	renderer.getDevice().deleteShader(vertexShader);
 	renderer.getDevice().deleteShader(pixelShader);
 
 	renderer.getDevice().deletePipeline(pipeline);
+
+	renderer.deinit();
 
 	SDL_Quit();
 

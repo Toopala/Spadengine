@@ -1,4 +1,5 @@
 
+#include "Renderer/Buffer.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderData.h"
@@ -8,18 +9,36 @@ namespace sge
 {
 	Renderer::Renderer(Window& window) :
 		device(nullptr),
-		queue(queueSize)
+		queue(queueSize),
+		uniformBuffer(nullptr),
+		PV(1.0f)
 	{
 		device = new GraphicsDevice(window);
 
-		device->init();
+		
 	}
 
 	Renderer::~Renderer()
 	{
-		device->deinit();
-
 		delete device;
+	}
+
+	void Renderer::init()
+	{
+		device->init();
+
+		// TODO hax these matrices shouldn't be here.
+		// Also fixed window size is no good.
+		PV = math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
+
+		// TODO hax size should be something nicer. Now this only supports one matrix.
+		uniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(PV));
+	}
+
+	void Renderer::deinit()
+	{
+		device->deleteBuffer(uniformBuffer);
+		device->deinit();
 	}
 
 	void Renderer::begin()
@@ -33,10 +52,16 @@ namespace sge
 
 		device->clear(1.0f, 0.0f, 0.2f, 1.0f);
 
-		for (auto command : queue.getQueue())
+		// TODO hax bind uniform buffer and copy data. HIGHLY INEFFECTIVE!
+		device->bindVertexUniformBuffer(uniformBuffer, 0);
+		math::mat4 model;
+
+		for (auto& command : queue.getQueue())
 		{
 			// TODO hax bind vertex buffer.
 			device->bindVertexBuffer(command.second->buffers[0]);
+
+			device->copyData(uniformBuffer, sizeof(model), &(PV * math::translate(math::mat4(1.0f), command.second->pos)));
 
 			// TODO hax draw to screen.
 			device->draw(command.second->count);

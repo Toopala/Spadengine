@@ -15,6 +15,9 @@ namespace sge
 		Renderer(Window& window);
 		~Renderer();
 
+		void init();
+		void deinit();
+
 		GraphicsDevice& getDevice() const { return *device; }
 
 		inline void pushCommand(const RenderCommand command, const RenderData* data)
@@ -32,6 +35,7 @@ namespace sge
 		const size_t queueSize = 1000;
 
 		// TODO hax.
+		Buffer* uniformBuffer;
 		math::mat4 PV;
 	};
 }

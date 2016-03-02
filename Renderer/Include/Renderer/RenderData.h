@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Math.h"
+
 namespace sge
 {
 	struct Buffer;
@@ -11,5 +13,8 @@ namespace sge
 
 		std::vector<Buffer*> buffers;
 		size_t count;
+
+		// TODO need a smarter and more generic way to pass this data.
+		math::vec3 pos;
 	};
 }
