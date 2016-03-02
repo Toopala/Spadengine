@@ -5,12 +5,14 @@
 
 #include "SDL2/SDL.h"
 
+#include "Core/Math.h"
 #include "Core/Types.h"
 
 #include "Renderer/Buffer.h"
 #include "Renderer/Enumerations.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Pipeline.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/RenderData.h"
 #include "Renderer/RenderQueue.h"
@@ -87,10 +89,7 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-	sge::GraphicsDevice device(window);
-
-	device.init();
-
+	sge::Renderer renderer(window);
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
@@ -102,11 +101,21 @@ int main(int argc, char** argv)
 	loadTextShader("../Assets/Shaders/SimplePixelShader.glsl", pShaderData);
 #endif
 
+	// TODO add uniform buffers so you can use one vertex data for multiple primitives.
+
 	float vertexData[] = {
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f,
 		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 	};
+
+	float vertexData2[] = {
+		0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-0.5f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-0.5f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+
+	// TODO load layout description from external file (shader.reflect).
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 2,
 	{
@@ -114,25 +123,42 @@ int main(int argc, char** argv)
 		{ 0, 4, sge::VertexSemantic::COLOR }
 	}};
 
-	sge::Shader* vertexShader = device.createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	sge::Shader* pixelShader = device.createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	// TODO move shader, pipeline, buffer and texture creation to somewhere else.
+	// PLAN CAREFULLY.
 
-	sge::Pipeline* pipeline = device.createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	// What if render material had pipeline? And using material would bind it.
+
+	sge::Shader* vertexShader = renderer.getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	sge::Shader* pixelShader = renderer.getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+
+	sge::Pipeline* pipeline = renderer.getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-	sge::Buffer* vertexBuffer = device.createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	sge::Buffer* vertexBuffer = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	sge::Buffer* vertexBuffer2 = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData2));
 
-	device.bindViewport(&viewport);
-	device.bindPipeline(pipeline);
 
-	device.bindVertexBuffer(vertexBuffer);
-	device.copyData(vertexBuffer, sizeof(vertexData), vertexData);
+	renderer.getDevice().bindViewport(&viewport);
+	renderer.getDevice().bindPipeline(pipeline);
+
+	renderer.getDevice().bindVertexBuffer(vertexBuffer);
+	renderer.getDevice().copyData(vertexBuffer, sizeof(vertexData), vertexData);
+
+	renderer.getDevice().bindVertexBuffer(vertexBuffer2);
+	renderer.getDevice().copyData(vertexBuffer2, sizeof(vertexData2), vertexData2);
+
+
+	// TODO plan a simple (and smart) way to generate these commands.
+	// Maybe we could generate it directly from renderdata?
 
 	sge::RenderData renderData;
-	sge::RenderCommand renderCommand = createCommand(0, 0, 0, 0, 0, 0);
-	sge::RenderQueue renderQueue(1000);
+	sge::RenderData renderData2;
 
 	renderData.buffers.emplace_back(vertexBuffer);
+	renderData.count = 3;
+
+	renderData2.buffers.emplace_back(vertexBuffer2);
+	renderData2.count = 3;
 
 	// Loop
 	SDL_Event event;
@@ -158,31 +184,24 @@ int main(int argc, char** argv)
 		}
 
 		// Rendering
+		renderer.begin();
 
-		device.clear(0.5f, 0.0f, 0.5f, 1.0f);
+		renderer.pushCommand(createCommand(0, 0, 0, 0, 0, 0), &renderData);
+		renderer.pushCommand(createCommand(0, 1, 0, 0, 0, 0), &renderData2);
 
-		renderQueue.begin();
-
-		renderQueue.push(renderCommand, &renderData);
-
-		renderQueue.sort();
-
-		device.draw(3);
-
-		device.swap();
+		renderer.end();
 	}
 
 	// Deinit
+	renderer.getDevice().debindPipeline(pipeline);
 
-	device.debindPipeline(pipeline);
+	renderer.getDevice().deleteBuffer(vertexBuffer);
+	renderer.getDevice().deleteBuffer(vertexBuffer2);
 
-	device.deleteBuffer(vertexBuffer);
+	renderer.getDevice().deleteShader(vertexShader);
+	renderer.getDevice().deleteShader(pixelShader);
 
-	device.deleteShader(vertexShader);
-	device.deleteShader(pixelShader);
-
-	device.deletePipeline(pipeline);
-	device.deinit();
+	renderer.getDevice().deletePipeline(pipeline);
 
 	SDL_Quit();
 

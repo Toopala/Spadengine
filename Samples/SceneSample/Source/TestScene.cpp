@@ -35,8 +35,8 @@ void TestScene::mouseLook(int mouseX, int mouseY)
 
 	float xoffset = mousseX - lastX;
 	float yoffset = lastY - mousseY;
-	lastX = mousseX;
-	lastY = mousseY;
+	lastX = static_cast<float>(mousseX);
+	lastY = static_cast<float>(mousseY);
 
 	float sensitivity = 0.15f;
 	xoffset *= sensitivity;
@@ -107,8 +107,6 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 
 	engine->mouseInput->enableRelativeMousePosition();
 	// Shaders and stuff here
-
-	int w, h, n;
 
 	/*
 	unsigned char* data = stbi_load("../Assets/rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
@@ -184,8 +182,6 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	engine->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
 	engine->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-	SDL_Event event;
-
 	bool running = true;
 
 	alpha = 0.0f;
@@ -233,7 +229,7 @@ void TestScene::update(float step)
 		engine->stop();
 	}
 
-	alpha += 0.005;
+	alpha += 0.005f;
 }
 
 void TestScene::draw()

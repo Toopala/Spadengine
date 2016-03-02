@@ -1,4 +1,5 @@
 #include "Core/Math.h"
+
 #include "Renderer/Enumerations.h"
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
@@ -65,8 +66,8 @@ void mouseLook(int mouseX, int mouseY)
 
 	float xoffset = mousseX - lastX;
 	float yoffset = lastY - mousseY;
-	lastX = mousseX;
-	lastY = mousseY;
+	lastX = static_cast<float>(mousseX);
+	lastY = static_cast<float>(mousseY);
 
 	float sensitivity = 0.15f;
 	xoffset *= sensitivity;
@@ -317,7 +318,7 @@ int main(int argc, char** argv)
 
 		device.swap();
 
-		alpha += 0.005;
+		alpha += 0.005f;
 	}
 
 	device.debindPipeline(pipeline);

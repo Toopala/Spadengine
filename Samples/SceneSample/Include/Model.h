@@ -67,23 +67,27 @@ public:
 	std::vector<unsigned int>* getIndexArray() { return &meshes[0].indices; }
 	sge::Texture* getDiffuseTexture()
 	{ 
-		for (int i = 0; i < meshes[0].textures.size(); i++)
+		for (size_t i = 0; i < meshes[0].textures.size(); i++)
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
 			{
 				return meshes[0].textures[i].getTexture();
 			}
 		}
+
+		return nullptr;
 	}
 	sge::Texture* getNormalTexture()
 	{ 
-		for (int i = 0; i < meshes[0].textures.size(); i++)
+		for (size_t i = 0; i < meshes[0].textures.size(); i++)
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_normal")
 			{
 				return meshes[0].textures[i].getTexture();
 			}
 		}
+
+		return nullptr;
 	}
 
 private:

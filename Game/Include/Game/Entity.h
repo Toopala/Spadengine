@@ -17,7 +17,7 @@ namespace sge
 		{
 			T* foundIt = nullptr;
 
-			for (int i = 0; i < components.size(); i++) // Iterate through the vector
+			for (size_t i = 0; i < components.size(); i++) // Iterate through the vector
 			{
 				foundIt = dynamic_cast<T*>(components[i]); // Casts the found component to its original type
 				

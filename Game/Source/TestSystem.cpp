@@ -15,11 +15,11 @@ namespace sge
 	void TestSystem::update() // Call update on all components governed by this system
 	{
 		system("cls");
-		for (int i = 0; i < comps1.size(); i++)
+		for (size_t i = 0; i < comps1.size(); i++)
 		{
 			comps1[i]->update(); // Uses the virtual update that all components have
 		}
-		for (int i = 0; i < comps2.size(); i++)
+		for (size_t i = 0; i < comps2.size(); i++)
 		{
 			comps2[i]->update(); // Uses the virtual update that all components have
 		}
