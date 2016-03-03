@@ -4,6 +4,7 @@
 #include "Spade/Spade.h"
 #include "Game/Scene.h"
 #include "Core/Math.h"
+#include "Resources/ModelResource.h"
 
 
 	// FORWARD DECLARE
@@ -69,5 +70,7 @@ private:
 	std::vector<Vertex>* vertices;
 	std::vector<unsigned int>* indices;
 	UniformData uniformData;
+
+	sge::ModelResource* model;
 
 };
