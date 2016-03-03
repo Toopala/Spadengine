@@ -64,6 +64,7 @@ solution "Spadengine"
 		files {"../Resources/**.cpp"}
 		includedirs {"../Resources/Include/",
 				"../Core/Include/",
+				"../Renderer/Iclude/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/stb_image/Include/"}
 
