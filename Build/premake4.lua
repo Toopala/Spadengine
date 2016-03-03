@@ -30,8 +30,9 @@ solution "Spadengine"
 		defines {"OPENGL4"}
 		files { "../Renderer/**.cpp" }
 		includedirs { "../Renderer/Include/",	
-				"../Core/Include",
-				"../ThirdParty/glad/Include/" }
+				"../Core/Include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/glm/include/" }
 		links { "SDL2", "glad"}
 
 
@@ -40,6 +41,7 @@ solution "Spadengine"
 		language "C++"
 		files { "../HID/**.cpp" }
 		includedirs {"../HID/Include/",
+				"../Core/Include/",
 				"../ThirdParty/glm/include/" }
 		links { "SDL2" }
 
@@ -55,6 +57,16 @@ solution "Spadengine"
 				"../ThirdParty/SDL/include/" }
 		links { "SDL2", "Core", "HID" }
 
+
+	project "Resources"
+		kind "StaticLib"
+		language "C++"
+		files {"../Resources/**.cpp"}
+		includedirs {"../Resources/Include/",
+				"../Core/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/stb_image/Include/"}
+
 	project "Spade"
 		kind "StaticLib"
 		language "C++"
@@ -62,6 +74,7 @@ solution "Spadengine"
 		includedirs { "../Spade/Include",
 				"../Renderer/Include",
 				"../Game/Include",
+				"../Core/Include",
 				"../ThirdParty/glm/include/",
 				"../HID/Include"}
 		links { "Renderer" }
@@ -73,10 +86,11 @@ solution "Spadengine"
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
 				"../Game/Include/",
+				"../Resources/Include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
-		links { "SDL2", "Core", "Renderer", "glad","dl","assimp" }
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
