@@ -96,3 +96,34 @@ solution "Spadengine"
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
 		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	
+	project "RenderSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/RenderSample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/"}
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	 
+	project "ECSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/RenderSample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/"}
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	
