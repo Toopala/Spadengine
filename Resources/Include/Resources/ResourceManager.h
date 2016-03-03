@@ -7,8 +7,6 @@
 #include "Resources/Handle.h"
 #include "Renderer/GraphicsDevice.h"
 
-// Tästä saa syövän
-
 namespace sge
 {
 	class ResourceManager
@@ -19,36 +17,26 @@ namespace sge
 		~ResourceManager();
 
 		template <class T>
-		Handle<T> load(const std::string &filename)
+		sge::Handle<T> load(const std::string &filename)
 		{
 			if (filename.empty())
 			{
 				std::cout << "Filename cannot be empty! Error loading resource." << std::endl;
-				return Handle<T>();
+				return sge::Handle<T>();
 			}
 
-			Handle<T> handle;
+			sge::Handle<T> handle(this);
 			unsigned int index;
-
-			// TODO STRING HASHING
-			std::unordered_map<std::string, sge::Resource*>::iterator it;
-			it = userData.find(filename);
-
-			if (it != userData.end())
-			{
-				(*it).second->increaseRef();
-
-			}
 
 			T* resource = new T(filename);
 
-			// TODO REFERENCE COUNTING WITH MAP
+			// TODO HANDLE GET RESOURCE
 
 			if (freeSlots.empty())
 			{
 				index = magicNumbers.size();
 				handle.init(index);
-				//	userData.push_back(resource);
+				userData.insert({ filename, resource });
 				magicNumbers.push_back(handle.getMagic());
 			}
 			else
@@ -57,6 +45,17 @@ namespace sge
 				handle.init(index);
 				freeSlots.pop_back();
 				magicNumbers[index] = handle.getMagic();
+			}
+
+			pathVec.push_back(filename);
+			assert(pathVec.at(index) == filename);
+
+			std::unordered_map<std::string, sge::Resource*>::iterator it;
+			it = userData.find(filename);
+
+			if (it != userData.end())
+			{
+				(*it).second->increaseRef();
 			}
 
 			return handle;
@@ -68,16 +67,33 @@ namespace sge
 		{
 			unsigned int index = handle.getIndex();
 
-			// TODO REFERENCE COUNTING WITH MAP
-
-			//assert(index < userData.size());
+			//assert(index < pathVec.size());
 			assert(magicNumbers[index] == handle.getMagic());
 
 			magicNumbers[index] = 0;
 			freeSlots.push_back(index);
 
+			std::unordered_map<std::string, sge::Resource*>::iterator it;
+			std::string filename = pathVec.at(index);
+			it = userData.find(filename);
+
+			if (it != userData.end())
+			{
+				(*it).second->decreaseRef();
+			}
+
 			std::cout << "Handle was released." << std::endl;
 		};
+
+		template <typename T>
+		T* getResource(sge::Handle<T>& handle)
+		{
+			std::string resPath = pathVec.at(handle.getIndex());
+			
+			std::unordered_map<std::string, sge::Resource*>::iterator it;
+			it = userData.find(resPath);
+			return static_cast<T*>((*it).second);
+		}
 
 
 		bool unload(const std::string &filename);
@@ -88,7 +104,7 @@ namespace sge
 
 	private:
 
-		std::unordered_map<std::string, Resource*> userData;
+		std::unordered_map<std::string, sge::Resource*> userData;
 		std::vector<unsigned int> magicNumbers;
 		std::vector<unsigned int> freeSlots;
 		std::vector<std::string> pathVec;

@@ -1,19 +1,21 @@
 #pragma once
-#include "TestComponent.h"
-#include "InputComponent.h"
+#include "Game/System.h"
+#include "Game/Component.h"
+#include "Game/TestComponent.h"
+#include "Game/InputComponent.h"
 #include <vector>
 
 namespace sge
 {
-	class TestSystem // System for testing system-based updating of components
+	class TestSystem : public System // System for testing system-based updating of components
 	{
 	public:
 		TestSystem();
 		~TestSystem();
 
 		void update();
-		void addTestComponent(TestComponent* comp);
-		void addInputComponent(InputComponent* comp);
+	
+		void addComponent(Component* comp);
 
 	private:
 		std::vector<TestComponent*> comps1;

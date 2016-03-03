@@ -11,7 +11,7 @@
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 #include "Resources/ResourceManager.h"
-//#include "Resources/TextureResource.h"
+#include "Resources/TextureResource.h"
 
 #include "stb_image.h"
 
@@ -145,17 +145,34 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	//sge::ResourceManager resMgr;
+	sge::ResourceManager resMgr;
 
-	//sge::Handle<sge::TextureResource> texHandle;
-	//texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
 
-	//texHandle.getResource();
+	sge::Handle<sge::TextureResource> texHandle;
+
+	texHandle = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle2 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle3 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle4 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle5 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle6 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle7 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle8 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle9 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+
+	auto gg = texHandle.getResource<sge::TextureResource>();
+
+
+
 	//device.createTexture(texHandle);
 
-	//resMgr.printResources();
-	//resMgr.release(texHandle);
-	//resMgr.printResources();
+	resMgr.printResources();
+	resMgr.release(texHandle2);
+	resMgr.release(texHandle3);
+	resMgr.release(texHandle4);
+	resMgr.release(texHandle5);
+	resMgr.release(texHandle6);
+	resMgr.printResources();
 
 	// --------------
 

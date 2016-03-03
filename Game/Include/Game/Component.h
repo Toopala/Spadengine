@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 
 namespace sge
 {
@@ -20,7 +20,7 @@ namespace sge
 
 	private:
 		Entity* parent;
-		
+		static std::string id;
 	};
 }
 

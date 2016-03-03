@@ -83,6 +83,7 @@
     <ClCompile Include="Source\InputComponent.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\System.cpp" />
     <ClCompile Include="Source\SystemManager.cpp" />
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="Include\Game\InputComponent.h" />
     <ClInclude Include="Include\Game\SceneManager.h" />
     <ClInclude Include="Include\Game\EventManager.h" />
+    <ClInclude Include="Include\Game\System.h" />
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />
     <ClInclude Include="Include\Game\TestSystem.h" />

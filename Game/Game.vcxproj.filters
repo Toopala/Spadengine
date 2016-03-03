@@ -34,6 +34,9 @@
     <ClCompile Include="Source\EventManager.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
+    <ClCompile Include="Source\System.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h">
@@ -68,6 +71,9 @@
     </ClInclude>
     <ClInclude Include="Include\Game\SceneManager.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\System.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
