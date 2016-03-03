@@ -3,7 +3,7 @@
 namespace sge
 {
 
-	TestSystem::TestSystem()
+	TestSystem::TestSystem() : System()
 	{
 	}
 
@@ -25,14 +25,17 @@ namespace sge
 		}
 	}
 
-	void TestSystem::addTestComponent(TestComponent* comp)
+	void TestSystem::addComponent(Component* comp)
 	{
-		comps1.push_back(comp); // Adds a component to the system's container
-	}
+		if (typeid(*comp) == typeid(TestComponent))
+		{
+			comps1.push_back(dynamic_cast<TestComponent*>(comp));
+		}
 
-	void TestSystem::addInputComponent(InputComponent* comp)
-	{
-		comps2.push_back(comp); // Adds a component to the system's container
+		if (typeid(*comp) == typeid(InputComponent))
+		{
+			comps2.push_back(dynamic_cast<InputComponent*>(comp));
+		}
 	}
 
 }
