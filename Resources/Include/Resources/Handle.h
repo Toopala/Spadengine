@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include "Resources/ResourceManager.h"
 
 namespace sge
 {
@@ -29,11 +30,16 @@ namespace sge
 		unsigned int m_Handle;
 		} TOINENVITTU;
 
+		ResourceManager* refManager;
 	public:
-
+		template <typename T>
+		T* getResource() {
+			return static_cast<T*>(refManager->getResource<T>(*this));
+		}
 		// Creation sets the handle to null for error check purposes.
 		// Handle needs to be initialized before it can be properly used.
-		Handle() {TOINENVITTU.m_Handle = 0;}
+		Handle() : refManager(nullptr) { TOINENVITTU.m_Handle = 0; }
+		Handle(ResourceManager* refManager) : refManager(refManager) { TOINENVITTU.m_Handle = 0; }
 		void init(unsigned int index);
 
 		// Methods for managing our Handle
@@ -78,4 +84,7 @@ namespace sge
 	{
 		return (h1.GetHandle() == h2.GetHandle());
 	}
+
+	// ----------------------------------------------------
+	// Retrieving resource
 }
