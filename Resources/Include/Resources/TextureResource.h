@@ -2,8 +2,6 @@
 #include "Resources/Resource.h"
 #include "Core/Math.h"
 
-#include "stb_image.h"
-
 namespace sge
 {
 	class TextureResource : public sge::Resource

@@ -9,6 +9,7 @@ namespace sge
 {
 	class GraphicsDevice;
 	class Window;
+	struct Buffer;
 
 	class Renderer
 	{

@@ -11,7 +11,7 @@
 #include "Game/EntityManager.h"
 #include "Core/Memory/PagePoolAllocator.h"
 #include "Resources/ResourceManager.h"
-#include "Resources/TextureResource.h"
+//#include "Resources/TextureResource.h"
 
 #include "stb_image.h"
 
@@ -145,17 +145,17 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	sge::ResourceManager resMgr;
+	//sge::ResourceManager resMgr;
 
-	sge::Handle<sge::TextureResource> texHandle;
-	texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
+	//sge::Handle<sge::TextureResource> texHandle;
+	//texHandle = resMgr.load<sge::TextureResource>("Assets/spade.png");
 
 	//texHandle.getResource();
 	//device.createTexture(texHandle);
 
-	resMgr.printResources();
-	resMgr.release(texHandle);
-	resMgr.printResources();
+	//resMgr.printResources();
+	//resMgr.release(texHandle);
+	//resMgr.printResources();
 
 	// --------------
 
@@ -313,8 +313,6 @@ int main(int argc, char** argv)
 
 			accumulator -= step;
 		}
-
-		uniformData.M = sge::math::rotate(uniformData.M, angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		device.copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
