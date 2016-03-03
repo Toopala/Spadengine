@@ -21,6 +21,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer/Texture.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/GraphicsDevice.h"
 
 namespace sge
 {
@@ -63,6 +65,11 @@ namespace sge
 		}
 		~ModelResource();
 
+		void setRenderer(Renderer* renderer)
+		{
+			this->renderer = renderer;
+		}
+
 		std::vector<Vertex>* getVerticeArray(){ return &meshes[0].vertices; }
 		std::vector<unsigned int>* getIndexArray() { return &meshes[0].indices; }
 		sge::Texture* getDiffuseTexture()
@@ -71,7 +78,7 @@ namespace sge
 			{
 				if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
 				{
-					
+					return renderer->getDevice().createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 					//return meshes[0].textures[i].getTexture();
 				}
 			}
@@ -84,7 +91,7 @@ namespace sge
 			{
 				if (meshes[0].textures[i].getTypeName() == "texture_normal")
 				{
-
+					return renderer->getDevice().createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 					//return meshes[0].textures[i].getTexture();
 				}
 			}
@@ -93,6 +100,7 @@ namespace sge
 		}
 
 	private:
+		Renderer* renderer;
 		/*  Model Data  */
 		std::vector<Mesh> meshes;
 		std::string directory;

@@ -141,6 +141,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	//Assimp test
 	sge::Handle <sge::ModelResource> modelHandle;
 	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	modelHandle.getResource()->setRenderer(engine->getRenderer());
 	
 	vertices = modelHandle.getResource()->getVerticeArray();
 	indices = modelHandle.getResource()->getIndexArray();

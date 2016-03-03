@@ -34,6 +34,11 @@ namespace sge
 			return resourceManager;
 		}
 
+		Renderer* getRenderer()
+		{
+			return renderer;
+		}
+
 		const float getStep() const
 		{
 			return step;
