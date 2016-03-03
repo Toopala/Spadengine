@@ -1,5 +1,6 @@
 #include "Game/EntityManager.h"
 #include <iostream>
+#include <typeinfo>
 namespace sge
 {
 	EntityManager::EntityManager()
@@ -24,8 +25,14 @@ namespace sge
 		return actor;
 	}
 
+	void EntityManager::setManager(SystemManager* sysMgr)
+	{
+		sysManager = sysMgr;
+	}
+
 	void EntityManager::setComponent(Entity* ent, Component* comp)
 	{
 		ent->setComponent(comp);
+		sysManager->addToSystem(comp);
 	}
 }
