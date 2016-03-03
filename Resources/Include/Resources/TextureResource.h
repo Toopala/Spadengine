@@ -12,9 +12,8 @@ namespace sge
 		TextureResource(const std::string& resourcePath);
 		~TextureResource();
 
-		void bind();
+		unsigned char* getData();
 		sge::math::ivec2 getSize();
-
 		std::string getTypeName();
 		void setTypename(const std::string& typeName);
 
