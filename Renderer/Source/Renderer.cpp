@@ -8,13 +8,12 @@
 namespace sge
 {
 	Renderer::Renderer(Window& window) :
-		device(nullptr),
 		queue(queueSize),
 		uniformBuffer(nullptr),
 		PV(1.0f)
 	{
 		device = new GraphicsDevice(window);
-
+		device->init();
 		
 	}
 

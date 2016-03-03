@@ -106,16 +106,6 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	mouseY = 0;
 
 	engine->mouseInput->enableRelativeMousePosition();
-	// Shaders and stuff here
-
-	/*
-	unsigned char* data = stbi_load("../Assets/rockwall_diffuse_map.png", &w, &h, &n, STBI_rgb_alpha);
-
-	std::cout << "Opened image rockwall_diffuse_map.png: " << w << "x" << h << " and something like " << n << std::endl;
-
-	unsigned char* data2 = stbi_load("../Assets/rockwall_normal_map.png", &w, &h, &n, STBI_rgb_alpha);
-
-	std::cout << "Opened image rockwall_normal_map.png: " << w << "x" << h << " and something like " << n << std::endl;*/
 
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
@@ -159,12 +149,6 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 
 	vertices = model->getVerticeArray();
 	indices = model->getIndexArray();
-
-	//texture = engine->getDevice().createTexture(w, h, data);
-	//texture2 = engine->getDevice().createTexture(w, h, data2);
-	//
-	//stbi_image_free(data);
-	//stbi_image_free(data2);
 
 	texture = model->getDiffuseTexture();
 	texture2 = model->getNormalTexture();
