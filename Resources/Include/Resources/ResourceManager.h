@@ -28,7 +28,7 @@ namespace sge
 			unsigned int index;
 
 			// TODO STRING HASHING
-			std::unordered_map<std::string, Resource*>::iterator it;
+			std::unordered_map<std::string, sge::Resource*>::iterator it;
 			it = userData.find(filename);
 
 			if (it != userData.end())
@@ -85,6 +85,7 @@ namespace sge
 		std::unordered_map<std::string, Resource*> userData;
 		std::vector<unsigned int> magicNumbers;
 		std::vector<unsigned int> freeSlots;
+		std::vector<std::string> pathVec;
 
 		void releaseAll();
 
