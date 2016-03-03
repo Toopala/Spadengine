@@ -2,14 +2,14 @@
 
 namespace sge
 {
-	Resource::Resource(const std::string& resourcePath)
+	sge::Resource::Resource(const std::string& resourcePath)
 	{
 		this->resourcePath = resourcePath;
 		references = 0;
 	}
 
 
-	Resource::~Resource()
+	sge::Resource::~Resource()
 	{
 	}
 
