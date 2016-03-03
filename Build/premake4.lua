@@ -72,12 +72,13 @@ solution "Spadengine"
 		kind "StaticLib"
 		language "C++"
 		files { "../Spade/**.cpp" }
-		includedirs { "../Spade/Include",
-				"../Renderer/Include",
-				"../Game/Include",
-				"../Core/Include",
+		includedirs { "../Spade/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Core/Include/",
+				"../Resources/Include/",
 				"../ThirdParty/glm/include/",
-				"../HID/Include"}
+				"../HID/Include/"}
 		links { "Renderer" }
 
 	project "Sample"
