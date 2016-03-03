@@ -95,7 +95,6 @@
     <ClCompile Include="Source\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Model.h" />
     <ClInclude Include="Include\TestScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

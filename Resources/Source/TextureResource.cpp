@@ -1,4 +1,5 @@
 #include "Resources/TextureResource.h"
+#include "stb_image.h"
 
 namespace sge
 {

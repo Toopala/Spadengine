@@ -7,14 +7,14 @@
 #include <sstream>
 #include <algorithm>
 
-#include "Model.h"
-
 #include "Renderer/Enumerations.h"
 #include "Renderer/Window.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Pipeline.h"
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
+
+#include "Resources/Handle.h"
 
 //--------------------------------
 // Copied functions
@@ -139,10 +139,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	uniformData.PV = P * V;
 
 	//Assimp test
-	Model* model = new Model("../Assets/suzanne.dae", engine);
-
-	vertices = model->getVerticeArray();
-	indices = model->getIndexArray();
+	sge::Handle <sge::ModelResource> modelHandle;
+	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	
+	vertices = modelHandle.getResource()->getVerticeArray();
+	indices = modelHandle.getResource()->getIndexArray();
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -153,8 +154,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	vertexShader = engine->getResourceManager->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = engine->getResourceManager->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
 	//texture = engine->getDevice().createTexture(w, h, data);
 	//texture2 = engine->getDevice().createTexture(w, h, data2);
@@ -162,25 +163,25 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	//stbi_image_free(data);
 	//stbi_image_free(data2);
 
-	texture = model->getDiffuseTexture();
-	texture2 = model->getNormalTexture();
+	texture = modelHandle.getResource()->getDiffuseTexture();
+	texture2 = modelHandle.getResource()->getNormalTexture();
 
-	pipeline = engine->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	pipeline = engine->getResourceManager->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
 
-	vertexBuffer = engine->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
-	uniformBuffer = engine->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
+	vertexBuffer = engine->getResourceManager->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(modelHandle.getResource()->Vertex) * vertices->size());
+	uniformBuffer = engine->getResourceManager->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
-	engine->getDevice().bindViewport(&viewport);
-	engine->getDevice().bindPipeline(pipeline);
+	engine->getResourceManager->getDevice().bindViewport(&viewport);
+	engine->getResourceManager->getDevice().bindPipeline(pipeline);
 
-	engine->getDevice().bindVertexBuffer(vertexBuffer);
-	engine->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
-	engine->getDevice().bindTexture(texture, 0);
-	engine->getDevice().bindTexture(texture2, 1);
+	engine->getResourceManager->getDevice().bindVertexBuffer(vertexBuffer);
+	engine->getResourceManager->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
+	engine->getResourceManager->getDevice().bindTexture(texture, 0);
+	engine->getResourceManager->getDevice().bindTexture(texture2, 1);
 
-	engine->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
-	engine->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getResourceManager->getDevice().copyData(vertexBuffer, sizeof(modelHandle.getResource()->Vertex) * vertices->size(), vertices->data());
+	engine->getResourceManager->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	bool running = true;
 
@@ -193,17 +194,17 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 TestScene::~TestScene()
 {
 	std::cout << "test scene terminator says hello" << std::endl;
-	engine->getDevice().debindPipeline(pipeline);
+	engine->getResourceManager->getDevice().debindPipeline(pipeline);
 
-	engine->getDevice().deleteBuffer(vertexBuffer);
-	engine->getDevice().deleteBuffer(uniformBuffer);
+	engine->getResourceManager->getDevice().deleteBuffer(vertexBuffer);
+	engine->getResourceManager->getDevice().deleteBuffer(uniformBuffer);
 
-	engine->getDevice().deleteShader(vertexShader);
-	engine->getDevice().deleteShader(pixelShader);
-	engine->getDevice().deleteTexture(texture);
-	engine->getDevice().deleteTexture(texture2);
+	engine->getResourceManager->getDevice().deleteShader(vertexShader);
+	engine->getResourceManager->getDevice().deleteShader(pixelShader);
+	engine->getResourceManager->getDevice().deleteTexture(texture);
+	engine->getResourceManager->getDevice().deleteTexture(texture2);
 
-	engine->getDevice().deletePipeline(pipeline);
+	engine->getResourceManager->getDevice().deletePipeline(pipeline);
 }
 
 void TestScene::update(float step)
@@ -234,13 +235,13 @@ void TestScene::update(float step)
 
 void TestScene::draw()
 {
-	engine->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
+	engine->getResourceManager->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	engine->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getResourceManager->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-	engine->getDevice().draw(vertices->size());
+	engine->getResourceManager->getDevice().draw(vertices->size());
 
-	engine->getDevice().swap();
+	engine->getResourceManager->getDevice().swap();
 }
 
 void TestScene::interpolate(float alpha)
