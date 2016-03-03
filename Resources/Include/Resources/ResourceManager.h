@@ -5,7 +5,6 @@
 #include "Resources/Resource.h"
 #include "Resources/TextureResource.h"
 #include "Resources/Handle.h"
-#include "Renderer/GraphicsDevice.h"
 
 namespace sge
 {
@@ -99,9 +98,6 @@ namespace sge
 		bool unload(const std::string &filename);
 		void printResources();
 
-		void setDevice(GraphicsDevice* device);
-		GraphicsDevice* getDevice();
-
 	private:
 
 		std::unordered_map<std::string, sge::Resource*> userData;
@@ -110,8 +106,6 @@ namespace sge
 		std::vector<std::string> pathVec;
 
 		void releaseAll();
-
-		sge::GraphicsDevice* device;
 
 	};
 }

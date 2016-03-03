@@ -141,10 +141,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	//Assimp test
 	sge::Handle <sge::ModelResource> modelHandle;
 	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	modelHandle.getResource()->setRenderer(engine->getRenderer());
-	
-	vertices = modelHandle.getResource()->getVerticeArray();
-	indices = modelHandle.getResource()->getIndexArray();
+
+	auto model = modelHandle.getResource<sge::ModelResource>();
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -155,8 +153,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getResourceManager->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getResourceManager->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	vertexShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+
+	vertices = model->getVerticeArray();
+	indices = model->getIndexArray();
 
 	//texture = engine->getDevice().createTexture(w, h, data);
 	//texture2 = engine->getDevice().createTexture(w, h, data2);
@@ -164,25 +165,25 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	//stbi_image_free(data);
 	//stbi_image_free(data2);
 
-	texture = modelHandle.getResource()->getDiffuseTexture();
-	texture2 = modelHandle.getResource()->getNormalTexture();
+	texture = model->getDiffuseTexture();
+	texture2 = model->getNormalTexture();
 
-	pipeline = engine->getResourceManager->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	pipeline = engine->getRenderer()->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
 
-	vertexBuffer = engine->getResourceManager->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(modelHandle.getResource()->Vertex) * vertices->size());
-	uniformBuffer = engine->getResourceManager->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
+	vertexBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
+	uniformBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
-	engine->getResourceManager->getDevice().bindViewport(&viewport);
-	engine->getResourceManager->getDevice().bindPipeline(pipeline);
+	engine->getRenderer()->getDevice().bindViewport(&viewport);
+	engine->getRenderer()->getDevice().bindPipeline(pipeline);
 
-	engine->getResourceManager->getDevice().bindVertexBuffer(vertexBuffer);
-	engine->getResourceManager->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
-	engine->getResourceManager->getDevice().bindTexture(texture, 0);
-	engine->getResourceManager->getDevice().bindTexture(texture2, 1);
+	engine->getRenderer()->getDevice().bindVertexBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
+	engine->getRenderer()->getDevice().bindTexture(texture, 0);
+	engine->getRenderer()->getDevice().bindTexture(texture2, 1);
 
-	engine->getResourceManager->getDevice().copyData(vertexBuffer, sizeof(modelHandle.getResource()->Vertex) * vertices->size(), vertices->data());
-	engine->getResourceManager->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getRenderer()->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
+	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	bool running = true;
 
@@ -195,21 +196,21 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 TestScene::~TestScene()
 {
 	std::cout << "test scene terminator says hello" << std::endl;
-	engine->getResourceManager->getDevice().debindPipeline(pipeline);
+	engine->getRenderer()->getDevice().debindPipeline(pipeline);
 
-	engine->getResourceManager->getDevice().deleteBuffer(vertexBuffer);
-	engine->getResourceManager->getDevice().deleteBuffer(uniformBuffer);
+	engine->getRenderer()->getDevice().deleteBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice().deleteBuffer(uniformBuffer);
 
-	engine->getResourceManager->getDevice().deleteShader(vertexShader);
-	engine->getResourceManager->getDevice().deleteShader(pixelShader);
-	engine->getResourceManager->getDevice().deleteTexture(texture);
-	engine->getResourceManager->getDevice().deleteTexture(texture2);
+	engine->getRenderer()->getDevice().deleteShader(vertexShader);
+	engine->getRenderer()->getDevice().deleteShader(pixelShader);
+	engine->getRenderer()->getDevice().deleteTexture(texture);
+	engine->getRenderer()->getDevice().deleteTexture(texture2);
 
-	engine->getResourceManager->getDevice().deletePipeline(pipeline);
+	engine->getRenderer()->getDevice().deletePipeline(pipeline);
 }
 
 void TestScene::update(float step)
-{		
+{
 	if (useMouse)
 	{
 #ifdef _WIN32
@@ -236,13 +237,13 @@ void TestScene::update(float step)
 
 void TestScene::draw()
 {
-	engine->getResourceManager->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
+	engine->getRenderer()->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	engine->getResourceManager->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-	engine->getResourceManager->getDevice().draw(vertices->size());
+	engine->getRenderer()->getDevice().draw(vertices->size());
 
-	engine->getResourceManager->getDevice().swap();
+	engine->getRenderer()->getDevice().swap();
 }
 
 void TestScene::interpolate(float alpha)

@@ -34,14 +34,4 @@ namespace sge
 	{
 
 	}
-
-	void ResourceManager::setDevice(GraphicsDevice* device)
-	{
-		this->device = device;
-	}
-
-	GraphicsDevice* ResourceManager::getDevice()
-	{
-		return device;
-	}
 }

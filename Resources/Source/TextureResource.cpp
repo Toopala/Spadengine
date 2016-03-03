@@ -10,7 +10,7 @@ namespace sge
 
 	TextureResource::~TextureResource()
 	{
-		stbi_image_free(data);
+		//stbi_image_free(data);
 	}
 
 	unsigned char* TextureResource::getData()

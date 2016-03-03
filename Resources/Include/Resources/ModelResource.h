@@ -24,21 +24,21 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/GraphicsDevice.h"
 
+struct Vertex {
+	// Position
+	sge::math::vec3 Position;
+	// Normal
+	sge::math::vec3 Normal;
+	// Position
+	sge::math::vec3 Tangent;
+	// Normal
+	sge::math::vec3 Bitangent;
+	// UV
+	sge::math::vec2 UV;
+};
+
 namespace sge
 {
-	struct Vertex {
-		// Position
-		sge::math::vec3 Position;
-		// Normal
-		sge::math::vec3 Normal;
-		// Position
-		sge::math::vec3 Tangent;
-		// Normal
-		sge::math::vec3 Bitangent;
-		// UV
-		sge::math::vec2 UV;
-	};
-
 	class Mesh {
 	public:
 		/*  Mesh Data  */
@@ -58,6 +58,7 @@ namespace sge
 
 	class ModelResource : public sge::Resource
 	{
+	public:
 		// Constructor, expects a filepath to a 3D model.
 		ModelResource(const std::string& resourcePath) : sge::Resource(resourcePath)
 		{

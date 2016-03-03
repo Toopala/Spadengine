@@ -163,7 +163,6 @@ int main(int argc, char** argv)
 	auto gg = texHandle.getResource<sge::TextureResource>();
 
 
-
 	//device.createTexture(texHandle);
 
 	resMgr.printResources();

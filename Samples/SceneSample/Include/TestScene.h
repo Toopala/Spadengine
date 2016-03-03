@@ -6,7 +6,6 @@
 #include "Core/Math.h"
 #include "Resources/ModelResource.h"
 
-
 	// FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
@@ -54,7 +53,7 @@ private:
 
 	sge::math::mat4 V;
 	sge::math::mat4 P;
-
+	
 	sge::Pipeline* pipeline;
 	sge::Viewport viewport;
 	sge::Buffer* vertexBuffer;

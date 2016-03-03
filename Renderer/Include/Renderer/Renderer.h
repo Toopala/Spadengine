@@ -4,6 +4,7 @@
 
 #include "Core/Math.h"
 #include "Renderer/RenderQueue.h"
+#include "Renderer\GraphicsDevice.h"
 
 namespace sge
 {
