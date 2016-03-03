@@ -33,6 +33,9 @@
     <ClInclude Include="Include\Resources\ModelResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Resources\TextResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Resource.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModelResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TextResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

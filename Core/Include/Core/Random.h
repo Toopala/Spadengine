@@ -3,35 +3,32 @@
 
 namespace sge
 {
-	void randomInitialize() // Initializes with "random" seed
+	void randomInitialize() // Initializes with a "random" seed
 	{
 		srand(time(NULL));
 	}
 
-	void randomInitialize(unsigned int seed) // Initializes with given seed
+	void randomInitialize(const unsigned int &seed) // Initializes with the given seed
 	{
 		srand(seed);
 	}
 
-	int random() // Generates random number
+	int random() // Generates a random number
 	{
 		return rand();
 	}
 
-	int random(int min, int max) // Generates random int from range min-max
+	int random(const int &min, const int &max) // Generates a random integer from range min-max
 	{
 		if (min < max)
 		{
-			return min + rand() % max - min + 1;
+			return min + rand() % (max - min + 1);
 		}
-		else
-		{
-			return max + rand() % min - max + 1;
-		}
+		return max + rand() % (min - max + 1);
 	}
 
 	template <typename T>
-	T random(T min, T max) // Generates random float/double from range min-max
+	T random(const T &min, const T &max) // Generates a random float/double from range min-max
 	{
 		return min + (T(random()) / (T)RAND_MAX * (max - min));
 	}

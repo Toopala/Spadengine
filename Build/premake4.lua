@@ -64,6 +64,7 @@ solution "Spadengine"
 		files {"../Resources/**.cpp"}
 		includedirs {"../Resources/Include/",
 				"../Core/Include/",
+				"../Renderer/Include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/stb_image/Include/"}
 
@@ -71,12 +72,13 @@ solution "Spadengine"
 		kind "StaticLib"
 		language "C++"
 		files { "../Spade/**.cpp" }
-		includedirs { "../Spade/Include",
-				"../Renderer/Include",
-				"../Game/Include",
-				"../Core/Include",
+		includedirs { "../Spade/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Core/Include/",
+				"../Resources/Include/",
 				"../ThirdParty/glm/include/",
-				"../HID/Include"}
+				"../HID/Include/"}
 		links { "Renderer" }
 
 	project "Sample"
@@ -94,3 +96,34 @@ solution "Spadengine"
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
 		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	
+	project "RenderSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/RenderSample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/"}
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	 
+	project "ECSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/RenderSample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/"}
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+	

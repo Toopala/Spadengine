@@ -1,7 +1,7 @@
 #include "Game/EntityManager.h"
 #include "Game/TransformComponent.h"
 #include "Game/TestComponent.h"
-#include "Game/TestSystem.h"
+#include "Game/SystemManager.h"
 #include "SDL2/SDL.h"
 #include "Core/Math.h"
 #include "Renderer/Window.h"
@@ -19,10 +19,12 @@ int main(int argc, char** argv)
 	device.init();
 
 	// Create systems and managers
-
-	sge::TestSystem* testSystem = new sge::TestSystem();
+	
 	sge::EntityManager* EManager = new sge::EntityManager();
+	sge::SystemManager* sysManager = new sge::SystemManager();
+	sysManager->init();
 
+	EManager->setManager(sysManager);
 
 	// Create an entity through the managercheck 
 
@@ -35,14 +37,7 @@ int main(int argc, char** argv)
 	EManager->setComponent(player1, new sge::TestComponent(player1));
 	EManager->setComponent(player2, new sge::TestComponent(player2));
 
-	EManager->setComponent(player1, new sge::InputComponent(player2));
-
-	// Give the testsystem some components to work with
-
-	testSystem->addTestComponent(player1->getComponent<sge::TestComponent>());
-	testSystem->addTestComponent(player2->getComponent<sge::TestComponent>());
-
-	testSystem->addInputComponent(player1->getComponent<sge::InputComponent>());
+	EManager->setComponent(player1, new sge::InputComponent(player1));
 
 	// Looooop
 
@@ -51,7 +46,7 @@ int main(int argc, char** argv)
 	{
 		device.clear(0.5f, 0.0f, 0.7f, 1.0f);
 
-		testSystem->update(); // Updates the testsystem which updates testcomponents
+		sysManager->updateSystems();
 
 		while (SDL_PollEvent(&event)) 
 		{
