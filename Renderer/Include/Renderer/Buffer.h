@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "Renderer/Enumerations.h"
 
 namespace sge

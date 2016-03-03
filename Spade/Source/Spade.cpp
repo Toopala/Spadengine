@@ -1,4 +1,3 @@
-#pragma once
 #include "Spade/Spade.h"
 #include "Game/Scene.h"
 
@@ -30,17 +29,17 @@ namespace sge
 #endif
 
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-		device = new GraphicsDevice(*window);
+		
 		mouseInput = new sge::MouseInput();
 		keyboardInput = new sge::KeyboardInput();
 		gamepadInput = new sge::GamepadInput();
 		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
 		sceneManager = new SceneManager();
+		resourceManager = new ResourceManager();
 	}
 
 	Spade::~Spade()
 	{
-		delete device;
 		delete window;
 	}
 
@@ -48,8 +47,8 @@ namespace sge
 	{
 		std::cout << "Spade init says hello" << std::endl;
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-		device = new GraphicsDevice(*window);		
-		device->init();
+		renderer = new Renderer(*window);
+		resourceManager->setDevice(&renderer->getDevice());
 		step = 1.0f / 60.0f;
 	}
 
@@ -58,7 +57,6 @@ namespace sge
 		std::cout << "Spade quit says hello" << std::endl;
 
 		delete sceneManager;
-		device->deinit();
 		delete mouseInput;
 		delete keyboardInput;
 		delete gamepadInput;
