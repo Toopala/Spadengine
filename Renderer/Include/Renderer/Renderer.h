@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Core/Math.h"
+#include <cstddef>
 
+#include "Core/Math.h"
 #include "Renderer/RenderQueue.h"
 
 namespace sge
@@ -37,5 +38,10 @@ namespace sge
 		// TODO hax.
 		Buffer* uniformBuffer;
 		math::mat4 PV;
+		struct UniformData
+		{
+			math::mat4 MVP;
+			math::vec4 color;
+		} uniformData;
 	};
 }
