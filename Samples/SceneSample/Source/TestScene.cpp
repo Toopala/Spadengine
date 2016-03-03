@@ -143,6 +143,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
 
 	auto model = modelHandle.getResource<sge::ModelResource>();
+	model->setRenderer(engine->getRenderer());
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
