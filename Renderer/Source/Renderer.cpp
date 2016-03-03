@@ -32,7 +32,7 @@ namespace sge
 		PV = math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 
 		// TODO hax size should be something nicer. Now this only supports one matrix.
-		uniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(PV));
+		uniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
 	}
 
 	void Renderer::deinit()
@@ -54,14 +54,16 @@ namespace sge
 
 		// TODO hax bind uniform buffer and copy data. HIGHLY INEFFECTIVE!
 		device->bindVertexUniformBuffer(uniformBuffer, 0);
-		math::mat4 model;
 
 		for (auto& command : queue.getQueue())
 		{
 			// TODO hax bind vertex buffer.
 			device->bindVertexBuffer(command.second->buffers[0]);
 
-			device->copyData(uniformBuffer, sizeof(model), &(PV * math::translate(math::mat4(1.0f), command.second->pos)));
+			uniformData.MVP = PV * math::translate(math::mat4(1.0f), command.second->pos);
+			uniformData.color = command.second->color;
+
+			device->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 			// TODO hax draw to screen.
 			device->draw(command.second->count);

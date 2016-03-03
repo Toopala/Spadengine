@@ -109,17 +109,16 @@ int main(int argc, char** argv)
 	float height = 256.0f;
 
 	float vertexData[] = {
-		0.0f, height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		width, -height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		-width, -height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		0.0f, height, 0.0f,
+		width, -height, 0.0f,
+		-width, -height, 0.0f,
 	};
 
 	// TODO load layout description from external file (shader.reflect).
 
-	sge::VertexLayoutDescription vertexLayoutDescription = { 2,
+	sge::VertexLayoutDescription vertexLayoutDescription = { 1,
 	{
-		{ 0, 3, sge::VertexSemantic::POSITION },
-		{ 0, 4, sge::VertexSemantic::COLOR }
+		{ 0, 3, sge::VertexSemantic::POSITION }
 	}};
 
 	// TODO move shader, pipeline, buffer and texture creation to somewhere else.
@@ -148,14 +147,34 @@ int main(int argc, char** argv)
 
 	sge::RenderData renderData;
 	sge::RenderData renderData2;
+	sge::RenderData renderData3;
+	sge::RenderData renderData4;
+	sge::RenderData renderData5;
 
 	renderData.buffers.emplace_back(vertexBuffer);
 	renderData.count = 3;
 	renderData.pos = { 1280.0f/2, 720.0f/2, 0.0f };
+	renderData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	renderData2.buffers.emplace_back(vertexBuffer);
 	renderData2.count = 3;
 	renderData2.pos = { 256.0f, 256.0f, 0.0f };
+	renderData2.color = { 1.0f, 1.0f, 1.0f, 0.5f };
+
+	renderData3.buffers.emplace_back(vertexBuffer);
+	renderData3.count = 3;
+	renderData3.pos = { 1280.0f / 2, 0.0f, 0.0f };
+	renderData3.color = { 1.0f, 1.0f, 0.0f, 0.4f };
+
+	renderData4.buffers.emplace_back(vertexBuffer);
+	renderData4.count = 3;
+	renderData4.pos = { 512.0f, 256.0f, 0.0f };
+	renderData4.color = { 1.0f, 0.0f, 1.0f, 1.0f };
+
+	renderData5.buffers.emplace_back(vertexBuffer);
+	renderData5.count = 3;
+	renderData5.pos = { 1280.0f/2, 256.0f, 0.0f };
+	renderData5.color = { 1.0f, 0.0f, 0.7f, 0.8f };
 
 	// Loop
 	SDL_Event event;
@@ -184,7 +203,10 @@ int main(int argc, char** argv)
 		renderer.begin();
 
 		renderer.pushCommand(createCommand(0, 0, 0, 0, 0, 0), &renderData);
-		renderer.pushCommand(createCommand(0, 1, 0, 0, 0, 0), &renderData2);
+		renderer.pushCommand(createCommand(4, 0, 0, 0, 0, 0), &renderData2);
+		renderer.pushCommand(createCommand(2, 0, 0, 0, 0, 0), &renderData3);
+		renderer.pushCommand(createCommand(3, 0, 0, 0, 0, 0), &renderData4);
+		renderer.pushCommand(createCommand(1, 0, 0, 0, 0, 0), &renderData5);
 
 		renderer.end();
 	}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "Core/Math.h"
 
 namespace sge
@@ -16,5 +18,6 @@ namespace sge
 
 		// TODO need a smarter and more generic way to pass this data.
 		math::vec3 pos;
+		math::vec4 color;
 	};
 }

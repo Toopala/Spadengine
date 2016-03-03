@@ -1,26 +1,20 @@
 #include "Resources/TextureResource.h"
 
-
 namespace sge
 {
 	TextureResource::TextureResource(const std::string& resourcePath) : sge::Resource(resourcePath)
 	{
 		data = stbi_load(resourcePath.c_str(), &width, &height, &comp, STBI_rgb_alpha);
-	
-		std::cout << "Texture loaded succesfully!" << std::endl;
 	}
-
 
 	TextureResource::~TextureResource()
 	{
 		stbi_image_free(data);
 	}
 
-	void TextureResource::bind()
+	unsigned char* TextureResource::getData()
 	{
-		//device.bindTexture(texture, 0);
-
-		std::cout << "Texture bound succesfully!" << std::endl;
+		return data;
 	}
 
 	sge::math::ivec2 TextureResource::getSize()
@@ -33,8 +27,8 @@ namespace sge
 		return typeName;
 	}
 
-	void TextureResource::setTypename(const std::string& typeName)
+	void TextureResource::setTypename(const std::string& type)
 	{
-		this-> typeName = typeName;
+		typeName = type;
 	}
 }
