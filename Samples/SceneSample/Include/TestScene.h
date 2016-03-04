@@ -8,12 +8,9 @@
 
 	// FORWARD DECLARE
 struct sge::Pipeline;
-struct sge::Buffer;
 struct sge::Viewport;
 struct sge::Shader;
 struct sge::Texture;
-
-struct Vertex;
 
 struct UniformData
 {
@@ -56,7 +53,7 @@ private:
 	
 	sge::Pipeline* pipeline;
 	sge::Viewport viewport;
-	sge::Buffer* vertexBuffer;
+	
 	sge::Buffer* uniformBuffer;
 	sge::Shader* vertexShader;
 	sge::Shader* pixelShader;
@@ -66,8 +63,6 @@ private:
 	glm::vec3 cameraPos;
 	glm::vec3 cameraUp;
 
-	std::vector<Vertex>* vertices;
-	std::vector<unsigned int>* indices;
 	UniformData uniformData;
 
 	sge::ModelResource* model;

@@ -37,6 +37,8 @@ struct Vertex {
 	sge::math::vec2 UV;
 };
 
+struct sge::Buffer;
+
 namespace sge
 {
 	class Mesh {
@@ -54,6 +56,15 @@ namespace sge
 			this->indices = indices;
 			this->textures = textures;
 		}
+
+		sge::Buffer* getVertexBuffer(GraphicsDevice* device)
+		{
+			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * this->vertices.size());
+			device->bindVertexBuffer(vertexBuffer);
+			return vertexBuffer;
+		}
+	private:
+		sge::Buffer* vertexBuffer;
 	};
 
 	class ModelResource : public sge::Resource
@@ -62,37 +73,35 @@ namespace sge
 		// Constructor, expects a filepath to a 3D model.
 		ModelResource(const std::string& resourcePath) : sge::Resource(resourcePath)
 		{
-			this->loadModel(resourcePath);
+			this->resourcePath = resourcePath;
 		}
 		~ModelResource();
 
-		void setRenderer(Renderer* renderer)
-		{
-			this->renderer = renderer;
-		}
+		void activateLoadModel(){ this->loadModel(this->resourcePath); }
 
 		std::vector<Vertex>* getVerticeArray(){ return &meshes[0].vertices; }
 		std::vector<unsigned int>* getIndexArray() { return &meshes[0].indices; }
-		sge::Texture* getDiffuseTexture()
+		
+		sge::Texture* getDiffuseTexture(GraphicsDevice* device)
 		{
 			for (size_t i = 0; i < meshes[0].textures.size(); i++)
 			{
 				if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
 				{
-					return renderer->getDevice().createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+					return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 					//return meshes[0].textures[i].getTexture();
 				}
 			}
 
 			return nullptr;
 		}
-		sge::Texture* getNormalTexture()
+		sge::Texture* getNormalTexture(GraphicsDevice* device)
 		{
 			for (size_t i = 0; i < meshes[0].textures.size(); i++)
 			{
 				if (meshes[0].textures[i].getTypeName() == "texture_normal")
 				{
-					return renderer->getDevice().createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+					return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 					//return meshes[0].textures[i].getTexture();
 				}
 			}
@@ -100,13 +109,16 @@ namespace sge
 			return nullptr;
 		}
 
+		std::vector<Mesh> getMeshes(){ return meshes; }
+
 	private:
-		Renderer* renderer;
 		/*  Model Data  */
 		std::vector<Mesh> meshes;
 		std::string directory;
 		std::vector<sge::TextureResource> textures_loaded; // Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 		
+		std::string resourcePath;
+
 		/*  Functions   */
 		// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 		void loadModel(std::string path)
