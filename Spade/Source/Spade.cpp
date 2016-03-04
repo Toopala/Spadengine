@@ -46,6 +46,7 @@ namespace sge
 		std::cout << "Spade init says hello" << std::endl;
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 		renderer = new Renderer(*window);
+		renderer->init();
 		step = 1.0f / 60.0f;
 	}
 

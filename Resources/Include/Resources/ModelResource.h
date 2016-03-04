@@ -50,21 +50,25 @@ namespace sge
 
 		/*  Functions  */
 		// Constructor
-		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<sge::TextureResource> textures)
+		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<sge::TextureResource> textures, GraphicsDevice* device)
 		{
+			this->device = device;
 			this->vertices = vertices;
 			this->indices = indices;
 			this->textures = textures;
+
+			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * this->vertices.size());
+
 		}
 
-		sge::Buffer* getVertexBuffer(GraphicsDevice* device)
+		sge::Buffer* getVertexBuffer()
 		{
-			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * this->vertices.size());
 			device->bindVertexBuffer(vertexBuffer);
 			return vertexBuffer;
 		}
 	private:
 		sge::Buffer* vertexBuffer;
+		GraphicsDevice* device;
 	};
 
 	class ModelResource : public sge::Resource
@@ -111,12 +115,17 @@ namespace sge
 
 		std::vector<Mesh> getMeshes(){ return meshes; }
 
+		void setDevice(GraphicsDevice* device)
+		{
+			this->device = device;
+		}
+
 	private:
 		/*  Model Data  */
 		std::vector<Mesh> meshes;
 		std::string directory;
 		std::vector<sge::TextureResource> textures_loaded; // Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-		
+		GraphicsDevice* device;
 		std::string resourcePath;
 
 		/*  Functions   */
@@ -148,7 +157,7 @@ namespace sge
 				// The node object only contains indices to index the actual objects in the scene. 
 				// The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-				this->meshes.push_back(this->processMesh(mesh, scene));
+				this->meshes.push_back(*this->processMesh(mesh, scene));
 			}
 			// After we've processed all of the meshes (if any) we then recursively process each of the children nodes
 			for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -158,7 +167,7 @@ namespace sge
 
 		}
 
-		Mesh processMesh(aiMesh* mesh, const aiScene* scene)
+		Mesh* processMesh(aiMesh* mesh, const aiScene* scene)
 		{
 			// Data to fill
 			std::vector<Vertex> vertices;
@@ -226,7 +235,8 @@ namespace sge
 			}
 
 			// Return a mesh object created from the extracted mesh data
-			return Mesh(vertices, indices, textures);
+			Mesh* mosh = new Mesh(vertices, indices, textures, device);
+			return mosh;
 		}
 
 		std::vector<sge::TextureResource> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

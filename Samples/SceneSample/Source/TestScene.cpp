@@ -133,6 +133,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
 
 	model = modelHandle.getResource<sge::ModelResource>();
+	model->setDevice(&engine->getRenderer()->getDevice());
 	model->activateLoadModel();
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
@@ -162,7 +163,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	engine->getRenderer()->getDevice().bindTexture(texture, 0);
 	engine->getRenderer()->getDevice().bindTexture(texture2, 1);
 
-	engine->getRenderer()->getDevice().copyData(model->getMeshes()[0].getVertexBuffer(&engine->getRenderer()->getDevice()), 
+	engine->getRenderer()->getDevice().copyData(model->getMeshes()[0].getVertexBuffer(), 
 		sizeof(Vertex) * model->getVerticeArray()->size(), model->getVerticeArray()->data());
 	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
@@ -179,7 +180,7 @@ TestScene::~TestScene()
 	std::cout << "test scene terminator says hello" << std::endl;
 	engine->getRenderer()->getDevice().debindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().deleteBuffer(model->getMeshes()[0].getVertexBuffer(&engine->getRenderer()->getDevice()));
+	engine->getRenderer()->getDevice().deleteBuffer(model->getMeshes()[0].getVertexBuffer());
 	engine->getRenderer()->getDevice().deleteBuffer(uniformBuffer);
 
 	engine->getRenderer()->getDevice().deleteShader(vertexShader);
