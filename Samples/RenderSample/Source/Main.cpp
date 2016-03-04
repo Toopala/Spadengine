@@ -140,10 +140,15 @@ int main(int argc, char** argv)
 	renderer.getDevice().bindVertexBuffer(vertexBuffer);
 	renderer.getDevice().copyData(vertexBuffer, sizeof(vertexData), vertexData);
 
-
 	// TODO plan a simple (and smart) way to generate these commands.
 	// Maybe we could generate it directly from renderdata?
 	// These draw the triangle described in the vertex buffer to a given destination.
+
+	// RenderData has all the data needed for rendering (d'oh). Vertex data, index data, matrices etc.
+	// But we also have to somehow pass required shaders to renderer. Should this be done via material struct?
+	// Shaders should be delivered so that you can sort the queue by them. This would optimize the drawing a bit
+	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
+	// data, since transparent data should be sorted by their depth.
 
 	sge::RenderData renderData;
 	sge::RenderData renderData2;
@@ -213,12 +218,9 @@ int main(int argc, char** argv)
 
 	// Deinit
 	renderer.getDevice().debindPipeline(pipeline);
-
 	renderer.getDevice().deleteBuffer(vertexBuffer);
-
 	renderer.getDevice().deleteShader(vertexShader);
 	renderer.getDevice().deleteShader(pixelShader);
-
 	renderer.getDevice().deletePipeline(pipeline);
 
 	renderer.deinit();

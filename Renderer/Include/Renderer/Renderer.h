@@ -35,9 +35,8 @@ namespace sge
 		GraphicsDevice* device;
 		RenderQueue queue;
 
-		const size_t queueSize = 1000;
-
 		// TODO hax.
+		const size_t queueSize = 1000;
 		Buffer* uniformBuffer;
 		math::mat4 PV;
 		struct UniformData

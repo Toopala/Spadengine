@@ -1,9 +1,9 @@
 #pragma once
 #include <cassert>
-#include "Resources/ResourceManager.h"
 
 namespace sge
 {
+	class ResourceManager;
 	template <typename TAG>
 	class Handle
 	{

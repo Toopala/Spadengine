@@ -13,8 +13,6 @@ namespace sge
 		PV(1.0f)
 	{
 		device = new GraphicsDevice(window);
-		device->init();
-		
 	}
 
 	Renderer::~Renderer()
@@ -30,7 +28,7 @@ namespace sge
 		// Also fixed window size is no good.
 		PV = math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 
-		// TODO hax size should be something nicer. Now this only supports one matrix.
+		// TODO hax size should be something nicer. Now this only supports one struct.
 		uniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
 	}
 
@@ -51,12 +49,20 @@ namespace sge
 
 		device->clear(1.0f, 0.0f, 0.2f, 1.0f);
 
-		// TODO hax bind uniform buffer and copy data. HIGHLY INEFFECTIVE!
+		// TODO hax bind uniform buffer and copy data. Probably not the best method here.
 		device->bindVertexUniformBuffer(uniformBuffer, 0);
 
 		for (auto& command : queue.getQueue())
 		{
-			// TODO hax bind vertex buffer.
+			// TODO parse this command so renderer has some idea what to do with it.
+			// For example if its a command command ":D" you execute it and if it's
+			// something to render you render it.
+			
+			// TODO some optimization should take place here. Can we combine data 
+			// used by same shaders? For example. RESEARCH NEEDED!
+
+			// TODO hax bind vertex buffer. Now we just bind the first buffer in the list. 
+			// Add more generic system.
 			device->bindVertexBuffer(command.second->buffers[0]);
 
 			uniformData.MVP = PV * math::translate(math::mat4(1.0f), command.second->pos);
