@@ -224,8 +224,8 @@ int main(int argc, char** argv)
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
 		{ 0, 3, sge::VertexSemantic::NORMAL },
-		{ 0, 3, sge::VertexSemantic::TANGENT }, //TODO: FIX
-		{ 0, 3, sge::VertexSemantic::TANGENT }, //TODO: FIX
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 

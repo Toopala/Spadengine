@@ -139,8 +139,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
 		{ 0, 3, sge::VertexSemantic::NORMAL },
-		{ 0, 3, sge::VertexSemantic::TANGENT }, // TODO: FIX
-		{ 0, 3, sge::VertexSemantic::TANGENT }, // TODO: FIX
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
@@ -208,7 +208,7 @@ void TestScene::update(float step)
 		uniformData.PV = P*V;
 	}
 
-	// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
+	// tämä rotate tehdään näin! Muuten tulee salmiakkia.
 	uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.2f, 0.1f));
 
 	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
