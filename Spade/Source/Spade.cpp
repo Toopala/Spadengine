@@ -26,7 +26,16 @@ namespace sge
 #ifdef _DEBUG
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
-#endif		
+#endif
+
+		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
+		
+		mouseInput = new sge::MouseInput();
+		keyboardInput = new sge::KeyboardInput();
+		gamepadInput = new sge::GamepadInput();
+		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
+		sceneManager = new SceneManager();
+		resourceManager = new ResourceManager();
 	}
 
 	Spade::~Spade()
@@ -36,13 +45,6 @@ namespace sge
 
 	void Spade::init()
 	{
-		mouseInput = new sge::MouseInput();
-		keyboardInput = new sge::KeyboardInput();
-		gamepadInput = new sge::GamepadInput();
-		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
-		sceneManager = new SceneManager();
-		resourceManager = new ResourceManager();
-
 		std::cout << "Spade init says hello" << std::endl;
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 		renderer = new Renderer(*window);

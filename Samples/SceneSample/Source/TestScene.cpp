@@ -132,38 +132,42 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	sge::Handle <sge::ModelResource> modelHandle;
 	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
 
-	model = modelHandle.getResource<sge::ModelResource>();
-	model->activateLoadModel();
+	auto model = modelHandle.getResource<sge::ModelResource>();
+	model->setRenderer(engine->getRenderer());
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
 		{ 0, 3, sge::VertexSemantic::NORMAL },
-		{ 0, 3, sge::VertexSemantic::TANGENT },
-		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 3, sge::VertexSemantic::TANGENT }, // TODO: FIX
+		{ 0, 3, sge::VertexSemantic::TANGENT }, // TODO: FIX
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
 	vertexShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	pixelShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	texture = model->getDiffuseTexture(&engine->getRenderer()->getDevice());
-	texture2 = model->getNormalTexture(&engine->getRenderer()->getDevice());
+	vertices = model->getVerticeArray();
+	indices = model->getIndexArray();
+
+	texture = model->getDiffuseTexture();
+	texture2 = model->getNormalTexture();
 
 	pipeline = engine->getRenderer()->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
 
+	vertexBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
 	uniformBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
 	engine->getRenderer()->getDevice().bindViewport(&viewport);
 	engine->getRenderer()->getDevice().bindPipeline(pipeline);
 
+	engine->getRenderer()->getDevice().bindVertexBuffer(vertexBuffer);
 	engine->getRenderer()->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
 	engine->getRenderer()->getDevice().bindTexture(texture, 0);
 	engine->getRenderer()->getDevice().bindTexture(texture2, 1);
 
-	engine->getRenderer()->getDevice().copyData(model->getMeshes()[0].getVertexBuffer(&engine->getRenderer()->getDevice()), 
-		sizeof(Vertex) * model->getVerticeArray()->size(), model->getVerticeArray()->data());
+	engine->getRenderer()->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
 	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	bool running = true;
@@ -179,7 +183,7 @@ TestScene::~TestScene()
 	std::cout << "test scene terminator says hello" << std::endl;
 	engine->getRenderer()->getDevice().debindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().deleteBuffer(model->getMeshes()[0].getVertexBuffer(&engine->getRenderer()->getDevice()));
+	engine->getRenderer()->getDevice().deleteBuffer(vertexBuffer);
 	engine->getRenderer()->getDevice().deleteBuffer(uniformBuffer);
 
 	engine->getRenderer()->getDevice().deleteShader(vertexShader);
@@ -204,7 +208,7 @@ void TestScene::update(float step)
 		uniformData.PV = P*V;
 	}
 
-	// Tämä rotate tehdään näin! Muuten tulee salmiakkia.
+	// Eemeli nyt oikeasti tämä rotate tehdään näin! Muuten tulee salmiakkia.
 	uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.2f, 0.1f));
 
 	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
@@ -222,7 +226,7 @@ void TestScene::draw()
 
 	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-	engine->getRenderer()->getDevice().draw(model->getVerticeArray()->size());
+	engine->getRenderer()->getDevice().draw(vertices->size());
 
 	engine->getRenderer()->getDevice().swap();
 }
