@@ -70,6 +70,7 @@ private:
 	std::vector<unsigned int>* indices;
 	UniformData uniformData;
 
-	sge::ModelResource* model;
+	sge::Handle <sge::ModelResource> modelHandle;
+	sge::Handle <sge::ModelResource> modelHandle2;
 
 };

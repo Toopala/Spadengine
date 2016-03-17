@@ -64,7 +64,10 @@ namespace sge
 		{
 			this->loadModel(resourcePath);
 		}
-		~ModelResource();
+		~ModelResource()
+		{
+			meshes.erase(meshes.begin(), meshes.end());
+		};
 
 		void setRenderer(Renderer* renderer)
 		{

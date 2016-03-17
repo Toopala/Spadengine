@@ -47,6 +47,7 @@ namespace sge
 			}
 
 			pathVec.push_back(filename);
+			// Jos 3d objekti releasattu ja sama objekti ladataan uudestaan, niin kaatuu asserttiin.
 			assert(pathVec.at(index) == filename);
 
 			std::unordered_map<std::string, sge::Resource*>::iterator it;

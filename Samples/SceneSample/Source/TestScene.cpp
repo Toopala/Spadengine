@@ -129,11 +129,41 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	uniformData.PV = P * V;
 
 	//Assimp test
-	sge::Handle <sge::ModelResource> modelHandle;
-	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	
+	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");		
+	modelHandle2 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 
-	auto model = modelHandle.getResource<sge::ModelResource>();
-	model->setRenderer(engine->getRenderer());
+	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());		
+	engine->getResourceManager()->release(modelHandle2);
+
+	//// TODO: FIX resoure manager. (Loading resources broken after releasing resources)
+	//engine->getResourceManager()->release(modelHandle);
+	//engine->getResourceManager()->release(modelHandle2);
+
+	//// TODO: FIX Instanseja tulee lisää...
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+		
+	//engine->getResourceManager()->release(modelHandle);
+
+	//sge::Handle <sge::ModelResource> modelHandle3;
+	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	//sge::Handle <sge::ModelResource> modelHandle4;
+	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	//sge::Handle <sge::ModelResource> modelHandle5;
+	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	//sge::Handle <sge::ModelResource> modelHandle6;
+	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -147,11 +177,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	vertexShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	pixelShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	vertices = model->getVerticeArray();
-	indices = model->getIndexArray();
+	vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
+	indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
 
-	texture = model->getDiffuseTexture();
-	texture2 = model->getNormalTexture();
+	texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
+	texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
 
 	pipeline = engine->getRenderer()->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
