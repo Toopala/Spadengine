@@ -134,8 +134,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle2 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());		
-
-	//// TODO: FIX resoure manager. (Loading resources broken after releasing resources)
+	
+	// DON'T RELEASE HANDLES BEFORE USE
 	//engine->getResourceManager()->release(modelHandle);
 	engine->getResourceManager()->release(modelHandle2);
 
@@ -147,6 +147,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle5 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 	sge::Handle <sge::ModelResource> modelHandle6;
 	modelHandle6 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+
+	engine->getResourceManager()->release(modelHandle3);
+	engine->getResourceManager()->release(modelHandle4);
+	engine->getResourceManager()->release(modelHandle5);
+	engine->getResourceManager()->release(modelHandle6);
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -205,6 +210,8 @@ TestScene::~TestScene()
 	engine->getRenderer()->getDevice().deleteTexture(texture2);
 
 	engine->getRenderer()->getDevice().deletePipeline(pipeline);
+
+	engine->getResourceManager()->release(modelHandle);
 }
 
 void TestScene::update(float step)
