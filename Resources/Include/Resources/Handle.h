@@ -10,24 +10,24 @@ namespace sge
 
 		union
 		{
-		enum BITFIELD
-		{
-			// Sizes to use for bitfields
-			MAX_BITS_INDEX = 16,
-			MAX_BITS_MAGIC = 16,
+			enum BITFIELD
+			{
+				// Sizes to use for bitfields
+				MAX_BITS_INDEX = 16,
+				MAX_BITS_MAGIC = 16,
 
-			// Size to compare against for asserting deferences
-			MAX_INDEX = (1 << MAX_BITS_INDEX) - 1,
-			MAX_MAGIC = (1 << MAX_BITS_MAGIC) - 1,
-		};
+				// Size to compare against for asserting deferences
+				MAX_INDEX = (1 << MAX_BITS_INDEX) - 1,
+				MAX_MAGIC = (1 << MAX_BITS_MAGIC) - 1,
+			};
 
-		struct
-		{
-			unsigned m_Index : MAX_BITS_INDEX;	// Index into resource array
-			unsigned m_Magic : MAX_BITS_MAGIC;	// Magic number to check
-		}MAXBITS;
+			struct
+			{
+				unsigned m_Index : MAX_BITS_INDEX;	// Index into resource array
+				unsigned m_Magic : MAX_BITS_MAGIC;	// Magic number to check
+			}MAXBITS;
 
-		unsigned int m_Handle;
+			unsigned int m_Handle;
 		}HANDLE;
 
 		ResourceManager* refManager;
@@ -38,8 +38,8 @@ namespace sge
 		}
 		// Creation sets the handle to null for error check purposes.
 		// Handle needs to be initialized before it can be properly used.
-		Handle() : refManager(nullptr) {HANDLE.m_Handle = 0; }
-		Handle(ResourceManager* refManager) : refManager(refManager) {HANDLE.m_Handle = 0; }
+		Handle() : refManager(nullptr) { HANDLE.m_Handle = 0; }
+		Handle(ResourceManager* refManager) : refManager(refManager) { HANDLE.m_Handle = 0; }
 		void init(unsigned int index);
 
 		// Methods for managing our Handle
@@ -67,8 +67,8 @@ namespace sge
 			s_AutoMagic = 1;
 		}
 
-		HANDLE.PERKELE.m_Index = index;
-		HANDLE.PERKELE.m_Magic = s_AutoMagic;
+		HANDLE.MAXBITS.m_Index = index;
+		HANDLE.MAXBITS.m_Magic = s_AutoMagic;
 	}
 
 	// ----------------------------------------------------
