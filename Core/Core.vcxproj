@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\PagePoolAllocator.cpp" />
+    <ClCompile Include="Source\Random.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13988EC4-18A8-4AB3-94BF-5BEE73E1EF22}</ProjectGuid>

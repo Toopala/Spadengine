@@ -134,36 +134,24 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle2 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());		
+	
+	// DON'T RELEASE HANDLES BEFORE USE
+	//engine->getResourceManager()->release(modelHandle);
 	engine->getResourceManager()->release(modelHandle2);
 
-	//// TODO: FIX resoure manager. (Loading resources broken after releasing resources)
-	//engine->getResourceManager()->release(modelHandle);
-	//engine->getResourceManager()->release(modelHandle2);
+	sge::Handle <sge::ModelResource> modelHandle3;
+	modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	sge::Handle <sge::ModelResource> modelHandle4;
+	modelHandle4 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	sge::Handle <sge::ModelResource> modelHandle5;
+	modelHandle5 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	sge::Handle <sge::ModelResource> modelHandle6;
+	modelHandle6 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 
-	//// TODO: FIX Instanseja tulee lisää...
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-	//modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
-	//modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
-		
-	//engine->getResourceManager()->release(modelHandle);
-
-	//sge::Handle <sge::ModelResource> modelHandle3;
-	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
-	//sge::Handle <sge::ModelResource> modelHandle4;
-	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
-	//sge::Handle <sge::ModelResource> modelHandle5;
-	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
-	//sge::Handle <sge::ModelResource> modelHandle6;
-	//modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	engine->getResourceManager()->release(modelHandle3);
+	engine->getResourceManager()->release(modelHandle4);
+	engine->getResourceManager()->release(modelHandle5);
+	engine->getResourceManager()->release(modelHandle6);
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -222,6 +210,8 @@ TestScene::~TestScene()
 	engine->getRenderer()->getDevice().deleteTexture(texture2);
 
 	engine->getRenderer()->getDevice().deletePipeline(pipeline);
+
+	engine->getResourceManager()->release(modelHandle);
 }
 
 void TestScene::update(float step)

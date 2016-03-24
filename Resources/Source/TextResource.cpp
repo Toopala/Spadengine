@@ -15,7 +15,8 @@ namespace sge
 
 	TextResource::~TextResource()
 	{
-	
+		FT_Done_FreeType(library);
+		FT_Done_Face(face);
 	}
 
 	// Setters:
