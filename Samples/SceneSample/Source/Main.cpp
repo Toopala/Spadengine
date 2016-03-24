@@ -1,5 +1,6 @@
 #include "Spade/Spade.h"
 #include "TestScene.h"
+#include "BulletTestScene.h"
 
 int main(int argc, char** argv)
 {
