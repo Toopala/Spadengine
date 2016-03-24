@@ -1,12 +1,16 @@
 #include "Game/EntityManager.h"
+#include "Game/SystemManager.h"
+
+#include "Game/Component.h"
+
 #include <iostream>
 #include <typeinfo>
+
 namespace sge
 {
 	EntityManager::EntityManager()
 	{
 	}
-
 
 	EntityManager::~EntityManager()
 	{
@@ -20,15 +24,20 @@ namespace sge
 	Entity* EntityManager::createActor() // Creates an entity with predetermined components.
 	{
 		Entity* actor = new Entity();
-		actor->setComponent(new TransformComponent(actor));
-		std::cout << "Component(s) added." << std::endl;
+		
 		return actor;
 	}
 
-	void EntityManager::setManager(SystemManager* sysMgr)
+	void EntityManager::setSysManager(SystemManager* sysMgr)
 	{
 		sysManager = sysMgr;
 	}
+
+	/*!Brief
+	*	Brief
+	*
+	*	Detailed
+	*/	
 
 	void EntityManager::setComponent(Entity* ent, Component* comp)
 	{
