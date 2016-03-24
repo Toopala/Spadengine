@@ -1,5 +1,8 @@
 #include "Core/Random.h"
 
+
+using namespace sge;
+
 void randomInitialize() // Initializes with a "random" seed
 {
 	srand(time(NULL));
@@ -10,7 +13,7 @@ void randomInitialize(const unsigned int &seed) // Initializes with the given se
 	srand(seed);
 }
 
-int random() // Generates a random number
+int  getRandom() // Generates a random number
 {
 	return rand();
 }
