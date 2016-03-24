@@ -78,12 +78,13 @@
   <ItemGroup>
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
-    <ClCompile Include="Source\EntityFactory.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\InputComponent.cpp" />
+    <ClCompile Include="Source\RenderingComponent.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\SpriteComponent.cpp" />
     <ClCompile Include="Source\System.cpp" />
     <ClCompile Include="Source\SystemManager.cpp" />
     <ClCompile Include="Source\TestComponent.cpp" />
@@ -93,12 +94,13 @@
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
-    <ClInclude Include="Include\Game\EntityFactory.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\RenderingComponent.h" />
     <ClInclude Include="Include\Game\Scene.h" />
     <ClInclude Include="Include\Game\InputComponent.h" />
     <ClInclude Include="Include\Game\SceneManager.h" />
     <ClInclude Include="Include\Game\EventManager.h" />
+    <ClInclude Include="Include\Game\SpriteComponent.h" />
     <ClInclude Include="Include\Game\System.h" />
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />

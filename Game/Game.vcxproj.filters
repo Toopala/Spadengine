@@ -37,9 +37,10 @@
     <ClCompile Include="Source\System.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EntityFactory.cpp">
-      <Filter>Source Files\Factories</Filter>
+    <ClCompile Include="Source\RenderingComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SpriteComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h">
@@ -78,9 +79,10 @@
     <ClInclude Include="Include\Game\System.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\EntityFactory.h">
-      <Filter>Header Files\Factories</Filter>
+    <ClInclude Include="Include\Game\RenderingComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Game\SpriteComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -121,12 +123,6 @@
     </Filter>
     <Filter Include="Header Files\Scenes">
       <UniqueIdentifier>{d64e43d5-35a3-469f-b1f7-9599a3a964de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Factories">
-      <UniqueIdentifier>{14f0b0ed-405b-493b-bf2d-4c01cefca32b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Factories">
-      <UniqueIdentifier>{355eaf2e-1897-40b4-9600-bb44d54ad4b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

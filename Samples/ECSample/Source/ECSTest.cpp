@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 	sge::SystemManager* sysManager = new sge::SystemManager();
 	sysManager->init();
 
-	EManager->setManager(sysManager);
+	EManager->setSysManager(sysManager);
 
 	// Create an entity through the managercheck 
 
