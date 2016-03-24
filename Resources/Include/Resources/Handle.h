@@ -10,7 +10,7 @@ namespace sge
 
 		union
 		{
-		enum VITTU
+		enum BITFIELD
 		{
 			// Sizes to use for bitfields
 			MAX_BITS_INDEX = 16,
@@ -25,10 +25,10 @@ namespace sge
 		{
 			unsigned m_Index : MAX_BITS_INDEX;	// Index into resource array
 			unsigned m_Magic : MAX_BITS_MAGIC;	// Magic number to check
-		}PERKELE;
+		}MAXBITS;
 
 		unsigned int m_Handle;
-		} TOINENVITTU;
+		}HANDLE;
 
 		ResourceManager* refManager;
 	public:
@@ -38,17 +38,17 @@ namespace sge
 		}
 		// Creation sets the handle to null for error check purposes.
 		// Handle needs to be initialized before it can be properly used.
-		Handle() : refManager(nullptr) { TOINENVITTU.m_Handle = 0; }
-		Handle(ResourceManager* refManager) : refManager(refManager) { TOINENVITTU.m_Handle = 0; }
+		Handle() : refManager(nullptr) {HANDLE.m_Handle = 0; }
+		Handle(ResourceManager* refManager) : refManager(refManager) {HANDLE.m_Handle = 0; }
 		void init(unsigned int index);
 
 		// Methods for managing our Handle
-		unsigned int getIndex()		const { return (TOINENVITTU.PERKELE.m_Index); }
-		unsigned int getMagic()		const { return (TOINENVITTU.PERKELE.m_Magic); }
-		unsigned int getHandle()	const { return (TOINENVITTU.m_Handle); }
-		bool isNull()				const { return (!TOINENVITTU.m_Handle); }
+		unsigned int getIndex()		const { return (HANDLE.MAXBITS.m_Index); }
+		unsigned int getMagic()		const { return (HANDLE.MAXBITS.m_Magic); }
+		unsigned int getHandle()	const { return (HANDLE.m_Handle); }
+		bool isNull()				const { return (!HANDLE.m_Handle); }
 
-		operator unsigned int()		const { return(TOINENVITTU.m_Handle); }
+		operator unsigned int()		const { return(HANDLE.m_Handle); }
 	};
 
 	template <typename TAG>
@@ -58,17 +58,17 @@ namespace sge
 		assert(isNull());
 
 		// Check that the index is within allocated range.
-		assert(index <= TOINENVITTU.MAX_INDEX);
+		assert(index <= HANDLE.MAX_INDEX);
 
 		static unsigned int s_AutoMagic = 0;
-		if (++s_AutoMagic > TOINENVITTU.MAX_MAGIC)
+		if (++s_AutoMagic > HANDLE.MAX_MAGIC)
 		{
 			// Value 0 is reserved for Null handle.
 			s_AutoMagic = 1;
 		}
 
-		TOINENVITTU.PERKELE.m_Index = index;
-		TOINENVITTU.PERKELE.m_Magic = s_AutoMagic;
+		HANDLE.PERKELE.m_Index = index;
+		HANDLE.PERKELE.m_Magic = s_AutoMagic;
 	}
 
 	// ----------------------------------------------------

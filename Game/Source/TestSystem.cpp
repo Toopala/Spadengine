@@ -1,4 +1,5 @@
 #include "Game/TestSystem.h"
+#include <typeinfo>
 
 namespace sge
 {
