@@ -45,6 +45,7 @@
     <Import Project="..\..\Config\Properties\Spade.props" />
     <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpDebug.props" />
+    <Import Project="..\..\Config\Properties\bulletphysics.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -90,10 +91,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BulletTestScene.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BulletTestScene.h" />
     <ClInclude Include="Include\TestScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
