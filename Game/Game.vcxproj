@@ -78,6 +78,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\EntityFactory.cpp" />
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\InputComponent.cpp" />
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
+    <ClInclude Include="Include\Game\EntityFactory.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
     <ClInclude Include="Include\Game\Scene.h" />
     <ClInclude Include="Include\Game\InputComponent.h" />
