@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Component.h"
+#include "Core/Math.h"
 
 namespace sge
 {
@@ -11,6 +12,10 @@ namespace sge
 		~TransformComponent();
 
 		void update();
+	private:
+		math::vec3 position;
+		math::vec3 scale;
+		float rotation;
 	};
 
 }

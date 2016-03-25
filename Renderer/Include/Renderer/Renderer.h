@@ -23,9 +23,9 @@ namespace sge
 
 		GraphicsDevice& getDevice() const { return *device; }
 
-		inline void pushCommand(const RenderCommand command, const RenderData* data)
+		inline void pushCommand(const RenderCommand command, const RenderQueue::RenderFunction renderFunction)
 		{
-			queue.push(command, data);
+			queue.push(command, renderFunction);
 		}
 
 		void begin();
@@ -35,14 +35,6 @@ namespace sge
 		GraphicsDevice* device;
 		RenderQueue queue;
 
-		// TODO hax.
 		const size_t queueSize = 1000;
-		Buffer* uniformBuffer;
-		math::mat4 PV;
-		struct UniformData
-		{
-			math::mat4 MVP;
-			math::vec4 color;
-		} uniformData;
 	};
 }
