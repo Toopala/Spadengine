@@ -107,6 +107,8 @@ namespace sge
 			accumulator -= step;
 
 			mouseInput->update();
+			keyboardInput->update();
+			gamepadInput->update();
 		}
 
 		sceneManager->interpolate(accumulator / step);

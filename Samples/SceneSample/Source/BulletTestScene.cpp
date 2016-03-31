@@ -14,6 +14,8 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 
+#include "Core\Random.h"
+
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
 	std::ifstream file;
@@ -253,23 +255,28 @@ BulletTestScene::~BulletTestScene()
 
 void BulletTestScene::update(float step)
 {
+	// TODO: Fix getting stuck.
 	dynamicsWorld->stepSimulation(step, 10);
 
-	fallRigidBody->applyTorque(btVector3(20,20,20));
-
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
+	{
+		int randomx = sge::random(10, 2000);
+		int randomy = sge::random(10, 2000);
+		int randomz = sge::random(10, 2000);
+		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
+		fallRigidBody->applyTorque(btVector3(randomx, randomy, randomz));
+		engine->keyboardInput->releaseKey(sge::KEYBOARD_SPACE);
+	}
 	btTransform trans;
 	fallRigidBody->getMotionState()->getWorldTransform(trans);
 
 	std::cout << "Box height: " << trans.getOrigin().getY() << std::endl;
-
-	// tämä rotate tehdään näin! Muuten tulee salmiakkia.
 	
 	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
 	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 
-	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
-		// Proper way to shutdown the program?
 		engine->stop();
 	}
 }
