@@ -14,7 +14,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 
-#include "Core\Random.h"
+#include "Core/Random.h"
 
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
