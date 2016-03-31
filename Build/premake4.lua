@@ -24,6 +24,12 @@ solution "Spadengine"
 		files {"../ThirdParty/glad/Source/**.c"}
 		includedirs {"../ThirdParty/glad/Include/"}
 	
+	project "freetype"
+		kind "StaticLib"
+		language "C++"
+		files {"../ThirdParty/freetype/include/"}
+
+
 	project "Renderer"
 		kind "StaticLib"
 		language "C++"
@@ -67,7 +73,13 @@ solution "Spadengine"
 				"../Core/Include/",
 				"../Renderer/Include/",
 				"../ThirdParty/glm/include/",
+				"../ThirdParty/freetype/include/",
 				"../ThirdParty/stb_image/Include/"}
+	
+	project "Audio"
+		kind "StaticLib"
+		language "C++"
+
 
 	project "Spade"
 		kind "StaticLib"
@@ -98,21 +110,6 @@ solution "Spadengine"
 				"../Samples/Sample/Include/"}
 		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
 	
-	project "RenderSample"
-		kind "ConsoleApp"
-		language "C++"
-		files {"../Samples/RenderSample/**.cpp"}
-		includedirs {"../Core/Include/",
-				"../Renderer/Include/",
-				"../Game/Include/",
-				"../Resources/Include/",
-				"../ThirdParty/SDL/include/",
-				"../ThirdParty/glm/include/",
-				"../ThirdParty/glad/Include/",
-				"../ThirdParty/stb_image/Include/",
-				"../ThirdParty/assimp/include/"}
-		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
-	 
 	project "ECSample"
 		kind "ConsoleApp"
 		language "C++"
@@ -126,5 +123,21 @@ solution "Spadengine"
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/"}
-		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" , "Game"}
+
+	project "RenderSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/RenderSample/**.cpp"}
+		includedirs {"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/"}
+		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources", "Game" }
+	 
 	
