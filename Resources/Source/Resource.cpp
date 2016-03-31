@@ -10,7 +10,8 @@ namespace sge
 
 
 	sge::Resource::~Resource()
-	{
+	{	
+		std::cout << "Resource was deleted." << std::endl;
 	}
 
 	std::string& Resource::getResourcePath()
