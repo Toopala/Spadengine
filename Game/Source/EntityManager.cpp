@@ -33,12 +33,6 @@ namespace sge
 		sysManager = sysMgr;
 	}
 
-	/*!Brief
-	*	Brief
-	*
-	*	Detailed
-	*/	
-
 	void EntityManager::setComponent(Entity* ent, Component* comp)
 	{
 		ent->setComponent(comp);

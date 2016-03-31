@@ -6,7 +6,7 @@ namespace sge
 
 	SystemManager::SystemManager()
 	{
-		testSys = new TestSystem();
+		
 	}
 
 
@@ -17,7 +17,8 @@ namespace sge
 
 	void SystemManager::init()
 	{
-		
+		testSys = new TestSystem();
+
 		systems.emplace(typeid(TestComponent).hash_code(), testSys);
 		systems.emplace(typeid(InputComponent).hash_code(), testSys);
 	}

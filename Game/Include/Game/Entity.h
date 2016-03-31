@@ -11,23 +11,37 @@ namespace sge
 	public:
 		Entity();
 		~Entity();
-
+		
+		/** \brief Getter function for Components.
+		*
+		* Gets a Component pointer of the called type.
+		* Iterates through the Entity's Component vector dynamic_casting Components to the wanted type.
+		* The loop terminates if a Component is successfully cast.
+		* Returns a nullpointer if a suitable Component isn't found.
+		* \param Pointer to a type of Component.
+		* \return Component pointer of the desired type.
+		*/
 		template<class T>
 		T* getComponent()
 		{
 			T* foundIt = nullptr;
 
-			for (size_t i = 0; i < components.size(); i++) // Iterate through the vector
+			for (size_t i = 0; i < components.size(); i++)
 			{
-				foundIt = dynamic_cast<T*>(components[i]); // Casts the found component to its original type
+				foundIt = dynamic_cast<T*>(components[i]);
 				
-				if (foundIt) // Exit the loop, entities generally only have one component of a type
+				if (foundIt)
 					break;
 			}
 
-			return foundIt; // Return the found component
+			return foundIt;
 		}
 		
+		/** \brief Component Removal function.
+		*
+		* Removes a Component from the Entity's vector by performing satanic rituals.
+		* \param Pointer to a type of Component
+		*/
 		template<class T>
 		void removeComponent() 
 		{
@@ -37,11 +51,17 @@ namespace sge
 					return getComponent<T>();
 				}),
 				components.end());
-		} // Finds and removes the component from the entity's vector
+		}
 		
-		void setComponent(Component* comp); // Called by entitymanager 
+		/** \brief Setter function for Components.
+		*
+		* Pushes a new Component to the back of the Component vector.
+		* \param Pointer to a type of Component.
+		*/
+		void setComponent(Component* comp); 
 
 	private:
-		std::vector<Component*> components; // All the components the entity has are stored in this vector
+		std::vector<Component*> components; ///< Vector of Component pointers
 	};
 }
+
