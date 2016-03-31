@@ -42,8 +42,19 @@ private:
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btRigidBody* fallRigidBody;
 	btRigidBody* groundRigidBody;
+	btRigidBody* wall1RigidBody;
+	btRigidBody* wall2RigidBody;
+	btRigidBody* wall3RigidBody;
+	btRigidBody* wall4RigidBody;
+	btRigidBody* topRigidBody;
 
 	btCollisionShape* groundShape;
+	btCollisionShape* topShape;
+
+	btCollisionShape* wall1Shape;
+	btCollisionShape* wall2Shape;
+	btCollisionShape* wall3Shape;
+	btCollisionShape* wall4Shape;
 
 	btCollisionShape* fallShape;
 
