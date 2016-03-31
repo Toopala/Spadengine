@@ -14,8 +14,6 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexLayout.h"
 
-#include "Resources/Handle.h"
-
 //--------------------------------
 // Copied functions
 
@@ -152,6 +150,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	engine->getResourceManager()->release(modelHandle4);
 	engine->getResourceManager()->release(modelHandle5);
 	engine->getResourceManager()->release(modelHandle6);
+
+	engine->getResourceManager()->printResources();
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{

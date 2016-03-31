@@ -146,8 +146,6 @@ int main(int argc, char** argv)
 	// Resource test
 
 	sge::ResourceManager resMgr;
-
-
 	sge::Handle<sge::TextureResource> texHandle;
 
 	texHandle = resMgr.load<sge::TextureResource>("../Assets/spade.png");

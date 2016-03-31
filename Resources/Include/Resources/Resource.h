@@ -9,7 +9,7 @@ namespace sge
 		friend class ResourceManager;
 	public:
 		Resource(const std::string& resourcePath);
-		~Resource();
+		virtual ~Resource();
 
 		std::string& getResourcePath();
 		int getReferenceCount();

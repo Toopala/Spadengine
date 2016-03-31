@@ -1,20 +1,19 @@
 #pragma once
 
 #include <vector>
-
+#include <functional>
 #include "Core/Assert.h"
 #include "Renderer/RenderCommand.h"
 
 namespace sge
 {
-	struct RenderData;
-
+	class GraphicsDevice;
 
 	class RenderQueue
 	{
 	public:
-		// TODO std::pair works but is it the fastest method? 
-		using Queue = std::vector<std::pair<RenderCommand, const RenderData*>>;
+		using RenderFunction = std::function<void(GraphicsDevice*)>;
+		using Queue = std::vector<std::pair<RenderCommand, RenderFunction>>;
 
 		RenderQueue(size_t size);
 
@@ -28,14 +27,14 @@ namespace sge
 			return queue; 
 		}
 		
-		inline void push(const RenderCommand command, const RenderData* data)
+		inline void push(const RenderCommand command, RenderFunction renderFunction)
 		{
 			if (!acceptingCommands)
 			{
 				return;
 			}
 
-			queue.emplace_back(std::make_pair(command, data));
+			queue.emplace_back(std::make_pair(command, renderFunction));
 		}
 	private:
 		Queue queue;

@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/Component.h"
 #include "Renderer/GraphicsDevice.h"
+#include "Renderer/RenderCommand.h"
 
 namespace sge
 {
@@ -10,6 +11,10 @@ namespace sge
 		RenderingComponent(Entity* ent);
 		virtual ~RenderingComponent();
 		virtual void render(GraphicsDevice* device) = 0;
+
+		RenderCommand getKey() { return key; }
+	private:
+		RenderCommand key;
 	};
 }
 

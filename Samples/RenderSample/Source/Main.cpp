@@ -22,6 +22,10 @@
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
+#include "Game/SpriteComponent.h"
+#include "Game/TransformComponent.h"
+#include "Game/Entity.h"
+
 void loadTextShader(const std::string& path, std::vector<char>& data)
 {
 	std::ifstream file;
@@ -70,17 +74,57 @@ void loadBinaryShader(const std::string& path, std::vector<char>& data)
 	}
 }
 
-sge::RenderCommand createCommand(uint64 data, uint64 fullscreenLayer, uint64 translucent, uint64 viewport, uint64 viewportLayer, uint64 command)
-{
-	sge::RenderCommand com;
-	com.data = data;
-	com.fullscreenLayer = fullscreenLayer;
-	com.translucent = translucent;
-	com.viewport = viewport;
-	com.viewportLayer = viewportLayer;
-	com.command = command;
+// TODO global is no no. :(
+std::vector<sge::Entity*> entities;
+std::vector<sge::TransformComponent*> transforms;
+std::vector<sge::SpriteComponent*> sprites;
 
-	return com;
+float vertexData[] = {
+	0.0f, 1.0f, 0.0f,
+	1.0f, -1.0f, 0.0f,
+	-1.0f, -1.0f, 0.0f,
+};
+
+struct UniformData
+{
+	sge::math::mat4 MVP;
+	sge::math::vec4 color;
+};
+
+sge::math::mat4 VP = sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
+sge::Shader* vertexShader;
+sge::Shader* pixelShader;
+sge::Pipeline* pipeline;
+sge::Viewport viewport = { 0, 0, 1280, 720 };
+sge::Buffer* vertexBuffer;
+sge::Buffer* uniformBuffer;
+
+void createSprite(const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
+{
+	// TODO kinda hax function. We need a proper way (a factory?) to create sprites.
+	sge::Entity* entity = new sge::Entity();
+
+	sge::TransformComponent* transform = new sge::TransformComponent(entity);
+	entity->setComponent(transform);
+
+	sge::SpriteComponent* sprite = new sge::SpriteComponent(entity);
+	entity->setComponent(sprite);
+
+	transform->setPosition(position);
+	transform->setScale(scale);
+	transform->setRotationVector(sge::math::vec3(0.0f, 0.0f, 1.0f));
+	transform->setAngle(rotation);
+	
+	sprite->setPipeline(pipeline);
+	sprite->setTexture(nullptr);
+	sprite->setUniformBuffer(uniformBuffer);
+	sprite->setVertexBuffer(vertexBuffer);
+	sprite->setVP(VP);
+	sprite->setColor(color);
+
+	entities.push_back(entity);
+	sprites.push_back(sprite);
+	transforms.push_back(transform);
 }
 
 int main(int argc, char** argv)
@@ -104,16 +148,6 @@ int main(int argc, char** argv)
 	loadTextShader("../../Shaders/Compiled/SimplePixelShader.glsl", pShaderData);
 #endif
 
-	// TODO add uniform buffers so you can use one vertex data for multiple primitives.
-	float width = 256.0f;
-	float height = 256.0f;
-
-	float vertexData[] = {
-		0.0f, height, 0.0f,
-		width, -height, 0.0f,
-		-width, -height, 0.0f,
-	};
-
 	// TODO load layout description from external file (shader.reflect).
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 1,
@@ -126,17 +160,14 @@ int main(int argc, char** argv)
 
 	// What if render material had pipeline? And using material would bind it.
 
-	sge::Shader* vertexShader = renderer.getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	sge::Shader* pixelShader = renderer.getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-
-	sge::Pipeline* pipeline = renderer.getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-	sge::Viewport viewport = { 0, 0, 1280, 720 };
-
-	sge::Buffer* vertexBuffer = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	vertexShader = renderer.getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = renderer.getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	pipeline = renderer.getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	vertexBuffer = renderer.getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+	uniformBuffer = renderer.getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(UniformData));
 
 	renderer.getDevice().bindViewport(&viewport);
 	renderer.getDevice().bindPipeline(pipeline);
-
 	renderer.getDevice().bindVertexBuffer(vertexBuffer);
 	renderer.getDevice().copyData(vertexBuffer, sizeof(vertexData), vertexData);
 
@@ -150,40 +181,13 @@ int main(int argc, char** argv)
 	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
 	// data, since transparent data should be sorted by their depth.
 
-	sge::RenderData renderData;
-	sge::RenderData renderData2;
-	sge::RenderData renderData3;
-	sge::RenderData renderData4;
-	sge::RenderData renderData5;
-
-	renderData.buffers.emplace_back(vertexBuffer);
-	renderData.count = 3;
-	renderData.pos = { 1280.0f/2, 720.0f/2, 0.0f };
-	renderData.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-	renderData2.buffers.emplace_back(vertexBuffer);
-	renderData2.count = 3;
-	renderData2.pos = { 256.0f, 256.0f, 0.0f };
-	renderData2.color = { 1.0f, 1.0f, 1.0f, 0.5f };
-
-	renderData3.buffers.emplace_back(vertexBuffer);
-	renderData3.count = 3;
-	renderData3.pos = { 1280.0f / 2, 0.0f, 0.0f };
-	renderData3.color = { 1.0f, 1.0f, 0.0f, 0.4f };
-
-	renderData4.buffers.emplace_back(vertexBuffer);
-	renderData4.count = 3;
-	renderData4.pos = { 512.0f, 256.0f, 0.0f };
-	renderData4.color = { 1.0f, 0.0f, 1.0f, 1.0f };
-
-	renderData5.buffers.emplace_back(vertexBuffer);
-	renderData5.count = 3;
-	renderData5.pos = { 1280.0f/2, 256.0f, 0.0f };
-	renderData5.color = { 1.0f, 0.0f, 0.7f, 0.8f };
-
+	createSprite({ 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+	createSprite({ 512.0f, 256.0f, 0.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+	
 	// Loop
 	SDL_Event event;
 	bool running = true;
+	float alpha = 0.0f;
 
 	while (running)
 	{
@@ -204,21 +208,47 @@ int main(int argc, char** argv)
 			}
 		}
 
+		// Update
+		// TODO add fixed timestep.
+		alpha += 0.0001f;
+		transforms.back()->setAngle(alpha);
+
 		// Rendering
 		renderer.begin();
 
-		renderer.pushCommand(createCommand(0, 0, 0, 0, 0, 0), &renderData);
-		renderer.pushCommand(createCommand(4, 0, 0, 0, 0, 0), &renderData2);
-		renderer.pushCommand(createCommand(2, 0, 0, 0, 0, 0), &renderData3);
-		renderer.pushCommand(createCommand(3, 0, 0, 0, 0, 0), &renderData4);
-		renderer.pushCommand(createCommand(1, 0, 0, 0, 0, 0), &renderData5);
+		renderer.getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
+
+		for (auto sprite : sprites)
+		{
+			renderer.pushCommand(sprite->getKey(), std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+		}
 
 		renderer.end();
 	}
 
 	// Deinit
-	renderer.getDevice().debindPipeline(pipeline);
+
+	for (auto sprite : sprites)
+	{
+		delete sprite;
+	}
+
+	for (auto transform : transforms)
+	{
+		delete transform;
+	}
+
+	for (auto entity : entities)
+	{
+		delete entity;
+	}
+
+	sprites.clear();
+	transforms.clear();
+	entities.clear();
+
 	renderer.getDevice().deleteBuffer(vertexBuffer);
+	renderer.getDevice().deleteBuffer(uniformBuffer);
 	renderer.getDevice().deleteShader(vertexShader);
 	renderer.getDevice().deleteShader(pixelShader);
 	renderer.getDevice().deletePipeline(pipeline);

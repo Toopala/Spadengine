@@ -40,7 +40,12 @@
     <ClCompile Include="Source\RenderingComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SpriteComponent.cpp" />
+    <ClCompile Include="Source\SpriteComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpriteRenderingSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h">
@@ -82,7 +87,12 @@
     <ClInclude Include="Include\Game\RenderingComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\SpriteComponent.h" />
+    <ClInclude Include="Include\Game\SpriteComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\SpriteRenderingSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -6,19 +6,8 @@ namespace sge
 	{
 	}
 
-
 	ResourceManager::~ResourceManager()
 	{
-	}
-
-	bool ResourceManager::unload(const std::string &filename)
-	{
-		if (filename.empty())
-		{
-			std::cout << "Filename cannot be empty! Error loading resource." << std::endl;
-			return false;
-		}
-		return true;
 	}
 
 	void ResourceManager::printResources()
@@ -32,6 +21,10 @@ namespace sge
 
 	void ResourceManager::releaseAll()
 	{
-
+		for (auto resource : userData)
+		{
+			resource.second->~Resource();
+			std::cout << resource.first << "released." << std::endl;
+		}
 	}
 }

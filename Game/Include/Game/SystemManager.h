@@ -5,7 +5,6 @@
 #include "Game/TestSystem.h"
 #include "Game/TestComponent.h"
 #include "Core/Memory/PagePoolAllocator.h"
-#include <xhash>
 
 namespace sge
 {

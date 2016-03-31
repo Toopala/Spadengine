@@ -2,7 +2,7 @@
 
 #include "Renderer/RenderQueue.h"
 #include "Renderer/RenderCommand.h"
-#include "Renderer/RenderData.h"
+#include "Renderer/GraphicsDevice.h"
 
 namespace sge
 {
@@ -27,7 +27,7 @@ namespace sge
 	void RenderQueue::sort()
 	{
 		std::sort(std::begin(queue), std::end(queue), 
-			[](const std::pair<RenderCommand, const RenderData*>& lhs, const std::pair<RenderCommand, const RenderData*>& rhs)
+			[](const std::pair<RenderCommand, RenderFunction>& lhs, const std::pair<RenderCommand, RenderFunction>& rhs)
 		{
 			return lhs.first.bits < rhs.first.bits;
 		});
