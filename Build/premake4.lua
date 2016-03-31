@@ -1,4 +1,6 @@
 solution "Spadengine"
+	
+		defines {"OPENGL4"}
 	configurations { "DEBUG", "RELEASE" }
 
 	configuration "Debug"
@@ -29,6 +31,11 @@ solution "Spadengine"
 		language "C++"
 		files {"../ThirdParty/freetype/include/"}
 
+--	project "bulletphysicssge"
+--		kind "StaticLib"
+--		language "C++"
+--		files {"../ThirdParty/bulletphysics/include/",
+--			"../ThirdParty/bulletphysics/include/Bullet"}
 
 	project "Renderer"
 		kind "StaticLib"
@@ -139,5 +146,25 @@ solution "Spadengine"
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/"}
 		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources", "Game" }
+
+	project "SceneSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/SceneSample/**.cpp"}
+		includedirs {"../Samples/SceneSample/Include/",
+				"../HID/Include/",
+				"../Game/Include/Game",
+				"../Core/Include/",
+				"../Resources/Include/",
+				"../Renderer/Include/",
+				"../Spade/Include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/bulletphysics/include/",
+				"../ThirdParty/bulletphysics/include/Bullet",
+				"../ThirdParty/assimp/include/",
+				"../ThirdParty/glad/Include/"}
+		links {"Core","Game","HID","Resources", "Renderer", "SDL2" ,"glad","dl","BulletPhysics","assimp"  }
 	 
 	
