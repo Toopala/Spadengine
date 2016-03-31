@@ -1,14 +1,21 @@
 #include "Game/SpriteComponent.h"
+#include "Game/TransformComponent.h"
+#include "Game/Entity.h"
+#include "Core/Assert.h"
 
 namespace sge
 {
 	SpriteComponent::SpriteComponent(Entity* ent) :
 		RenderingComponent(ent),
-		position(0.0f),
-		scale(1.0f),
-		color(1.0f),
-		rotation(0.0f)
+		color(1.0f)
 	{
+		Entity* entity = getParent();
+
+
+		transform = getParent()->getComponent<TransformComponent>();
+
+		// We need transform!
+		SGE_ASSERT(transform);
 	}
 
 	SpriteComponent::~SpriteComponent()
@@ -17,10 +24,7 @@ namespace sge
 
 	void SpriteComponent::render(GraphicsDevice* device)
 	{
-		uniformData.MVP = VP * 
-			math::translate(math::mat4(1.0f), position) * 
-			math::rotate(math::mat4(1.0f), rotation, math::vec3(0.0f, 0.0f, 1.0f)) *
-			math::scale(math::mat4(1.0f), scale);
+		uniformData.MVP = VP * transform->getMatrix();
 
 		uniformData.color = color;
 
@@ -59,23 +63,8 @@ namespace sge
 		this->VP = VP;
 	}
 
-	void SpriteComponent::setPosition(const math::vec3& position)
-	{
-		this->position = position;
-	}
-
-	void SpriteComponent::setScale(const math::vec3& scale)
-	{
-		this->scale = scale;
-	}
-
 	void SpriteComponent::setColor(const math::vec4& color)
 	{
 		this->color = color;
-	}
-
-	void SpriteComponent::setRotation(float rotation)
-	{
-		this->rotation = rotation;
 	}
 }

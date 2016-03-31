@@ -23,6 +23,7 @@
 #include "Renderer/Window.h"
 
 #include "Game/SpriteComponent.h"
+#include "Game/TransformComponent.h"
 #include "Game/Entity.h"
 
 void loadTextShader(const std::string& path, std::vector<char>& data)
@@ -73,8 +74,11 @@ void loadBinaryShader(const std::string& path, std::vector<char>& data)
 	}
 }
 
-// TODO global is no no.
-sge::Entity entity;
+// TODO global is no no. :(
+std::vector<sge::Entity*> entities;
+std::vector<sge::TransformComponent*> transforms;
+std::vector<sge::SpriteComponent*> sprites;
+
 float vertexData[] = {
 	0.0f, 1.0f, 0.0f,
 	1.0f, -1.0f, 0.0f,
@@ -95,20 +99,32 @@ sge::Viewport viewport = { 0, 0, 1280, 720 };
 sge::Buffer* vertexBuffer;
 sge::Buffer* uniformBuffer;
 
-sge::SpriteComponent createSprite(const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
+void createSprite(const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
 {
-	sge::SpriteComponent sprite(&entity);
-	sprite.setPipeline(pipeline);
-	sprite.setTexture(nullptr);
-	sprite.setUniformBuffer(uniformBuffer);
-	sprite.setVertexBuffer(vertexBuffer);
-	sprite.setVP(VP);
-	sprite.setColor(color);
-	sprite.setPosition(position);
-	sprite.setScale(scale);
-	sprite.setRotation(rotation);
+	// TODO kinda hax function. We need a proper way (a factory?) to create sprites.
+	sge::Entity* entity = new sge::Entity();
 
-	return sprite;
+	sge::TransformComponent* transform = new sge::TransformComponent(entity);
+	entity->setComponent(transform);
+
+	sge::SpriteComponent* sprite = new sge::SpriteComponent(entity);
+	entity->setComponent(sprite);
+
+	transform->setPosition(position);
+	transform->setScale(scale);
+	transform->setRotationVector(sge::math::vec3(0.0f, 0.0f, 1.0f));
+	transform->setAngle(rotation);
+	
+	sprite->setPipeline(pipeline);
+	sprite->setTexture(nullptr);
+	sprite->setUniformBuffer(uniformBuffer);
+	sprite->setVertexBuffer(vertexBuffer);
+	sprite->setVP(VP);
+	sprite->setColor(color);
+
+	entities.push_back(entity);
+	sprites.push_back(sprite);
+	transforms.push_back(transform);
 }
 
 int main(int argc, char** argv)
@@ -165,8 +181,9 @@ int main(int argc, char** argv)
 	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
 	// data, since transparent data should be sorted by their depth.
 
-	sge::SpriteComponent sprite1 = createSprite({ 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
-	sge::SpriteComponent sprite2 = createSprite({ 512.0f, 256.0f, 0.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f }, sge::math::radians(90.0f));
+	createSprite({ 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+	createSprite({ 512.0f, 256.0f, 0.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+	
 	// Loop
 	SDL_Event event;
 	bool running = true;
@@ -194,20 +211,42 @@ int main(int argc, char** argv)
 		// Update
 		// TODO add fixed timestep.
 		alpha += 0.0001f;
-		sprite2.setRotation(alpha);
+		transforms.back()->setAngle(alpha);
 
 		// Rendering
 		renderer.begin();
 
 		renderer.getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
 
-		renderer.pushCommand(sprite1.getKey(), std::bind(&sge::SpriteComponent::render, &sprite1, std::placeholders::_1));
-		renderer.pushCommand(sprite2.getKey(), std::bind(&sge::SpriteComponent::render, &sprite2, std::placeholders::_1));
+		for (auto sprite : sprites)
+		{
+			renderer.pushCommand(sprite->getKey(), std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+		}
 
 		renderer.end();
 	}
 
 	// Deinit
+
+	for (auto sprite : sprites)
+	{
+		delete sprite;
+	}
+
+	for (auto transform : transforms)
+	{
+		delete transform;
+	}
+
+	for (auto entity : entities)
+	{
+		delete entity;
+	}
+
+	sprites.clear();
+	transforms.clear();
+	entities.clear();
+
 	renderer.getDevice().deleteBuffer(vertexBuffer);
 	renderer.getDevice().deleteBuffer(uniformBuffer);
 	renderer.getDevice().deleteShader(vertexShader);

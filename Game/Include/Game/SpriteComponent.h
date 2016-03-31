@@ -4,6 +4,8 @@
 
 namespace sge
 {
+	class TransformComponent;
+
 	class SpriteComponent : public RenderingComponent
 	{
 	public:
@@ -17,11 +19,7 @@ namespace sge
 		void setTexture(sge::Texture* texture);
 		void setPipeline(sge::Pipeline* pipeline);
 		void setVP(const math::mat4& VP);
-
-		void setPosition(const math::vec3& position);
-		void setScale(const math::vec3& scale);
 		void setColor(const math::vec4& color);
-		void setRotation(float rotation);
 		
 	private:
 		sge::Buffer* vertexBuffer;
@@ -37,8 +35,7 @@ namespace sge
 
 		math::mat4 VP;
 		math::vec4 color;
-		math::vec3 position;
-		math::vec3 scale;
-		float rotation;
+
+		TransformComponent* transform;
 	};
 }
