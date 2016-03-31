@@ -9,98 +9,68 @@
 
 namespace sge
 {
-	/** \brief PageHeader struct.
-	*
-	*	A page contains a constant amount of same sized memory slots.
-	*
-	*	\param size_t slotSize : Size of a single memory slot.
-	*	\param unsigned slotCount : Number of memory slots in one page.
-	*	\param unsigned slotsLeft : Number of memory slots left in one page.
-	*	\param unsigned freeSpaceCount : Keeps count on the slots that have been removed from the middle.
-	*	\param void *nextSlot : Pointer to the next slot.
-	*	\param PageHeader *nextPage : Pointer to the nextPage.
-	*/
+	/** \brief Contains a constant amount of same sized memory slots and keeps track on used and unused slots. */
 	struct PageHeader
 	{
-		size_t slotSize;
-		unsigned slotCount, slotsLeft, freeSpaceCount;
-		void *nextSlot;
-		PageHeader *nextPage;
+		size_t slotSize;			/**<  Size of a single memory slot. */
+		unsigned slotCount;			/**<  Number of memory slots in a page. */
+		unsigned slotsLeft;			/**<  Number of memory slots left in a page. */
+		unsigned freeSpaceCount;	/**<  Keeps count on the slots that have been pointing to something but is now deleted. */
+		void *nextSlot;				/**<  Points to the slot that is going to be used next. */
+		PageHeader *nextPage;		/**<  Points to the next page. */
 	};
 
-	/** \brief HeaderLocationInfo struct.
-	*
-	*	Information about the "book", where all the pages are stored.
-	
-	*	\param PageHeader *page : Pointer to page.
-	*	\param void *top : Pointer to the top of the "book".
-	*	\param void *bottom : Pointer to the bottom of the "book".
-	*/
+	/** \brief Keeps track of the information on allocated memory. */
 	struct HeaderLocationInfo
 	{
-		PageHeader *page;
-		void *top, *bottom;
+		PageHeader *page;	/**<  Points to a page. */
+		void *bottom;		/**<  The first slot in the page. */
+		void *top;			/**<  The last slot in the page. */
 	};
 
-	/** \brief Slot struct.
-	*
-	*	Pointer to empty slot, if the page has empty slots left.
-	*	\param void *data : Pointer to slot.
-	*/
+	/** \brief A struct that is used to store a pointer. */
 	struct Slot
 	{
-		void *data;
+		void *data;	/**<  Pointer to slot data. */
 	};
 
-	/** \brief Memory allocator.
-	*	Memory allocator that uses PagePoolAllocator style.
+	/** \brief The class that manages memory.
 	*
-	*	
+	*	The allocator uses PagePool style which means that the memory is divided by size.
+	*	Objects of different sizes are on different pages to make it quick and easy to allocate and deallocate memory.
 	*/
 	class PagePoolAllocator
 	{
 	public:
-		/** \brief A constructor.
-		*/
+		/** \brief The default constructor. */
 		PagePoolAllocator();
 
-		/** \brief A destructor.
-		*/
+		/** \brief The destructor. */
 		~PagePoolAllocator();
-
-		/** \brief PageMap.
-		*
-		*	\param typedef std::map<size_t, PageHeader*> PageMap : Aka. book, that holds all the pages together.
-		*/
-		typedef std::map<size_t, PageHeader*> PageMap;
-
-		/** \brief poolSize
-		*
-		*	\param static const unsigned int poolSize : Max. number of items in one page
-		*/
-		static const unsigned int poolSize = 100; 
 		
-		/** \brief Allocate
+		/** \brief Allocates memory in pages.
 		*
-		*	Allocates memory in pages. Checks if the pages has the same type of memory slots free.
-		*	\param size_t size : Size of the allocated class.
-		*	\return pointer : Returns pointer to the allocated slot.
+		*	If there are no pages with room for the given object type, a new page is created and the object is then assigned to the first pointer.
+		*
+		*	\param size_t size : Size of the object.
+		*	\return Returns pointer to the allocated slot.
 		*/
 		void* allocate(size_t size);
 
-		/** \brief Deallocate
+		/** \brief Deallocate memory from pages.
 		*
-		*	Checks the pages, if there are same type of memory used and which can be deallocated.
-		*	\param void* data : Pointer to slots which we want to deallocate.
+		*	Finds the object behind the given pointer and marks it as unused.
+		*
+		*	\param void* data : Pointer to the data we want to get rid of.
 		*/
 		void deallocate(void* data);
 
-		/** \brief A function that is used instead of new.
+		/** \brief A template function that is used instead of operator new.
 		*
-		*	Calls allocate function in order to find an empty slot
-		*	that is then used in conjunction with the new function.
+		*	Calls allocate function in order to find an empty slot and then creates the object to that slot.
+		*
 		*	\param Args... args : Takes variable amount of class arguments.
-		*	\return obj : Returns the pointer to the slot that's been allocated.
+		*	\return Returns the pointer to the slot that has been allocated.
 		*/
 		template <typename T, typename... Args>
 		T* create(Args... args)
@@ -111,9 +81,9 @@ namespace sge
 			return obj;
 		}
 
-		/** \brief A function that marks the slot as free.
+		/** \brief A function that destroys an object.
 		*
-		*	Calls the destructor of the object behind the pointer and calls deallocate function that marks the slot as free. 
+		*	Calls the destructor of the object behind the given pointer and then calls the deallocate function which marks the slot that was used as free.
 		*	\param T* ptr : Pointer to the object that the user wants to destroy.
 		*/
 		template <typename T>
@@ -122,6 +92,9 @@ namespace sge
 			ptr->~T();
 			deallocate(ptr);
 		}
+
+		typedef std::map<size_t, PageHeader*> PageMap; /**<  A map that keeps track of the pages. You can think of it as the book that holds the pages. */
+		static const unsigned int poolSize = 100; /**<  The amount of slots in a page. */
 
 	private:
 		/** \brief Creates a new page header
@@ -140,11 +113,12 @@ namespace sge
 		*/
 		PageHeader *findPageWithRoom(PageHeader *page);
 		
+		/**<	The map that contains all the pages.
+		*		\see PageMap
+		*/
 		PageMap pageMap;
 
-		/** \brief Vector for storing information about the "book".
-		*/
-		std::vector<HeaderLocationInfo> headerLocations;
+		std::vector<HeaderLocationInfo> headerLocations; /**<  Vector for storing information about the pages. */
 	};
 	extern PagePoolAllocator allocator;
 }

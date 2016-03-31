@@ -129,20 +129,61 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
 
-	groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(1.), btScalar(50.)));
+	groundShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
+	topShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
+	
+	wall1Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
+	wall2Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
+	wall3Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
+	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
+	
+	fallShape = new btBoxShape(btVector3(1, 1, 1));
 
-	fallShape = new btBoxShape(btVector3(1,1,1));
-
-
+	// Floor
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		groundRigidBodyCI(0, groundMotionState, groundShape, btVector4(0, 0, 1,1));
 	groundRigidBody = new btRigidBody(groundRigidBodyCI);
 	dynamicsWorld->addRigidBody(groundRigidBody);
 
+	// Top
+	btDefaultMotionState* topMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		topRigidBodyCI(0, topMotionState, topShape, btVector4(0, 0, 1, 1));
+	topRigidBody = new btRigidBody(topRigidBodyCI);
+	dynamicsWorld->addRigidBody(topRigidBody);
 
+	// Wall 1
+	btDefaultMotionState* wall1MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 25, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		wall1RigidBodyCI(0, wall1MotionState, wall1Shape, btVector4(0, 0, 1, 1));
+	wall1RigidBody = new btRigidBody(wall1RigidBodyCI);
+	dynamicsWorld->addRigidBody(wall1RigidBody);
+
+	// Wall 2
+	btDefaultMotionState* wall2MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, -25)));
+	btRigidBody::btRigidBodyConstructionInfo
+		wall2RigidBodyCI(0, wall2MotionState, wall2Shape, btVector4(0, 0, 1, 1));
+	wall2RigidBody = new btRigidBody(wall2RigidBodyCI);
+	dynamicsWorld->addRigidBody(wall2RigidBody);
+
+	// Wall 3
+	btDefaultMotionState* wall3MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-25, 25, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		wall3RigidBodyCI(0, wall3MotionState, wall3Shape, btVector4(0, 0, 1, 1));
+	wall3RigidBody = new btRigidBody(wall3RigidBodyCI);
+	dynamicsWorld->addRigidBody(wall3RigidBody);
+
+	// Wall 4
+	btDefaultMotionState* wall4MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, 25)));
+	btRigidBody::btRigidBodyConstructionInfo
+		wall4RigidBodyCI(0, wall4MotionState, wall4Shape, btVector4(0, 0, 1, 1));
+	wall4RigidBody = new btRigidBody(wall4RigidBodyCI);
+	dynamicsWorld->addRigidBody(wall4RigidBody);
+
+	// falling object
 	btDefaultMotionState* fallMotionState =
-		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
@@ -161,10 +202,32 @@ BulletTestScene::~BulletTestScene()
 	delete groundRigidBody->getMotionState();
 	delete groundRigidBody;
 
+	dynamicsWorld->removeRigidBody(topRigidBody);
+	delete topRigidBody->getMotionState();
+	delete topRigidBody;
+
+	dynamicsWorld->removeRigidBody(wall1RigidBody);
+	delete wall1RigidBody->getMotionState();
+	delete wall1RigidBody;
+	dynamicsWorld->removeRigidBody(wall2RigidBody);
+	delete wall2RigidBody->getMotionState();
+	delete wall2RigidBody;
+	dynamicsWorld->removeRigidBody(wall3RigidBody);
+	delete wall3RigidBody->getMotionState();
+	delete wall3RigidBody;
+	dynamicsWorld->removeRigidBody(wall4RigidBody);
+	delete wall4RigidBody->getMotionState();
+	delete wall4RigidBody;
 
 	delete fallShape;
 
 	delete groundShape;
+	delete topShape;
+
+	delete wall1Shape;
+	delete wall2Shape;
+	delete wall3Shape;
+	delete wall4Shape;
 
 
 	delete dynamicsWorld;
@@ -192,13 +255,17 @@ void BulletTestScene::update(float step)
 {
 	dynamicsWorld->stepSimulation(step, 10);
 
+	fallRigidBody->applyTorque(btVector3(20,20,20));
+
 	btTransform trans;
 	fallRigidBody->getMotionState()->getWorldTransform(trans);
 
 	std::cout << "Box height: " << trans.getOrigin().getY() << std::endl;
 
 	// tämä rotate tehdään näin! Muuten tulee salmiakkia.
-	uniformData2.M = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	
+	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 
 	if (engine->mouseInput->buttonIsPressed(sge::MOUSE_BUTTON_LEFT))
 	{

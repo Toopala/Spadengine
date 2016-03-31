@@ -53,9 +53,10 @@ solution "Spadengine"
 		includedirs { "../Game/Include/",
 				"../Core/Include/",
 				"../HID/Include/",
+				"../Renderer/Include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/" }
-		links { "SDL2", "Core", "HID" }
+		links { "SDL2", "Core", "HID", }
 
 
 	project "Resources"
