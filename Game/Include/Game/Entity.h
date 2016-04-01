@@ -14,11 +14,10 @@ namespace sge
 		
 		/** \brief Getter function for Components.
 		*
-		* Gets a Component pointer of the called type.
+		* Gets a Component pointer of the called type T.
 		* Iterates through the Entity's Component vector dynamic_casting Components to the wanted type.
 		* The loop terminates if a Component is successfully cast.
 		* Returns a nullpointer if a suitable Component isn't found.
-		* \param Pointer to a type of Component.
 		* \return Component pointer of the desired type.
 		*/
 		template<class T>
@@ -39,8 +38,7 @@ namespace sge
 		
 		/** \brief Component Removal function.
 		*
-		* Removes a Component from the Entity's vector by performing satanic rituals.
-		* \param Pointer to a type of Component
+		* Removes Component T from the Entity's Component vector by performing satanic rituals.
 		*/
 		template<class T>
 		void removeComponent() 
@@ -56,12 +54,12 @@ namespace sge
 		/** \brief Setter function for Components.
 		*
 		* Pushes a new Component to the back of the Component vector.
-		* \param Pointer to a type of Component.
+		* \param Component* comp : Pointer to a type of Component.
 		*/
 		void setComponent(Component* comp); 
 
 	private:
-		std::vector<Component*> components; ///< Vector of Component pointers
+		std::vector<Component*> components; /**< Vector of Component pointers */
 	};
 }
 

@@ -24,13 +24,13 @@ namespace sge
 		/** \brief Function for adding Components.
 		*
 		* Casts the Component to the vector's type and adds it.
-		* \param Pointer to a type of Component.
+		* \param Component* comp : Pointer to a type of Component.
 		*/
 		void addComponent(Component* comp);
 
 	private:
-		std::vector<TestComponent*> comps1; ///< Vector containing TestComponent pointers. 
-		std::vector<InputComponent*> comps2; ///< Vector containing InputComponent pointers.
+		std::vector<TestComponent*> comps1; /**< Vector containing TestComponent pointers. */
+		std::vector<InputComponent*> comps2; /**< Vector containing InputComponent pointers. */
 	};
 
 }

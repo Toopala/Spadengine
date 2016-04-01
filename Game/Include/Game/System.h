@@ -13,7 +13,7 @@ namespace sge
 		*
 		* Overwritten by systems, used by all systems to add a type of Component
 		* to a matching container.
-		* \param
+		* \param Component* comp : Component to be added.
 		*/
 		virtual void addComponent(Component* comp) = 0;
 	};

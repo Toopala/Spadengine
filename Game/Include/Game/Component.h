@@ -18,17 +18,17 @@ namespace sge
 		*/
 		virtual void update() = 0;
 
-		/** \brief Getter function for the Components parent.
+		/** \brief Getter function for the Component's parent.
 		*
 		* Gets the parent or "owner" Entity of the Component and returns the pointer to it.
 		* \return Pointer to an Entity.
 		*/
-		Entity* getParent() // Returns the "owning" entity of the component
+		Entity* getParent() 
 		{
 			return parent;
 		}
 
 	private:
-		Entity* parent; ///< Pointer to the parent Entity.
+		Entity* parent; /**< Pointer to the parent Entity. */
 	};
 }

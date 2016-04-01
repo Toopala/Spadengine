@@ -18,23 +18,23 @@ namespace sge
 		*/
 		void update(); // Every component derived from the Component base class needs to include this method;
 
-		/** \brief
+		/** \brief Position getter function.
 		*
-		* Detailed
-		* \return
+		* Gets the value stored in the position variable.
+		* \return Value stored in the vec2 position variable.
 		*/
 		sge::math::vec2& getPosition();
 
 		/** \brief Setter function
 		*
-		* Detailed
+		* \param const sge::mat::vec2& newPos : New position in vec2 form.
 		* \return
 		*/
 		void setPosition(const sge::math::vec2& newPos);
 
 	private:
-		int counter; ///< Debug variables
-		sge::math::vec2 position; ///<
+		int counter; /**< Debug variable. */
+		sge::math::vec2 position; /**< Position variable. */
 		
 	};
 
