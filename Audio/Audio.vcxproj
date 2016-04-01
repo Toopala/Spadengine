@@ -36,12 +36,14 @@
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Resources.props" />
+    <Import Project="..\Config\Properties\Audio.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Config\Properties\spadengine.props" />
     <Import Project="..\Config\Properties\Core.props" />
     <Import Project="..\Config\Properties\Resources.props" />
+    <Import Project="..\Config\Properties\Audio.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -70,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\AudioContext.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
