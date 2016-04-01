@@ -145,31 +145,30 @@ int main(int argc, char** argv)
 
 	// Resource test
 
-	sge::ResourceManager resMgr;
 	sge::Handle<sge::TextureResource> texHandle;
 
-	texHandle = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle2 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle3 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle4 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle5 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle6 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle7 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle8 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
-	sge::Handle<sge::TextureResource> texHandle9 = resMgr.load<sge::TextureResource>("../Assets/spade.png");
+	texHandle = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle7 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle8 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+	sge::Handle<sge::TextureResource> texHandle9 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
 
 	auto gg = texHandle.getResource<sge::TextureResource>();
 
 
 	//device.createTexture(texHandle);
 
-	resMgr.printResources();
-	resMgr.release(texHandle2);
-	resMgr.release(texHandle3);
-	resMgr.release(texHandle4);
-	resMgr.release(texHandle5);
-	resMgr.release(texHandle6);
-	resMgr.printResources();
+    sge::ResourceManager::getMgr().printResources();
+	sge::ResourceManager::getMgr().release(texHandle2);
+	sge::ResourceManager::getMgr().release(texHandle3);
+	sge::ResourceManager::getMgr().release(texHandle4);
+	sge::ResourceManager::getMgr().release(texHandle5);
+	sge::ResourceManager::getMgr().release(texHandle6);
+    sge::ResourceManager::getMgr().printResources();
 
 	// --------------
 

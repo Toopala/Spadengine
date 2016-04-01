@@ -92,8 +92,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
 	vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
 	indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
@@ -101,22 +101,22 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
 	texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
 
-	pipeline = engine->getRenderer()->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
 
-	vertexBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
-	uniformBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(UniformData2));
+	vertexBuffer = engine->getRenderer()->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
+	uniformBuffer = engine->getRenderer()->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(UniformData2));
 
-	engine->getRenderer()->getDevice().bindViewport(&viewport);
-	engine->getRenderer()->getDevice().bindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->bindViewport(&viewport);
+	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().bindVertexBuffer(vertexBuffer);
-	engine->getRenderer()->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
-	engine->getRenderer()->getDevice().bindTexture(texture, 0);
-	engine->getRenderer()->getDevice().bindTexture(texture2, 1);
+	engine->getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
+	engine->getRenderer()->getDevice()->bindTexture(texture, 0);
+	engine->getRenderer()->getDevice()->bindTexture(texture2, 1);
 
-	engine->getRenderer()->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
-	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
+	engine->getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
+	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -190,8 +190,21 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	fallRigidBodyCI.m_restitution = 1.0f;
+	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
+	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
+
+	// falling object 2
+	btDefaultMotionState* fallMotionState2 =
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, 23, 0)));
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape, fallInertia);
+	fallRigidBodyCI2.m_restitution = 0.4f;
+	fallRigidBodyCI2.m_friction = 0.8f;
+	fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
+	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(fallRigidBody2);
 }
 
 BulletTestScene::~BulletTestScene()
@@ -199,6 +212,10 @@ BulletTestScene::~BulletTestScene()
 	dynamicsWorld->removeRigidBody(fallRigidBody);
 	delete fallRigidBody->getMotionState();
 	delete fallRigidBody;
+
+	dynamicsWorld->removeRigidBody(fallRigidBody2);
+	delete fallRigidBody2->getMotionState();
+	delete fallRigidBody2;
 
 	dynamicsWorld->removeRigidBody(groundRigidBody);
 	delete groundRigidBody->getMotionState();
@@ -238,17 +255,17 @@ BulletTestScene::~BulletTestScene()
 	delete dispatcher;
 	delete broadphase;
 
-	engine->getRenderer()->getDevice().debindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().deleteBuffer(vertexBuffer);
-	engine->getRenderer()->getDevice().deleteBuffer(uniformBuffer);
+	engine->getRenderer()->getDevice()->deleteBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice()->deleteBuffer(uniformBuffer);
 
-	engine->getRenderer()->getDevice().deleteShader(vertexShader);
-	engine->getRenderer()->getDevice().deleteShader(pixelShader);
-	engine->getRenderer()->getDevice().deleteTexture(texture);
-	engine->getRenderer()->getDevice().deleteTexture(texture2);
+	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
+	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
+	engine->getRenderer()->getDevice()->deleteTexture(texture);
+	engine->getRenderer()->getDevice()->deleteTexture(texture2);
 
-	engine->getRenderer()->getDevice().deletePipeline(pipeline);
+	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 
 	engine->getResourceManager()->release(modelHandle);
 }
@@ -260,13 +277,51 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
-		int randomx = sge::random(10, 2000);
-		int randomy = sge::random(10, 2000);
-		int randomz = sge::random(10, 2000);
+		int randomx = sge::random(10, 500);
+		int randomy = sge::random(10, 500);
+		int randomz = sge::random(10, 500);
 		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
 		fallRigidBody->applyTorque(btVector3(randomx, randomy, randomz));
-		engine->keyboardInput->releaseKey(sge::KEYBOARD_SPACE);
+		
 	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
+	{
+		int randomx = sge::random(-10, 10);
+		int randomy = sge::random(-10, 10);
+		int randomz = sge::random(-10, 10);
+		dynamicsWorld->setGravity(btVector3(randomx, randomy, randomz));
+		
+	}
+
+	// Physics test with second object
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(-2, 0, 0));
+		
+		
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3( 2, 0, 0));
+
+		
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(0, -0, -2));
+
+		
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(0, 0, 2));
+
+		
+	}
+
 	btTransform trans;
 	fallRigidBody->getMotionState()->getWorldTransform(trans);
 
@@ -282,13 +337,24 @@ void BulletTestScene::update(float step)
 }
 void BulletTestScene::draw()
 {
-	engine->getRenderer()->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
+	engine->getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
+	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
 
 	engine->getRenderer()->getDevice().draw(vertices->size());
 
-	engine->getRenderer()->getDevice().swap();
+	// testing physics with second draw
+	btTransform trans;
+	fallRigidBody2->getMotionState()->getWorldTransform(trans);
+
+	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
+
+	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
+	engine->getRenderer()->getDevice().draw(vertices->size());
+	// test ends
+
+	engine->getRenderer()->getDevice()->swap();
 }
 
 void BulletTestScene::interpolate(float alpha)
