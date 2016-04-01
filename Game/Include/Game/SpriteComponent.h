@@ -5,6 +5,7 @@
 namespace sge
 {
 	class TransformComponent;
+    class SpriteRenderingSystem;
 
 	class SpriteComponent : public RenderingComponent
 	{
@@ -20,6 +21,9 @@ namespace sge
 		void setPipeline(sge::Pipeline* pipeline);
 		void setVP(const math::mat4& VP);
 		void setColor(const math::vec4& color);
+        void setRenderingSystem(SpriteRenderingSystem* system);
+
+        const math::vec4& getColor();
 		
 	private:
 		sge::Buffer* vertexBuffer;
@@ -37,5 +41,6 @@ namespace sge
 		math::vec4 color;
 
 		TransformComponent* transform;
+        SpriteRenderingSystem* renderingSystem;
 	};
 }

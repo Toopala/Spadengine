@@ -162,8 +162,8 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getRenderer()->getDevice().createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
 	vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
 	indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
@@ -171,22 +171,22 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
 	texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
 
-	pipeline = engine->getRenderer()->getDevice().createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };
 
-	vertexBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
-	uniformBuffer = engine->getRenderer()->getDevice().createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
+	vertexBuffer = engine->getRenderer()->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(Vertex) * vertices->size());
+	uniformBuffer = engine->getRenderer()->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 
-	engine->getRenderer()->getDevice().bindViewport(&viewport);
-	engine->getRenderer()->getDevice().bindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->bindViewport(&viewport);
+	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().bindVertexBuffer(vertexBuffer);
-	engine->getRenderer()->getDevice().bindVertexUniformBuffer(uniformBuffer, 0);
-	engine->getRenderer()->getDevice().bindTexture(texture, 0);
-	engine->getRenderer()->getDevice().bindTexture(texture2, 1);
+	engine->getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
+	engine->getRenderer()->getDevice()->bindTexture(texture, 0);
+	engine->getRenderer()->getDevice()->bindTexture(texture2, 1);
 
-	engine->getRenderer()->getDevice().copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
-	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
+	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 	bool running = true;
 
@@ -199,17 +199,17 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 TestScene::~TestScene()
 {
 	std::cout << "test scene terminator says hello" << std::endl;
-	engine->getRenderer()->getDevice().debindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 
-	engine->getRenderer()->getDevice().deleteBuffer(vertexBuffer);
-	engine->getRenderer()->getDevice().deleteBuffer(uniformBuffer);
+	engine->getRenderer()->getDevice()->deleteBuffer(vertexBuffer);
+	engine->getRenderer()->getDevice()->deleteBuffer(uniformBuffer);
 
-	engine->getRenderer()->getDevice().deleteShader(vertexShader);
-	engine->getRenderer()->getDevice().deleteShader(pixelShader);
-	engine->getRenderer()->getDevice().deleteTexture(texture);
-	engine->getRenderer()->getDevice().deleteTexture(texture2);
+	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
+	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
+	engine->getRenderer()->getDevice()->deleteTexture(texture);
+	engine->getRenderer()->getDevice()->deleteTexture(texture2);
 
-	engine->getRenderer()->getDevice().deletePipeline(pipeline);
+	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 
 	engine->getResourceManager()->release(modelHandle);
 }
@@ -242,13 +242,13 @@ void TestScene::update(float step)
 
 void TestScene::draw()
 {
-	engine->getRenderer()->getDevice().clear(0.5f, 0.0f, 0.5f, 1.0f);
+	engine->getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-	engine->getRenderer()->getDevice().draw(vertices->size());
+	engine->getRenderer()->getDevice()->draw(vertices->size());
 
-	engine->getRenderer()->getDevice().swap();
+	engine->getRenderer()->getDevice()->swap();
 }
 
 void TestScene::interpolate(float alpha)

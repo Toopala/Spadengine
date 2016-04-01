@@ -21,7 +21,7 @@ namespace sge
 		void init();
 		void deinit();
 
-		GraphicsDevice& getDevice() const { return *device; }
+		GraphicsDevice* getDevice() const { return device; }
 
 		inline void pushCommand(const RenderCommand command, const RenderQueue::RenderFunction renderFunction)
 		{

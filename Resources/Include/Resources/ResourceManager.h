@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include "Core/Assert.h"
 #include "Resources/Resource.h"
-#include "Resources/TextureResource.h"
 
 // RESOURCE MANAGER
 //
@@ -25,6 +24,8 @@
 
 namespace sge
 {
+
+
 	template<class T>
 	class Handle;
 
@@ -117,6 +118,15 @@ namespace sge
 			it = userData.find(resPath);
 			return static_cast<T*>((*it).second);
 		}
+
+        static ResourceManager& ResourceManager::getMgr()
+        {
+            static ResourceManager resMgr;
+            return resMgr;
+        }
+
+        ResourceManager(const ResourceManager&) = delete;
+        void operator=(const ResourceManager&) = delete;
 
 		void printResources();
 

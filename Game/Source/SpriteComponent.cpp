@@ -1,6 +1,7 @@
 #include "Game/SpriteComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
+#include "Game/SpriteRenderingSystem.h"
 #include "Core/Assert.h"
 
 namespace sge
@@ -24,13 +25,7 @@ namespace sge
 
 	void SpriteComponent::render(GraphicsDevice* device)
 	{
-		uniformData.MVP = VP * transform->getMatrix();
-
-		uniformData.color = color;
-
-		device->bindVertexBuffer(vertexBuffer);
-		device->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
-		device->draw(3);
+        renderingSystem->renderSprite(this);
 	}
 
 	void SpriteComponent::update()
@@ -67,4 +62,14 @@ namespace sge
 	{
 		this->color = color;
 	}
+
+    void SpriteComponent::setRenderingSystem(SpriteRenderingSystem* system)
+    {
+        renderingSystem = system;
+    }
+
+    const math::vec4& SpriteComponent::getColor()
+    {
+        return color;
+    }
 }
