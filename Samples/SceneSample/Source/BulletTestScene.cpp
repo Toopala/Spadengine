@@ -190,8 +190,21 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	fallRigidBodyCI.m_restitution = 1.0f;
+	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
+	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
+
+	// falling object 2
+	btDefaultMotionState* fallMotionState2 =
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, 23, 0)));
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape, fallInertia);
+	fallRigidBodyCI2.m_restitution = 0.4f;
+	fallRigidBodyCI2.m_friction = 0.8f;
+	fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
+	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(fallRigidBody2);
 }
 
 BulletTestScene::~BulletTestScene()
@@ -199,6 +212,10 @@ BulletTestScene::~BulletTestScene()
 	dynamicsWorld->removeRigidBody(fallRigidBody);
 	delete fallRigidBody->getMotionState();
 	delete fallRigidBody;
+
+	dynamicsWorld->removeRigidBody(fallRigidBody2);
+	delete fallRigidBody2->getMotionState();
+	delete fallRigidBody2;
 
 	dynamicsWorld->removeRigidBody(groundRigidBody);
 	delete groundRigidBody->getMotionState();
@@ -260,13 +277,51 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
-		int randomx = sge::random(10, 2000);
-		int randomy = sge::random(10, 2000);
-		int randomz = sge::random(10, 2000);
+		int randomx = sge::random(10, 500);
+		int randomy = sge::random(10, 500);
+		int randomz = sge::random(10, 500);
 		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
 		fallRigidBody->applyTorque(btVector3(randomx, randomy, randomz));
-		engine->keyboardInput->releaseKey(sge::KEYBOARD_SPACE);
+		
 	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
+	{
+		int randomx = sge::random(-10, 10);
+		int randomy = sge::random(-10, 10);
+		int randomz = sge::random(-10, 10);
+		dynamicsWorld->setGravity(btVector3(randomx, randomy, randomz));
+		
+	}
+
+	// Physics test with second object
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(-2, 0, 0));
+		
+		
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3( 2, 0, 0));
+
+		
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(0, -0, -2));
+
+		
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
+	{
+		fallRigidBody2->applyCentralImpulse(btVector3(0, 0, 2));
+
+		
+	}
+
 	btTransform trans;
 	fallRigidBody->getMotionState()->getWorldTransform(trans);
 
@@ -287,6 +342,17 @@ void BulletTestScene::draw()
 	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
 
 	engine->getRenderer()->getDevice().draw(vertices->size());
+
+	// testing physics with second draw
+	btTransform trans;
+	fallRigidBody2->getMotionState()->getWorldTransform(trans);
+
+	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
+
+	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
+	engine->getRenderer()->getDevice().draw(vertices->size());
+	// test ends
 
 	engine->getRenderer()->getDevice().swap();
 }
