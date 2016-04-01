@@ -16,7 +16,7 @@ namespace sge
 	class SpriteRenderingSystem : public System
 	{
 	public:
-        SpriteRenderingSystem(Renderer* device, const std::vector<char>& pShaderData, const std::vector<char>& vShaderData);
+        SpriteRenderingSystem(Renderer* device);
         ~SpriteRenderingSystem();
 
         void renderSprite(SpriteComponent* sprite);

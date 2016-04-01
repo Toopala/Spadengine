@@ -10,11 +10,28 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/Renderer.h"
 
+#include "Resources/ResourceManager.h"
+#include "Resources/ShaderResource.h"
+#include "Resources/TextureResource.h"
+
 namespace sge
 {
-    SpriteRenderingSystem::SpriteRenderingSystem(Renderer* renderer, const std::vector<char>& vShaderData, const std::vector<char>& pShaderData) :
+    SpriteRenderingSystem::SpriteRenderingSystem(Renderer* renderer) :
         renderer(renderer)
     {
+
+        Handle<ShaderResource> pixelShaderHandle;
+        Handle<ShaderResource> vertexShaderHandle;
+
+#ifdef DIRECTX11
+        vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
+        pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
+#elif OPENGL4
+        vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
+        pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
+#endif
+
+
         sge::VertexLayoutDescription vertexLayoutDescription = { 1,
         {
             { 0, 3, sge::VertexSemantic::POSITION }
@@ -25,6 +42,9 @@ namespace sge
             1.0f, -1.0f, 0.0f,
             -1.0f, -1.0f, 0.0f,
         };
+
+        const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
+        const std::vector<char>& pShaderData = pixelShaderHandle.getResource<ShaderResource>()->loadShader();
 
         vertexShader = renderer->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
         pixelShader = renderer->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());

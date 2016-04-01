@@ -341,7 +341,7 @@ void BulletTestScene::draw()
 
 	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
 
-	engine->getRenderer()->getDevice().draw(vertices->size());
+	engine->getRenderer()->getDevice()->draw(vertices->size());
 
 	// testing physics with second draw
 	btTransform trans;
@@ -350,8 +350,8 @@ void BulletTestScene::draw()
 	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
 	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 
-	engine->getRenderer()->getDevice().copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
-	engine->getRenderer()->getDevice().draw(vertices->size());
+	engine->getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
+	engine->getRenderer()->getDevice()->draw(vertices->size());
 	// test ends
 
 	engine->getRenderer()->getDevice()->swap();

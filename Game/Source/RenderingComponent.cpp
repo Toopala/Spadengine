@@ -10,7 +10,6 @@ namespace sge
 		key.bits = 1;
 	}
 
-
 	RenderingComponent::~RenderingComponent()
 	{
 	}

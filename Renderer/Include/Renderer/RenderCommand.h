@@ -6,7 +6,7 @@ namespace sge
 {
 	union RenderCommand
 	{
-		struct
+		struct Fields
 		{
 			uint64 data : 53;
 			uint64 command : 1;
@@ -14,7 +14,7 @@ namespace sge
 			uint64 viewportLayer : 3;
 			uint64 viewport : 3;
 			uint64 fullscreenLayer : 2;
-		};
+        } fields;
 
 		uint64 bits;
 	};

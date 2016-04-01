@@ -28,8 +28,6 @@
 #include "Game/Entity.h"
 
 #include "Resources/ResourceManager.h"
-#include "Resources/ShaderResource.h"
-#include "Resources/TextureResource.h"
 
 // TODO global is no no. :(
 std::vector<sge::Entity*> entities;
@@ -73,28 +71,12 @@ int main(int argc, char** argv)
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::Renderer renderer(window);
+    renderer.init();
 
-    sge::Handle<sge::ShaderResource> pixelShaderHandle;
-    sge::Handle<sge::ShaderResource> vertexShaderHandle;
-
-	renderer.init();
-
-#ifdef DIRECTX11
-    vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
-    pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
-#elif OPENGL4
-    vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
-    pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
-#endif
 
     sge::ResourceManager::getMgr().printResources();
 
 	// TODO load layout description from external file (shader.reflect).
-
-	sge::VertexLayoutDescription vertexLayoutDescription = { 1,
-	{
-		{ 0, 3, sge::VertexSemantic::POSITION }
-	}};
 
 	// TODO move shader, pipeline, buffer and texture creation to somewhere else.
 	// PLAN CAREFULLY.
@@ -114,8 +96,7 @@ int main(int argc, char** argv)
 	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
 	// data, since transparent data should be sorted by their depth.
 
-    sge::SpriteRenderingSystem spriteRenderingSystem(&renderer, vertexShaderHandle.getResource<sge::ShaderResource>()->loadShader(),
-        pixelShaderHandle.getResource<sge::ShaderResource>()->loadShader());
+    sge::SpriteRenderingSystem spriteRenderingSystem(&renderer);
     spriteRenderingSystem.setVP(VP);
 
     createSprite(&spriteRenderingSystem, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
