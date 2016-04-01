@@ -41,6 +41,7 @@ private:
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btRigidBody* fallRigidBody;
+	btRigidBody* fallRigidBody2;
 	btRigidBody* groundRigidBody;
 	btRigidBody* wall1RigidBody;
 	btRigidBody* wall2RigidBody;

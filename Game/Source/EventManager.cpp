@@ -32,10 +32,10 @@ namespace sge
 			{
 				//Keyboard
 			case SDL_KEYDOWN:
-				keyboardInput->pressKey(inputEvent.button.button);
+				keyboardInput->pressKey(inputEvent.key.keysym.scancode);
 				break;
 			case SDL_KEYUP:
-				keyboardInput->releaseKey(inputEvent.button.which);
+				keyboardInput->releaseKey(inputEvent.key.keysym.scancode);
 				break;
 
 				//Mouse
