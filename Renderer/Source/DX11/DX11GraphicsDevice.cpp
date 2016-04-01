@@ -612,7 +612,7 @@ namespace sge
 		impl->context->PSSetShaderResources(slot, 1, &reinterpret_cast<DX11Texture*>(texture)->textureView);
 	}
 
-	void GraphicsDevice::debindTexture(Texture* texture)
+	void GraphicsDevice::debindTexture(Texture* texture, size_t slot)
 	{
 
 	}

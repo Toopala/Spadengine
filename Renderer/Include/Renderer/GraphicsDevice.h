@@ -50,7 +50,7 @@ namespace sge
 		void bindViewport(Viewport* viewport);
 
 		void bindTexture(Texture* texture, size_t slot);
-		void debindTexture(Texture* texture);
+		void debindTexture(Texture* texture, size_t slot);
 
 		void copyData(Buffer* buffer, size_t size, const void* data);
 		void copySubData(Buffer* buffer, size_t offset, size_t size, const void* data);

@@ -28,6 +28,7 @@
 #include "Game/Entity.h"
 
 #include "Resources/ResourceManager.h"
+#include "Resources/TextureResource.h"
 
 // TODO global is no no. :(
 std::vector<sge::Entity*> entities;
@@ -37,7 +38,7 @@ std::vector<sge::SpriteComponent*> sprites;
 sge::math::mat4 VP = sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-void createSprite(sge::SpriteRenderingSystem* system, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
+void createSprite(sge::SpriteRenderingSystem* system, sge::Texture* texture, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
 {
 	// TODO kinda hax function. We need a proper way (a factory?) to create sprites.
 	sge::Entity* entity = new sge::Entity();
@@ -53,7 +54,7 @@ void createSprite(sge::SpriteRenderingSystem* system, const sge::math::vec3& pos
 	transform->setRotationVector(sge::math::vec3(0.0f, 0.0f, 1.0f));
 	transform->setAngle(rotation);
 	
-	sprite->setTexture(nullptr);
+	sprite->setTexture(texture);
 	sprite->setColor(color);
     sprite->setRenderingSystem(system);
 
@@ -72,6 +73,13 @@ int main(int argc, char** argv)
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
 	sge::Renderer renderer(window);
     renderer.init();
+
+    sge::Handle<sge::TextureResource> textureResource = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+
+    sge::Texture* texture = renderer.getDevice()->createTexture(
+        textureResource.getResource<sge::TextureResource>()->getSize().x, 
+        textureResource.getResource<sge::TextureResource>()->getSize().y,
+        textureResource.getResource<sge::TextureResource>()->getData());
 
 
     sge::ResourceManager::getMgr().printResources();
@@ -96,11 +104,11 @@ int main(int argc, char** argv)
 	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
 	// data, since transparent data should be sorted by their depth.
 
-    sge::SpriteRenderingSystem spriteRenderingSystem(&renderer);
-    spriteRenderingSystem.setVP(VP);
+    sge::SpriteRenderingSystem* spriteRenderer = new sge::SpriteRenderingSystem(&renderer);
+    spriteRenderer->setVP(VP);
 
-    createSprite(&spriteRenderingSystem, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
-    createSprite(&spriteRenderingSystem, { 512.0f, 256.0f, 0.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+    createSprite(spriteRenderer, texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+    createSprite(spriteRenderer, texture, { 512.0f, 256.0f, 0.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
 	
 	// Loop
 	SDL_Event event;
@@ -134,7 +142,7 @@ int main(int argc, char** argv)
 		// Rendering
 		renderer.begin();
 
-        spriteRenderingSystem.update();
+        spriteRenderer->update();
 
 		renderer.end();
 	}
@@ -155,6 +163,10 @@ int main(int argc, char** argv)
 	{
 		delete entity;
 	}
+
+    renderer.getDevice()->deleteTexture(texture);
+
+    delete spriteRenderer;
 
 	sprites.clear();
 	transforms.clear();

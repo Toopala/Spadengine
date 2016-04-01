@@ -380,9 +380,9 @@ namespace sge
 		checkError();
 	}
 
-	void GraphicsDevice::debindTexture(Texture* texture)
+	void GraphicsDevice::debindTexture(Texture* texture, size_t slot)
 	{
-		glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		checkError();

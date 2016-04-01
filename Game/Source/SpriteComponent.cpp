@@ -6,13 +6,12 @@
 
 namespace sge
 {
-	SpriteComponent::SpriteComponent(Entity* ent) :
-		RenderingComponent(ent),
-		color(1.0f)
+    SpriteComponent::SpriteComponent(Entity* ent) :
+        RenderingComponent(ent),
+        color(1.0f),
+        texture(nullptr),
+        renderingSystem(nullptr)
 	{
-		Entity* entity = getParent();
-
-
 		transform = getParent()->getComponent<TransformComponent>();
 
 		// We need transform!
@@ -25,6 +24,8 @@ namespace sge
 
 	void SpriteComponent::render(GraphicsDevice* device)
 	{
+        SGE_ASSERT(renderingSystem);
+
         renderingSystem->renderSprite(this);
 	}
 
@@ -33,35 +34,15 @@ namespace sge
 
 	}
 
-	void SpriteComponent::setVertexBuffer(sge::Buffer* buffer)
-	{
-		vertexBuffer = buffer;
-	}
-
-	void SpriteComponent::setUniformBuffer(sge::Buffer* buffer)
-	{
-		uniformBuffer = buffer;
-	}
-
-	void SpriteComponent::setTexture(sge::Texture* texture)
-	{
-		this->texture = texture;
-	}
-
-	void SpriteComponent::setPipeline(sge::Pipeline* pipeline)
-	{
-		this->pipeline = pipeline;
-	}
-
-	void SpriteComponent::setVP(const math::mat4& VP)
-	{
-		this->VP = VP;
-	}
-
 	void SpriteComponent::setColor(const math::vec4& color)
 	{
 		this->color = color;
 	}
+
+    void SpriteComponent::setTexture(Texture* texture)
+    {
+        this->texture = texture;
+    }
 
     void SpriteComponent::setRenderingSystem(SpriteRenderingSystem* system)
     {
@@ -71,5 +52,10 @@ namespace sge
     const math::vec4& SpriteComponent::getColor()
     {
         return color;
+    }
+
+    Texture* SpriteComponent::getTexture()
+    {
+        return texture;
     }
 }

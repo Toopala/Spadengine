@@ -2,6 +2,8 @@
 #include "Game/RenderingComponent.h"
 #include "Core/Math.h"
 
+#include <string>
+
 namespace sge
 {
 	class TransformComponent;
@@ -15,29 +17,15 @@ namespace sge
 		void render(GraphicsDevice* device);
 		void update();
 
-		void setVertexBuffer(sge::Buffer* buffer);
-		void setUniformBuffer(sge::Buffer* buffer);
-		void setTexture(sge::Texture* texture);
-		void setPipeline(sge::Pipeline* pipeline);
-		void setVP(const math::mat4& VP);
+		void setTexture(Texture* texture);
 		void setColor(const math::vec4& color);
         void setRenderingSystem(SpriteRenderingSystem* system);
 
         const math::vec4& getColor();
+        Texture* getTexture();
 		
 	private:
-		sge::Buffer* vertexBuffer;
-		sge::Buffer* uniformBuffer;
-		sge::Texture* texture;
-		sge::Pipeline* pipeline;
-
-		struct UniformData
-		{
-			math::mat4 MVP;
-			math::vec4 color;
-		} uniformData;
-
-		math::mat4 VP;
+        Texture* texture;
 		math::vec4 color;
 
 		TransformComponent* transform;

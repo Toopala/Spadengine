@@ -19,7 +19,6 @@ namespace sge
     SpriteRenderingSystem::SpriteRenderingSystem(Renderer* renderer) :
         renderer(renderer)
     {
-
         Handle<ShaderResource> pixelShaderHandle;
         Handle<ShaderResource> vertexShaderHandle;
 
@@ -31,16 +30,20 @@ namespace sge
         pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
 #endif
 
-
-        sge::VertexLayoutDescription vertexLayoutDescription = { 1,
+        sge::VertexLayoutDescription vertexLayoutDescription = { 2,
         {
-            { 0, 3, sge::VertexSemantic::POSITION }
+            { 0, 3, sge::VertexSemantic::POSITION },
+            { 0, 2, sge::VertexSemantic::TEXCOORD }
         } };
 
         float vertexData[] = {
-            0.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+
+            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f
         };
 
         const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
@@ -71,6 +74,13 @@ namespace sge
     void SpriteRenderingSystem::renderSprite(SpriteComponent* sprite)
     {
         renderer->getDevice()->bindPipeline(pipeline);
+
+        sge::Texture* texture = sprite->getTexture();
+
+        if (texture)
+        {
+            renderer->getDevice()->bindTexture(texture, 0);
+        }
         
         uniformData.MVP = *VP * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
         uniformData.color = sprite->getColor();
@@ -78,7 +88,12 @@ namespace sge
         renderer->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
         renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
-        renderer->getDevice()->draw(3);
+        renderer->getDevice()->draw(6);
+
+        if (texture)
+        {
+            renderer->getDevice()->debindTexture(texture, 0);
+        }
 
         renderer->getDevice()->debindPipeline(pipeline);
     }

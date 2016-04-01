@@ -6,7 +6,6 @@
 
 namespace sge
 {
-	class GraphicsDevice;
     class Renderer;
     class SpriteComponent;
     struct Pipeline;
@@ -16,7 +15,7 @@ namespace sge
 	class SpriteRenderingSystem : public System
 	{
 	public:
-        SpriteRenderingSystem(Renderer* device);
+        SpriteRenderingSystem(Renderer* renderer);
         ~SpriteRenderingSystem();
 
         void renderSprite(SpriteComponent* sprite);
