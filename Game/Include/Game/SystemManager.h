@@ -30,7 +30,7 @@ namespace sge
 		*
 		* Uses the map to find the correct System for the Component and adds it
 		* into that System.
-		* \param Pointer to a type of Component.
+		* \param Component* comp Pointer to a type of Component.
 		*/
 		void addToSystem(Component* comp);
 
@@ -41,8 +41,8 @@ namespace sge
 		void updateSystems();
 
 	private:
-		Systems systems; ///< Map used to find what Component goes to which System.
-		TestSystem* testSys; ///< Pointer to a TestSystem.
+		Systems systems; /**< Map used to find what Component goes to which System. */
+		TestSystem* testSys; /**< Pointer to a TestSystem. */
 	
 	};
 }

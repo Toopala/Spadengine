@@ -30,14 +30,15 @@ namespace sge
 		/** \brief Function for adding Components.
 		*
 		* Adds a Component to the Entity.
-		* \param Pointer to Entity, Pointer to a type of Component.
+		* \param Entity* ent : Pointer to Entity 
+		* \param Component* comp : Pointer to a type of Component.
 		*/
 		void setComponent(Entity* ent, Component* comp);
 		
 		/** \brief Setter Function for SystemManager
 		*
 		* Sets class sysManager pointer to received pointer.
-		* \param Pointer to SystemManager.
+		* \param SystemManager* sysMgr : Pointer to SystemManager.
 		*/
 		void setSysManager(SystemManager* sysMgr);
 
@@ -45,7 +46,7 @@ namespace sge
 		*
 		* Wraps the removeComponent method of the Entity class.
 		* Removes any type of component from an Entity.
-		* \param Pointer to type of Component as template parameter, Pointer to Entity
+		* \param Entity& ent : Reference to the Entity we want to remove Component T from.
 		*/
 		template<class T>
 		void removeComponent(Entity& ent)
@@ -55,6 +56,6 @@ namespace sge
 
 	private:
 
-		SystemManager* sysManager; ///< SystemManager pointer
+		SystemManager* sysManager; /**< SystemManager pointer */
 	};
 }
