@@ -272,7 +272,6 @@ BulletTestScene::~BulletTestScene()
 
 void BulletTestScene::update(float step)
 {
-	// TODO: Fix getting stuck.
 	dynamicsWorld->stepSimulation(step, 10);
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))

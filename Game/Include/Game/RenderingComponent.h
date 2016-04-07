@@ -12,8 +12,6 @@ namespace sge
 		virtual ~RenderingComponent();
 		virtual void render(GraphicsDevice* device) = 0;
 
-		RenderCommand getKey() { return key; }
-	private:
 		RenderCommand key;
 	};
 }
