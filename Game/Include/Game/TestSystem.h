@@ -1,6 +1,5 @@
 #pragma once
 #include "Game/System.h"
-#include "Game/Component.h"
 #include "Game/TestComponent.h"
 #include "Game/InputComponent.h"
 #include <vector>

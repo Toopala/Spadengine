@@ -85,6 +85,8 @@
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\InputComponent.cpp" />
+    <ClCompile Include="Source\PhysicsComponent.cpp" />
+    <ClCompile Include="Source\PhysicsSystem.cpp" />
     <ClCompile Include="Source\RenderingComponent.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
@@ -95,11 +97,14 @@
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
     <ClCompile Include="Source\TransformComponent.cpp" />
+    <ClCompile Include="Source\TransformSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\PhysicsComponent.h" />
+    <ClInclude Include="Include\Game\PhysicsSystem.h" />
     <ClInclude Include="Include\Game\RenderingComponent.h" />
     <ClInclude Include="Include\Game\Scene.h" />
     <ClInclude Include="Include\Game\InputComponent.h" />
@@ -112,6 +117,7 @@
     <ClInclude Include="Include\Game\TestComponent.h" />
     <ClInclude Include="Include\Game\TestSystem.h" />
     <ClInclude Include="Include\Game\TransformComponent.h" />
+    <ClInclude Include="Include\Game\TransformSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
