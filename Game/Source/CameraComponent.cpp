@@ -1,8 +1,24 @@
-#include "Renderer/MouseLookCamera.h"
+#include "Game/CameraComponent.h"
+#include "Game/TransformComponent.h"
+#include "Game/Entity.h"
 
 namespace sge
 {
-	MouseLookCamera::MouseLookCamera(float FOV, float aspectRatio, float near, float far, bool enableMouse, sge::math::vec3 POS, sge::math::vec3 front, sge::math::vec3 up)
+	CameraComponent::CameraComponent(Entity* ent) : 
+		RenderingComponent(ent)
+		//renderingSystem(nullptr)
+	{
+		transform = getParent()->getComponent<TransformComponent>();
+
+		SGE_ASSERT(transform);
+	}
+
+	CameraComponent::~CameraComponent()
+	{
+
+	}
+
+	void CameraComponent::setupCamera(float FOV, float aspectRatio, float near, float far, bool enableMouse, sge::math::vec3 POS, sge::math::vec3 front, sge::math::vec3 up)
 	{
 		this->cameraPos = POS;
 		this->cameraFront = front;
@@ -14,29 +30,31 @@ namespace sge
 		VP = P * V;
 		mouseEnabled = enableMouse;
 
+		if (mouseEnabled)
+		{
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+		}
+
 		firstMouse = true;
 
 		sensitivity = 0.15f;
 	}
 
-	MouseLookCamera::~MouseLookCamera()
-	{
-
-	}
-
-	void MouseLookCamera::update(int mouseX, int mouseY)
+	void CameraComponent::update()
 	{
 		if (mouseEnabled)
 		{
+			Spade::getInstance().mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
+
 			if (firstMouse)
 			{
-				lastX += mouseX;
-				lastY += mouseY;
+				lastX += mouseXpos;
+				lastY += mouseYpos;
 				firstMouse = false;
 			}
 
-			mousseX += mouseX;
-			mousseY += mouseY;
+			mousseX += mouseXpos;
+			mousseY += mouseYpos;
 
 			float xoffset = mousseX - lastX;
 			float yoffset = lastY - mousseY;
@@ -61,41 +79,49 @@ namespace sge
 			cameraFront = sge::math::normalize(front);
 		}
 
+		setPosition(transform->getPosition());
+		if (!mouseEnabled)
+		{
+			setFrontByVector(transform->getRotationVector);
+		}		
+
 		V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		VP = P * V;
 	}
 
-	sge::math::mat4 MouseLookCamera::getVp()
+	sge::math::mat4 CameraComponent::getVp()
 	{
 		return VP;
 	}
 
-	void MouseLookCamera::enableMouse()
+	void CameraComponent::enableMouse()
 	{
 		mouseEnabled = true;
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 
-	void MouseLookCamera::disableMouse()
+	void CameraComponent::disableMouse()
 	{
 		mouseEnabled = false;
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 
-	void MouseLookCamera::setFrontByVector(sge::math::vec3 front)
+	void CameraComponent::setFrontByVector(sge::math::vec3 front)
 	{
 		cameraFront = front;
 	}
 
-	void MouseLookCamera::setPosition(sge::math::vec3 POS)
+	void CameraComponent::setPosition(sge::math::vec3 POS)
 	{
 		cameraPos = POS;
 	}
 
-	void MouseLookCamera::setSensitivity(float sensitivity)
+	void CameraComponent::setSensitivity(float sensitivity)
 	{
 		this->sensitivity = sensitivity;
 	}
 
-	sge::math::vec3 MouseLookCamera::getFront()
+	sge::math::vec3 CameraComponent::getFront()
 	{
 		return cameraFront;
 	}
