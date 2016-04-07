@@ -8,14 +8,15 @@ namespace sge
 	{
 		struct Fields
 		{
-			uint64 data : 53;
-			uint64 command : 1;
-			uint64 translucent : 2;
-			uint64 viewportLayer : 3;
-			uint64 viewport : 3;
-			uint64 fullscreenLayer : 2;
+            uint64 data : 31;
+            uint64 depth : 32;
+            uint64 translucent : 1;
         } fields;
 
 		uint64 bits;
 	};
+
+    // TODO translucent draws should be sorted by depth and from back to front
+    // while opaque draws should be sorted by used shaders, textures etc. and 
+    // from front to back. 
 }

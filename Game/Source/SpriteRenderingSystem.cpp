@@ -37,13 +37,13 @@ namespace sge
         } };
 
         float vertexData[] = {
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
         };
 
         const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
@@ -117,7 +117,8 @@ namespace sge
     {
         for (auto sprite : components)
         {
-            renderer->pushCommand(sprite->getKey(), std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+            sprite->update();
+            renderer->pushCommand(sprite->key, std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
         }
     }
 }
