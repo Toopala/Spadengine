@@ -3,7 +3,11 @@
 #include "Game/System.h"
 #include "Game/Component.h"
 #include "Game/TestSystem.h"
+#include "Game/PhysicsSystem.h"
+#include "Game/TransformSystem.h"
 #include "Game/TestComponent.h"
+#include "Game/PhysicsComponent.h"
+#include "Game/TransformComponent.h"
 #include "Core/Memory/PagePoolAllocator.h"
 
 namespace sge
@@ -42,7 +46,9 @@ namespace sge
 
 	private:
 		Systems systems; /**< Map used to find what Component goes to which System. */
-		TestSystem* testSys; /**< Pointer to a TestSystem. */
+		TestSystem* testSys; /**< Pointer to TestSystem. */
+		PhysicsSystem* physSys; /**< Pointer to PhysicsSystem. */
+		TransformSystem* tranSys; /**< Pointer to TransformSystem. */
 	
 	};
 }

@@ -6,6 +6,10 @@ namespace sge
 {
 	class SystemManager;
 	class Component;
+	class TransformComponent;
+	class SpriteComponent;
+	class InputComponent;
+	class PhysicsComponent;
 
 	class EntityManager
 	{
@@ -13,19 +17,36 @@ namespace sge
 		EntityManager();
 		~EntityManager();
 
-		/** \brief Creates an empty Entity.
+		/** \brief Creates a transformable Entity.
 		*
-		* Empty default constructed Entity.
+		* Creates an Entity that only contains a transform component.
 		* \return Pointer to a default constructed Entity.
 		*/
 		Entity* createEntity();
 
 		/** \brief Entity factory function.
 		*
-		* Creates a new Entity and gives it certain components.
+		* Creates a new Entity and gives it a transform component and a
+		* sprite component.
 		* \return Pointer to created Entity.
 		*/
 		Entity* createActor();
+
+		/** \brief Entity factory function.
+		*
+		* Creates a new Entity and gives it a transform component,
+		* sprite component and a physics component.
+		* \return Pointer to created Entity.
+		*/
+		Entity* createPhysicsActor();
+
+		/** \brief Entity factory function.
+		*
+		* Creates a new Entity and gives it a transform component,
+		* sprite component, input component and a physics component.
+		* \return Pointer to created Entity.
+		*/
+		Entity* createPlayer();
 
 		/** \brief Function for adding Components.
 		*
@@ -52,6 +73,7 @@ namespace sge
 		void removeComponent(Entity& ent)
 		{
 			ent.removeComponent<T>();
+			//system remove t
 		};
 
 	private:
