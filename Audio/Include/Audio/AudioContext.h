@@ -1,5 +1,5 @@
-#include <al.h>
-#include <alc.h>
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 #include <iostream>
 
 namespace sge

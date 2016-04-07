@@ -4,15 +4,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
   <ItemDefinitionGroup>
-	<ClCompile>
-	      <AdditionalIncludeDirectories>$(SolutionDir)/../Audio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../ThirdParty/OpenAL/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../Audio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/OpenAL/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-	   <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/OpenAL/lib/EFX-Util_MT/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-	   <AdditionalDependencies>EFX-Util.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
