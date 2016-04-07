@@ -32,7 +32,7 @@ namespace sge
 	void SpriteComponent::update()
 	{
         key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
-        key.fields.depth = transform->getPosition().z;
+        key.fields.depth = static_cast<uint64>(transform->getPosition().z);
 	}
 
 	void SpriteComponent::setColor(const math::vec4& color)
