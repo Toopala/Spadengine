@@ -1,6 +1,6 @@
 solution "Spadengine"
 	
-		defines {"OPENGL4"}
+	defines {"OPENGL4"}
 	configurations { "DEBUG", "RELEASE" }
 
 	configuration "Debug"
@@ -58,36 +58,6 @@ solution "Spadengine"
 				"../ThirdParty/glm/include/" }
 		links { "SDL2" }
 
-
-	project "Game"
-		kind "StaticLib"
-		language "C++"
-		files {"../Game/**.cpp"}	
-		includedirs { "../Game/Include/",
-				"../Core/Include/",
-				"../HID/Include/",
-				"../Renderer/Include/",
-				"../ThirdParty/glm/include/",
-				"../ThirdParty/SDL/include/" }
-		links { "SDL2", "Core", "HID", }
-
-
-	project "Resources"
-		kind "StaticLib"
-		language "C++"
-		files {"../Resources/**.cpp"}
-		includedirs {"../Resources/Include/",
-				"../Core/Include/",
-				"../Renderer/Include/",
-				"../ThirdParty/glm/include/",
-				"../ThirdParty/freetype/include/",
-				"../ThirdParty/stb_image/Include/"}
-	
-	project "Audio"
-		kind "StaticLib"
-		language "C++"
-
-
 	project "Spade"
 		kind "StaticLib"
 		language "C++"
@@ -101,9 +71,43 @@ solution "Spadengine"
 				"../HID/Include/"}
 		links { "Renderer" }
 
+	project "Game"
+		kind "StaticLib"
+		language "C++"
+		files {"../Game/**.cpp"}	
+		includedirs { "../Game/Include/",
+				"../Core/Include/",
+				"../HID/Include/",
+				"../Renderer/Include/",
+				"../Resources/Include/",
+				"../Spade/Include",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/SDL/include/" }
+		links { "SDL2", "Core", "HID","Resources", "Spade" }
+
+
+	project "Resources"
+		kind "StaticLib"
+		language "C++"
+		files {"../Resources/**.cpp"}
+		includedirs {"../Resources/Include/",
+				"../Core/Include/",
+				"../Renderer/Include/",
+				"../Game/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/freetype/include/",
+				"../ThirdParty/stb_image/Include/"}
+
+	project "Audio"
+		kind "StaticLib"
+		language "C++"
+		includedirs {"../Audio/Include/"}
+
+
 	project "Sample"
 		kind "ConsoleApp"
 		language "C++"
+		location "../Samples/Sample/"
 		files {"../Samples/Sample/**.cpp"}
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
@@ -120,6 +124,7 @@ solution "Spadengine"
 	project "ECSample"
 		kind "ConsoleApp"
 		language "C++"
+		location "../Samples/ECSample"
 		files {"../Samples/RenderSample/**.cpp"}
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
@@ -130,11 +135,12 @@ solution "Spadengine"
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/"}
-		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" , "Game"}
+		links {"Core", "Renderer", "Game", "Resources","SDL2","glad","dl","assimp"}
 
 	project "RenderSample"
 		kind "ConsoleApp"
 		language "C++"
+		location "../Samples/RenderSample/"
 		files {"../Samples/RenderSample/**.cpp"}
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
@@ -145,26 +151,27 @@ solution "Spadengine"
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/"}
-		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources", "Game" }
+		links {"Core", "Renderer", "Game", "Resources","SDL2","glad","dl","assimp"}
 
 	project "SceneSample"
 		kind "ConsoleApp"
 		language "C++"
+		location "../Samples/SceneSample/"
 		files {"../Samples/SceneSample/**.cpp"}
 		includedirs {"../Samples/SceneSample/Include/",
-				"../HID/Include/",
-				"../Game/Include/Game",
-				"../Core/Include/",
-				"../Resources/Include/",
+				"../Core/Include/",	
 				"../Renderer/Include/",
+				"../Game/Include/",
+				"../Resources/Include/",
 				"../Spade/Include/",
+				"../HID/Include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/glm/include/",
+				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/bulletphysics/include/",
-				"../ThirdParty/bulletphysics/include/Bullet",
-				"../ThirdParty/assimp/include/",
-				"../ThirdParty/glad/Include/"}
-		links {"Core","Game","HID","Resources", "Renderer", "SDL2" ,"glad","dl","BulletPhysics","assimp"  }
+				"../ThirdParty/bulletphysics/include/Bullet/LinearMath/",
+				"../ThirdParty/assimp/include/"}
+		links {"Core", "Renderer", "Game", "Resources","Spade","HID","SDL2","glad","dl","Bullet","assimp"}
 	 
 	
