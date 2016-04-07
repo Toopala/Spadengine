@@ -82,7 +82,7 @@ namespace sge
 		setPosition(transform->getPosition());
 		if (!mouseEnabled)
 		{
-			setFrontByVector(transform->getRotationVector);
+			setFrontByVector(transform->getRotationVector());
 		}		
 
 		V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
