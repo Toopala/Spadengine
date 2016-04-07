@@ -7,7 +7,7 @@ namespace sge
 		// TODO do a proper calculation for depth, pipeline etc.
 		// Maybe in the derived classes?
 		// Needs more planning!
-		key.bits = 1;
+		key.bits = 0;
 	}
 
 	RenderingComponent::~RenderingComponent()

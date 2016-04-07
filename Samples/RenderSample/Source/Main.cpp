@@ -107,8 +107,8 @@ int main(int argc, char** argv)
     sge::SpriteRenderingSystem* spriteRenderer = new sge::SpriteRenderingSystem(&renderer);
     spriteRenderer->setVP(VP);
 
-    createSprite(spriteRenderer, texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
     createSprite(spriteRenderer, texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+    createSprite(spriteRenderer, texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
 	
 	// Loop
 	SDL_Event event;

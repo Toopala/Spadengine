@@ -117,7 +117,8 @@ namespace sge
     {
         for (auto sprite : components)
         {
-            renderer->pushCommand(sprite->getKey(), std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+            sprite->update();
+            renderer->pushCommand(sprite->key, std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
         }
     }
 }
