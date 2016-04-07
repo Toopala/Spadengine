@@ -119,7 +119,7 @@ namespace sge
 			return static_cast<T*>((*it).second);
 		}
 
-        static ResourceManager& ResourceManager::getMgr()
+        static ResourceManager& getMgr()
         {
             static ResourceManager resMgr;
             return resMgr;
