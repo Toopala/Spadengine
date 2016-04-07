@@ -37,13 +37,13 @@ namespace sge
         } };
 
         float vertexData[] = {
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
         };
 
         const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();

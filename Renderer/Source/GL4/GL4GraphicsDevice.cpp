@@ -80,14 +80,14 @@ namespace sge
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 
 		std::cout << "Using OpenGL version " << major << "." << minor << std::endl;
-
-		glFrontFace(GL_CCW);
-		glCullFace(GL_BACK);
+		
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
-
+        glEnable(GL_BLEND);
 		glEnable(GL_MULTISAMPLE);
+
+        glCullFace(GL_BACK);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		checkError();
 	}
