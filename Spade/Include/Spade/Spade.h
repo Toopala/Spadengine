@@ -24,6 +24,15 @@ namespace sge
 
 		void quit();
 
+        static Spade& getInstance()
+        {
+            static Spade spade;
+            return spade;
+        }
+
+        Spade(const Spade&) = delete;
+        void operator=(const Spade&) = delete;
+
 		SceneManager* getSceneManager()
 		{
 			return sceneManager;
