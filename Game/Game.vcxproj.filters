@@ -55,6 +55,9 @@
     <ClCompile Include="Source\PhysicsSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CameraComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="Include\Game\PhysicsSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\CameraComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
