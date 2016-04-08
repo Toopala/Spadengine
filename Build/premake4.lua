@@ -82,8 +82,10 @@ solution "Spadengine"
 				"../Resources/Include/",
 				"../Spade/Include",
 				"../ThirdParty/glm/include/",
+				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/",
 				"../ThirdParty/SDL/include/" }
-		links { "SDL2", "Core", "HID","Resources", "Spade" }
+		links { "SDL2", "Core", "HID","Resources", "Spade", "Assimp" }
 
 
 	project "Resources"
