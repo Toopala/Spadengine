@@ -31,7 +31,7 @@ namespace sge
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
 			{
-				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+				return sge::Spade::getInstance().getRenderer()->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace sge
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_normal")
 			{
-				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+				return sge::Spade::getInstance().getRenderer()->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 			}
 		}
 

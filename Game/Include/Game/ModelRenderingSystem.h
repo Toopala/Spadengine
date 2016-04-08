@@ -8,6 +8,7 @@ namespace sge
 {
 	class Renderer;
 	class ModelComponent;
+	struct Buffer;
 
 	class ModelRenderingSystem : public System
 	{
@@ -27,5 +28,13 @@ namespace sge
 		Renderer* renderer;
 		
 		const math::mat4* VP;
+
+		Buffer* uniformBuffer;
+
+		struct UniformDataComponent
+		{
+			sge::math::mat4 PV;
+			sge::math::mat4 M;
+		} uniformData;
 	};
 }

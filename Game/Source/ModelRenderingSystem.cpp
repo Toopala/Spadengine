@@ -13,17 +13,29 @@ namespace sge
 	ModelRenderingSystem::ModelRenderingSystem(Renderer* renderer) :
 		renderer(renderer)
 	{
-
+		uniformBuffer = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)
 	{
+		uniformData.M = model->getParent()->getComponent<TransformComponent>()->getMatrix();
 
+		renderer->getDevice()->bindPipeline(model->getPipeline());
+		renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+
+		renderer->getDevice()->bindTexture(model->diffTexture, 0);
+		renderer->getDevice()->bindTexture(model->normTexture, 1);
+
+		renderer->getDevice()->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
+		renderer->getDevice()->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
+
+		renderer->getDevice()->draw(model->getModelResource()->getVerticeArray()->size());
+		renderer->getDevice()->debindPipeline(model->getPipeline());
 	}
 
 	void ModelRenderingSystem::setVP(const math::mat4& VP)
 	{
-		this->VP = &VP;
+		uniformData.PV = VP;
 	}
 
 	void ModelRenderingSystem::addComponent(Component* component)

@@ -32,4 +32,11 @@ namespace sge
 	{
 		renderingSystem = system;
 	}
+
+	void ModelComponent::setModelResource(sge::Handle <sge::ModelResource>* modelHandle)
+	{
+		this->modelHandle = modelHandle;
+		diffTexture = modelHandle->getResource<ModelResource>()->getDiffuseTexture();
+		normTexture = modelHandle->getResource<ModelResource>()->getNormalTexture();
+	}
 }

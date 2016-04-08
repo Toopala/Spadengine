@@ -58,6 +58,7 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 
 BulletTestScene::BulletTestScene()
 {
+	modelSystem = new sge::ModelRenderingSystem(sge::Spade::getInstance().getRenderer());
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
@@ -68,10 +69,6 @@ BulletTestScene::BulletTestScene()
 	loadTextShader("../Assets/Shaders/VertexShader.glsl", vShaderData);
 	loadTextShader("../Assets/Shaders/PixelShader.glsl", pShaderData);
 #endif
-
-	//Assimp test
-	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
-	modelHandle.getResource<sge::ModelResource>()->setRenderer(sge::Spade::getInstance().getRenderer());
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -85,30 +82,37 @@ BulletTestScene::BulletTestScene()
 	vertexShader = sge::Spade::getInstance().getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	pixelShader = sge::Spade::getInstance().getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
-	indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
-
-	texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
-	texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
-
 	pipeline = sge::Spade::getInstance().getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	sge::Spade::getInstance().getRenderer()->getDevice()->bindPipeline(pipeline);
+
+	//Assimp test
+	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	modelHandle.getResource<sge::ModelResource>()->setRenderer(sge::Spade::getInstance().getRenderer());
+
+	EManager = new sge::EntityManager();
+	sysManager = new sge::SystemManager();
+	sysManager->init();
+	EManager->setSysManager(sysManager);
+	modentity = EManager->createEntity();
+
+	modcomponent = new sge::ModelComponent(modentity);
+	modentity->setComponent(modcomponent);
+
+	modtransform = new sge::TransformComponent(modentity);
+	modentity->setComponent(modtransform);
+
+	modcomponent->setModelResource(&modelHandle);
+	modcomponent->setRenderingSystem(modelSystem);
+
+	
+
 	viewport = { 0, 0, 1280, 720 };
+
+	modcomponent->setPipeline(pipeline);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers(sge::Spade::getInstance().getRenderer()->getDevice());
 
-	vertexBuffer = modelHandle.getResource<sge::ModelResource>()->getVertexBuffer();
-	uniformBuffer = modelHandle.getResource<sge::ModelResource>()->getIndexBuffer();
-
 	sge::Spade::getInstance().getRenderer()->getDevice()->bindViewport(&viewport);
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindPipeline(pipeline);
-
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindTexture(texture, 0);
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindTexture(texture2, 1);
-
-	sge::Spade::getInstance().getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices->size(), vertices->data());
-	sge::Spade::getInstance().getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -198,10 +202,6 @@ BulletTestScene::BulletTestScene()
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
 
-	EManager = new sge::EntityManager();
-	sysManager = new sge::SystemManager();
-	sysManager->init();
-	EManager->setSysManager(sysManager);
 	camentity = EManager->createEntity();
 
 	camcomponent = new sge::CameraComponent(camentity);
@@ -269,14 +269,10 @@ BulletTestScene::~BulletTestScene()
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->debindPipeline(pipeline);
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteBuffer(vertexBuffer);
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteBuffer(uniformBuffer);
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(vertexShader);
 	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(pixelShader);
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteTexture(texture);
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteTexture(texture2);
-
+	
 	sge::Spade::getInstance().getRenderer()->getDevice()->deletePipeline(pipeline);
 
 	sge::Spade::getInstance().getResourceManager()->release(modelHandle);
@@ -356,26 +352,13 @@ void BulletTestScene::update(float step)
 	}
 
 	camentity->getComponent<sge::CameraComponent>()->update();
-	uniformData2.PV = camentity->getComponent<sge::CameraComponent>()->getVp();
+	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getVp());
 }
 void BulletTestScene::draw()
 {
 	sge::Spade::getInstance().getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
-
-	sge::Spade::getInstance().getRenderer()->getDevice()->draw(vertices->size());
-
-	// testing physics with second draw
-	btTransform trans;
-	fallRigidBody2->getMotionState()->getWorldTransform(trans);
-
-	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
-
-	sge::Spade::getInstance().getRenderer()->getDevice()->copyData(uniformBuffer, sizeof(uniformData2), &uniformData2);
-	sge::Spade::getInstance().getRenderer()->getDevice()->draw(vertices->size());
-	// test ends
+	modentity->getComponent<sge::ModelComponent>()->render(sge::Spade::getInstance().getRenderer()->getDevice());
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->swap();
 }

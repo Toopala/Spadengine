@@ -11,6 +11,8 @@
 #include "Game/EntityManager.h"
 #include "Game/SystemManager.h"
 #include "Game/CameraComponent.h"
+#include "Game/ModelComponent.h"
+#include "Game/ModelRenderingSystem.h"
 
 // FORWARD DECLARE
 struct sge::Pipeline;
@@ -95,4 +97,10 @@ private:
 	sge::Entity* camentity;
 	sge::TransformComponent* camtransform;
 	sge::CameraComponent* camcomponent;
+
+	sge::Entity* modentity;
+	sge::TransformComponent* modtransform;
+	sge::ModelComponent* modcomponent;
+
+	sge::ModelRenderingSystem* modelSystem;
 };

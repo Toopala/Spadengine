@@ -24,6 +24,8 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/GraphicsDevice.h"
 
+#include "Spade/Spade.h"
+
 struct Vertex {
 	// Position
 	sge::math::vec3 Position;
@@ -60,8 +62,11 @@ namespace sge
 
 		void createBuffers(GraphicsDevice* device)
 		{
+			
 			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
 			indexBuffer = device->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
+			device->bindVertexBuffer(vertexBuffer);
+			device->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
 		}
 
 		sge::Buffer* getVertexBuffer()
