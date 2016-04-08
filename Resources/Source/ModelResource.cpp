@@ -50,6 +50,24 @@ namespace sge
 		return nullptr;
 	}
 
+	void ModelResource::createBuffers(GraphicsDevice* device)
+	{
+		for (auto &mesh : meshes)
+		{
+			mesh.createBuffers(device);
+		}
+	}
+
+	sge::Buffer* ModelResource::getVertexBuffer()
+	{
+		return meshes[0].getVertexBuffer();
+	}
+
+	sge::Buffer* ModelResource::getIndexBuffer()
+	{
+		return meshes[0].getIndexBuffer();
+	}
+
 	/*  Functions   */
 	// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 	void ModelResource::loadModel(std::string path)
