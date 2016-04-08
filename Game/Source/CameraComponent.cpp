@@ -20,8 +20,9 @@ namespace sge
 
 	void CameraComponent::setupCamera(float FOV, float aspectRatio, float near, float far, bool enableMouse, sge::math::vec3 POS, sge::math::vec3 front, sge::math::vec3 up)
 	{
-		this->cameraPos = POS;
+		this->transform->setPosition(POS);
 		this->cameraFront = front;
+		this->transform->setRotationVector(cameraFront);
 		this->cameraUp = up;
 
 		P = sge::math::perspective(sge::math::radians(FOV), aspectRatio, near, far);
@@ -78,6 +79,7 @@ namespace sge
 			front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
 			cameraFront = sge::math::normalize(front);
 		}
+		transform->setRotationVector(cameraFront);
 
 		setPosition(transform->getPosition());
 		if (!mouseEnabled)
@@ -87,6 +89,11 @@ namespace sge
 
 		V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		VP = P * V;
+	}
+
+	void CameraComponent::render(GraphicsDevice* device)
+	{
+
 	}
 
 	sge::math::mat4 CameraComponent::getVp()

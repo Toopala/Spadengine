@@ -8,6 +8,10 @@
 
 #include <Bullet/btBulletDynamicsCommon.h>
 
+#include "Game/EntityManager.h"
+#include "Game/SystemManager.h"
+#include "Game/CameraComponent.h"
+
 // FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
@@ -86,4 +90,10 @@ private:
 	UniformData2 uniformData2;
 
 	sge::Handle <sge::ModelResource> modelHandle;
+
+	sge::EntityManager* EManager;
+	sge::SystemManager* sysManager;
+	sge::Entity* camentity;
+	sge::TransformComponent* camtransform;
+	sge::CameraComponent* camcomponent;
 };
