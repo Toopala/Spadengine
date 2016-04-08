@@ -4,10 +4,9 @@
 
 int main(int argc, char** argv)
 {
-	sge::Spade engine;
+	sge::Spade::getInstance().init();
+	sge::Spade::getInstance().run(new BulletTestScene());
+	sge::Spade::getInstance().quit();
 
-	engine.init();
-	engine.run(new BulletTestScene(&engine));
-	engine.quit();
 	return 0;
 };

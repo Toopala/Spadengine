@@ -46,6 +46,9 @@ namespace sge
 		std::vector<unsigned int> indices;
 		std::vector<sge::TextureResource> textures;
 
+		sge::Buffer* vertexBuffer;
+		sge::Buffer* indexBuffer;
+
 		/*  Functions  */
 		// Constructor
 		Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<sge::TextureResource> textures)
@@ -53,6 +56,22 @@ namespace sge
 			this->vertices = vertices;
 			this->indices = indices;
 			this->textures = textures;
+		}
+
+		void createBuffers(GraphicsDevice* device)
+		{
+			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
+			indexBuffer = device->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
+		}
+
+		sge::Buffer* getVertexBuffer()
+		{
+			return vertexBuffer;
+		}
+
+		sge::Buffer* getIndexBuffer()
+		{
+			return indexBuffer;
 		}
 	};
 
@@ -69,14 +88,19 @@ namespace sge
 		std::vector<unsigned int>* getIndexArray();
 		sge::Texture* getDiffuseTexture();
 		sge::Texture* getNormalTexture();
-		
+
+		void createBuffers(GraphicsDevice* device);
+
+		sge::Buffer* getVertexBuffer();
+		sge::Buffer* getIndexBuffer();
+
 	private:
 		Renderer* renderer;
 		/*  Model Data  */
 		std::vector<Mesh> meshes;
 		std::string directory;
 		std::vector<sge::TextureResource> textures_loaded; // Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-		
+
 		/*  Functions   */
 		// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 		void loadModel(std::string path);

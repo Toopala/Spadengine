@@ -30,7 +30,7 @@ struct UniformData2
 class BulletTestScene : public sge::Scene
 {
 public:
-	BulletTestScene(sge::Spade* engine);
+	BulletTestScene();
 	~BulletTestScene();
 
 	void update(float step);
@@ -40,7 +40,6 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
-	sge::Spade* engine;
 	sge::Viewport viewport;
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
