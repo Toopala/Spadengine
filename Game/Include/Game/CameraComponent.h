@@ -43,12 +43,14 @@ namespace sge
 
 		int mouseXpos, mouseYpos;
 		int mousseX, mousseY;
-		bool firstMouse = true;
+
 		bool mouseEnabled;
 
 		float sensitivity;
 
 		TransformComponent* transform;
 		// SomeObjectRenderingSystem* renderingsystem;
+
+		int enableX, enableY;
 	};
 }

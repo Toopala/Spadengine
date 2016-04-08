@@ -13,6 +13,7 @@ namespace sge
 	{
 	public:
 		SpriteComponent(Entity* ent);
+		SpriteComponent(Entity* ent, sge::SpriteRenderingSystem* system, sge::Texture* texture, const sge::math::vec4& col);
 		~SpriteComponent();
 		void render(GraphicsDevice* device);
 		void update();
