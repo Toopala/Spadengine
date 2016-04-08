@@ -103,13 +103,27 @@ BulletTestScene::BulletTestScene()
 	modcomponent->setModelResource(&modelHandle);
 	modcomponent->setRenderingSystem(modelSystem);
 
-	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
+	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
+
+	modentity2 = EManager->createEntity();
+	modcomponent2 = new sge::ModelComponent(modentity2);
+	modentity2->setComponent(modcomponent2);
+
+	modtransform = new sge::TransformComponent(modentity2);
+	modentity2->setComponent(modtransform);
+
+	modcomponent2->setModelResource(&modelHandle);
+	modcomponent2->setRenderingSystem(modelSystem);
+
+	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
+	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	viewport = { 0, 0, 1280, 720 };
 
 	modcomponent->setPipeline(pipeline);
+	modcomponent2->setPipeline(pipeline);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 
@@ -339,6 +353,12 @@ void BulletTestScene::update(float step)
 	modentity->getComponent<sge::TransformComponent>()->setAngle(trans.getRotation().getAngle());
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 
+	btTransform trans2;
+	fallRigidBody2->getMotionState()->getWorldTransform(trans2);
+	modentity2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans2.getOrigin().getX(), trans2.getOrigin().getY(), trans2.getOrigin().getZ()));
+	modentity2->getComponent<sge::TransformComponent>()->setAngle(trans2.getRotation().getAngle());
+	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans2.getRotation().getAxis().getX(), trans2.getRotation().getAxis().getY(), trans2.getRotation().getAxis().getZ()));
+
 	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
 		sge::Spade::getInstance().stop();
@@ -361,6 +381,7 @@ void BulletTestScene::draw()
 	sge::Spade::getInstance().getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
 
 	modentity->getComponent<sge::ModelComponent>()->render(sge::Spade::getInstance().getRenderer()->getDevice());
+	modentity2->getComponent<sge::ModelComponent>()->render(sge::Spade::getInstance().getRenderer()->getDevice());
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->swap();
 }
