@@ -50,11 +50,11 @@ namespace sge
 		return nullptr;
 	}
 
-	void ModelResource::createBuffers(GraphicsDevice* device)
+	void ModelResource::createBuffers()
 	{
 		for (auto &mesh : meshes)
 		{
-			mesh.createBuffers(device);
+			mesh.createBuffers();
 		}
 	}
 

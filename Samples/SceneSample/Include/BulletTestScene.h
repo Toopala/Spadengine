@@ -11,9 +11,9 @@
 #include "Game/EntityManager.h"
 #include "Game/SystemManager.h"
 #include "Game/CameraComponent.h"
-#include "Game/TransformComponent.h"
 #include "Game/ModelComponent.h"
 #include "Game/ModelRenderingSystem.h"
+#include "Game/TransformComponent.h"
 
 // FORWARD DECLARE
 struct sge::Pipeline;

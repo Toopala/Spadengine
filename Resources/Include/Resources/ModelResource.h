@@ -60,13 +60,13 @@ namespace sge
 			this->textures = textures;
 		}
 
-		void createBuffers(GraphicsDevice* device)
+		void createBuffers()
 		{
 			
-			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
-			indexBuffer = device->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
-			device->bindVertexBuffer(vertexBuffer);
-			device->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
+			vertexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
+			indexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
+			sge::Spade::getInstance().getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
+			sge::Spade::getInstance().getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
 		}
 
 		sge::Buffer* getVertexBuffer()
@@ -94,7 +94,7 @@ namespace sge
 		sge::Texture* getDiffuseTexture();
 		sge::Texture* getNormalTexture();
 
-		void createBuffers(GraphicsDevice* device);
+		void createBuffers();
 
 		sge::Buffer* getVertexBuffer();
 		sge::Buffer* getIndexBuffer();

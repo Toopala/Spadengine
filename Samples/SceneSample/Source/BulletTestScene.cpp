@@ -89,10 +89,8 @@ BulletTestScene::BulletTestScene()
 	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(sge::Spade::getInstance().getRenderer());
 
-	EManager = new sge::EntityManager();
-	sysManager = new sge::SystemManager();
-	sysManager->init();
-	EManager->setSysManager(sysManager);
+	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
+
 	modentity = EManager->createEntity();
 
 	modcomponent = new sge::ModelComponent(modentity);
@@ -110,7 +108,7 @@ BulletTestScene::BulletTestScene()
 
 	modcomponent->setPipeline(pipeline);
 
-	modelHandle.getResource<sge::ModelResource>()->createBuffers(sge::Spade::getInstance().getRenderer()->getDevice());
+	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->bindViewport(&viewport);
 
