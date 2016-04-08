@@ -63,10 +63,9 @@ solution "Spadengine"
 		files { "../HID/**.cpp" }
 		includedirs {"../HID/Include/",
 				"../Core/Include/",
-				"../Renderer/Inlcude/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/" }
-		links {"Core", "Renderer", "SDL2" }
+		links {"Core", "SDL2" }
 
 	project "Game"
 		kind "StaticLib"
@@ -77,7 +76,7 @@ solution "Spadengine"
 				"../HID/Include/",
 				"../Renderer/Include/",
 				"../Resources/Include/",
-				"../Spade/Include",
+				"../Spade/Include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/",
@@ -113,7 +112,7 @@ solution "Spadengine"
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/stb_image/Include/"}
-		links { "Core", "Renderer", "Resources", "Assimp", "glad", "SDL2"}
+		links { "Core", "Renderer", "Assimp", "glad", "SDL2"}
 
 	project "Audio"
 		kind "StaticLib"
@@ -177,18 +176,18 @@ solution "Spadengine"
 		files {"../Samples/SceneSample/**.cpp"}
 		includedirs {"../Samples/SceneSample/Include/",
 				"../Core/Include/",	
-				"../Renderer/Include/",
 				"../Game/Include/",
+				"../HID/Include/",
+				"../Renderer/Include/",
 				"../Resources/Include/",
 				"../Spade/Include/",
-				"../HID/Include/",
-				"../ThirdParty/SDL/include/",
-				"../ThirdParty/glm/include/",
-				"../ThirdParty/glad/Include/",
-				"../ThirdParty/stb_image/Include/",
+				"../ThirdParty/assimp/include/",
 				"../ThirdParty/bulletphysics/include/",
 				"../ThirdParty/bulletphysics/include/Bullet/",
-				"../ThirdParty/assimp/include/"}
-		links {"Core", "Renderer", "Game", "Resources","Spade","HID","SDL2","glad","dl","Bullet","assimp"}
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/stb_image/Include/"}
+		links {"Core", "Game", "HID", "Renderer", "Resources", "Spade", "assimp", "Bullet", "glad", "SDL2", "dl"}
 	 
 	
