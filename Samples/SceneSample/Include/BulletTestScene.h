@@ -99,8 +99,10 @@ private:
 	sge::CameraComponent* camcomponent;
 
 	sge::Entity* modentity;
+	sge::Entity* modentity2;
 	sge::TransformComponent* modtransform;
 	sge::ModelComponent* modcomponent;
+	sge::ModelComponent* modcomponent2;
 
 	sge::ModelRenderingSystem* modelSystem;
 };
