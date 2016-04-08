@@ -62,10 +62,11 @@ namespace sge
 
 		void createBuffers()
 		{
-			
+			//plaa
 			vertexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
 			indexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
 			sge::Spade::getInstance().getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
+			sge::Spade::getInstance().getRenderer()->getDevice()->bindIndexBuffer(indexBuffer);
 			sge::Spade::getInstance().getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
 		}
 

@@ -21,13 +21,15 @@ namespace sge
 		uniformData.M = model->getParent()->getComponent<TransformComponent>()->getMatrix();
 
 		renderer->getDevice()->bindPipeline(model->getPipeline());
-		renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+
+		//renderer->getDevice()->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
+		renderer->getDevice()->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
+		renderer->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
 
 		renderer->getDevice()->bindTexture(model->diffTexture, 0);
 		renderer->getDevice()->bindTexture(model->normTexture, 1);
 
-		renderer->getDevice()->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
-		renderer->getDevice()->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
+		renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
 
 		renderer->getDevice()->draw(model->getModelResource()->getVerticeArray()->size());
 		renderer->getDevice()->debindPipeline(model->getPipeline());

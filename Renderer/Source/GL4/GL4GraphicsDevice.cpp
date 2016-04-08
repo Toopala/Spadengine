@@ -382,6 +382,8 @@ namespace sge
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
+
+		checkError();
 		glBindTexture(GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id);
 
 		checkError();
@@ -400,6 +402,7 @@ namespace sge
 		GL4Buffer* gl4Buffer = reinterpret_cast<GL4Buffer*>(buffer);
 		glBufferData(gl4Buffer->target, size, data, gl4Buffer->usage);
 		gl4Buffer->header.size = size;
+		checkError();
 	}
 
 	void GraphicsDevice::copySubData(Buffer* buffer, size_t offset, size_t size, const void* data)

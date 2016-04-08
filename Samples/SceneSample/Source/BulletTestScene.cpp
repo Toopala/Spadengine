@@ -15,6 +15,7 @@
 #include "Renderer/VertexLayout.h"
 
 #include "Core/Random.h"
+#include "Game/TransformComponent.h"
 
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
@@ -86,7 +87,7 @@ BulletTestScene::BulletTestScene()
 	sge::Spade::getInstance().getRenderer()->getDevice()->bindPipeline(pipeline);
 
 	//Assimp test
-	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");
+	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(sge::Spade::getInstance().getRenderer());
 
 	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
@@ -102,6 +103,8 @@ BulletTestScene::BulletTestScene()
 	modcomponent->setModelResource(&modelHandle);
 	modcomponent->setRenderingSystem(modelSystem);
 
+	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
+	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
 
 	viewport = { 0, 0, 1280, 720 };
@@ -214,9 +217,7 @@ BulletTestScene::BulletTestScene()
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	camentity->getComponent<sge::CameraComponent>()->setupCamera(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f, false, cameraPos, cameraFront, cameraUp);
-
-	uniformData2.M = glm::translate(glm::mat4(), glm::vec3(0.0f, 50.0f, 0.0f));
-	uniformData2.PV = camentity->getComponent<sge::CameraComponent>()->getVp();
+	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getVp());
 }
 
 BulletTestScene::~BulletTestScene()
@@ -332,10 +333,11 @@ void BulletTestScene::update(float step)
 	btTransform trans;
 	fallRigidBody->getMotionState()->getWorldTransform(trans);
 
-	//std::cout << "Box height: " << trans.getOrigin().getY() << std::endl;
-	
-	sge::math::mat4 plaa = sge::math::translate(sge::math::mat4(), sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-	uniformData2.M = sge::math::rotate(plaa, trans.getRotation().getAngle(), sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
+	std::cout << "Box height: " << trans.getOrigin().getY() << std::endl;
+
+	modentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	modentity->getComponent<sge::TransformComponent>()->setAngle(trans.getRotation().getAngle());
+	modentity->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 
 	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
