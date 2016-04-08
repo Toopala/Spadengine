@@ -9,6 +9,7 @@ namespace sge
 	{
 	public:
 		TransformComponent(Entity* ent);
+		TransformComponent(Entity* ent, const sge::math::vec3& position, const sge::math::vec3& scale, float rotation);
 		~TransformComponent();
 
 		// TODO do we need update??????

@@ -1,20 +1,25 @@
 #pragma once
 
 #include "Game/Entity.h"
+#include "Core/Math.h"
 
 namespace sge
 {
 	class SystemManager;
+	class SpriteRenderingSystem;
 	class Component;
 	class TransformComponent;
 	class SpriteComponent;
 	class InputComponent;
 	class PhysicsComponent;
+	class Texture;
+	class Renderer;
+	
 
 	class EntityManager
 	{
 	public:
-		EntityManager();
+		EntityManager(Renderer* renderer);
 		~EntityManager();
 
 		/** \brief Creates a transformable Entity.
@@ -30,7 +35,7 @@ namespace sge
 		* sprite component.
 		* \return Pointer to created Entity.
 		*/
-		Entity* createActor();
+		Entity* createActor(sge::Texture* texture, const sge::math::vec4& color, const sge::math::vec3& position, const sge::math::vec3& scale, float rotation);
 
 		/** \brief Entity factory function.
 		*
@@ -56,13 +61,6 @@ namespace sge
 		*/
 		void setComponent(Entity* ent, Component* comp);
 		
-		/** \brief Setter Function for SystemManager
-		*
-		* Sets class sysManager pointer to received pointer.
-		* \param SystemManager* sysMgr : Pointer to SystemManager.
-		*/
-		void setSysManager(SystemManager* sysMgr);
-
 		/** \brief Function for removing a Component
 		*
 		* Wraps the removeComponent method of the Entity class.
@@ -76,8 +74,11 @@ namespace sge
 			//system remove t
 		};
 
-	private:
+		void updateSystems();
 
+	private:
 		SystemManager* sysManager; /**< SystemManager pointer */
+		SpriteRenderingSystem* spritSys;
+		
 	};
 }

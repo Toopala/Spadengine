@@ -206,10 +206,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
 
-	EManager = new sge::EntityManager();
-	sysManager = new sge::SystemManager();
-	sysManager->init();
-	EManager->setSysManager(sysManager);
+	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
+
 	camentity = EManager->createEntity();
 
 	camcomponent = new sge::CameraComponent(camentity);

@@ -18,6 +18,18 @@ namespace sge
 		SGE_ASSERT(transform);
 	}
 
+	SpriteComponent::SpriteComponent(Entity* ent, sge::SpriteRenderingSystem* system, sge::Texture* texture, const sge::math::vec4& col) : 
+		RenderingComponent(ent),
+		color(col),
+		texture(texture),
+		renderingSystem(system)
+	{
+		transform = getParent()->getComponent<TransformComponent>();
+
+		// We need transform!
+		SGE_ASSERT(transform);
+	}
+
 	SpriteComponent::~SpriteComponent()
 	{
 	}
