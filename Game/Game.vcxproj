@@ -86,6 +86,8 @@
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\InputComponent.cpp" />
+    <ClCompile Include="Source\ModelComponent.cpp" />
+    <ClCompile Include="Source\ModelRenderingSystem.cpp" />
     <ClCompile Include="Source\PhysicsComponent.cpp" />
     <ClCompile Include="Source\PhysicsSystem.cpp" />
     <ClCompile Include="Source\RenderingComponent.cpp" />
@@ -105,6 +107,8 @@
     <ClInclude Include="Include\Game\Component.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\ModelComponent.h" />
+    <ClInclude Include="Include\Game\ModelRenderingSystem.h" />
     <ClInclude Include="Include\Game\PhysicsComponent.h" />
     <ClInclude Include="Include\Game\PhysicsSystem.h" />
     <ClInclude Include="Include\Game\RenderingComponent.h" />
