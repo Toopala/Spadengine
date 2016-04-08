@@ -104,7 +104,7 @@ BulletTestScene::BulletTestScene()
 	modcomponent->setModelResource(&modelHandle);
 	modcomponent->setRenderingSystem(modelSystem);
 
-	
+
 
 	viewport = { 0, 0, 1280, 720 };
 
@@ -202,6 +202,8 @@ BulletTestScene::BulletTestScene()
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
 
+	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
+
 	camentity = EManager->createEntity();
 
 	camcomponent = new sge::CameraComponent(camentity);
@@ -272,7 +274,7 @@ BulletTestScene::~BulletTestScene()
 
 	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(vertexShader);
 	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(pixelShader);
-	
+
 	sge::Spade::getInstance().getRenderer()->getDevice()->deletePipeline(pipeline);
 
 	sge::Spade::getInstance().getResourceManager()->release(modelHandle);

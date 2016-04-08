@@ -1,10 +1,12 @@
 #include "Game/EntityManager.h"
 #include "Game/TransformComponent.h"
+#include "Game/InputComponent.h"
 #include "Game/TestComponent.h"
 #include "Game/SystemManager.h"
 #include "SDL2/SDL.h"
 #include "Core/Math.h"
 #include "Renderer/Window.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/GraphicsDevice.h"
 
 
@@ -15,18 +17,15 @@ int main(int argc, char** argv)
 	SDL_Event event;
 
 	sge::Window window("The test to end all tests.", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
-	sge::GraphicsDevice device(window);
-	device.init();
+	sge::Renderer renderer(window);
+	renderer.init();
 
-	// Create systems and managers
+	// Create EntityManager
 	
-	sge::EntityManager* EManager = new sge::EntityManager();
-	sge::SystemManager* sysManager = new sge::SystemManager();
-	sysManager->init();
+	sge::EntityManager* EManager = new sge::EntityManager(&renderer);
 
-	EManager->setSysManager(sysManager);
 
-	// Create an entity through the managercheck 
+	// Create an entity through the manager
 
 	sge::Entity* player1 = EManager->createEntity();
 	sge::Entity* player2 = EManager->createEntity();
@@ -44,9 +43,9 @@ int main(int argc, char** argv)
 	bool running = true;
 	while (running)
 	{
-		device.clear(0.5f, 0.0f, 0.7f, 1.0f);
+		renderer.getDevice()->clear(0.5f, 0.0f, 0.7f, 1.0f);
 
-		sysManager->updateSystems();
+		EManager->updateSystems();
 
 		while (SDL_PollEvent(&event)) 
 		{
@@ -63,7 +62,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		device.swap();
+		renderer.getDevice()->swap();
 	}
 
 	// Testing component deletion
@@ -73,7 +72,7 @@ int main(int argc, char** argv)
 
 	EManager->removeComponent<sge::InputComponent>(*player1);
 
-	device.deinit();
+	renderer.deinit();
 
 	return 0;
 }
