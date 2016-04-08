@@ -1,38 +1,35 @@
 #pragma once
 
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+//#include <OpenAL/al.h>
+//#include <OpenAL/alc.h>
+#include <OpenAL/alut.h>
 #include <iostream>
+#pragma warning (disable : 4996)		// HAX
+#define NUM_BUFFERS 7
 
 namespace sge
 {
-	// Initialization
 	class Audio
 	{
 	public:
 		Audio()
 		{
-			init();
-
-			// OpenAL testing
-			ALboolean enumeration;
-			enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
-			if (enumeration == AL_FALSE)
-			{
-				std::cout << "Not supported.." << std::endl;
-			}
-			else
-			{
-				std::cout << "Supported.." << std::endl;
-			}
-
+			// OpenAL initialization
+			//init();
 		}
 
 		// List of audio devices
 		static void listAudioDevices(const ALCchar *devices);
+		
+		// AL format
+		static inline ALenum toALFormat(short channels, short samples);
+
 
 		// Context initialization
 		void init();
+
+		// Display errors
+		ALvoid displayALError(ALbyte *szText, ALint errorCode);
 
 		~Audio()
 		{
@@ -40,6 +37,13 @@ namespace sge
 		}
 
 	private:
-
+		ALint error;
+		ALCcontext *context;
+		ALCdevice *device;
+		ALuint buffers[NUM_BUFFERS], *source;
+		ALenum format;
+		ALsizei size, freq;
+		ALvoid *data;
+		ALboolean loop;
 	};
 }
