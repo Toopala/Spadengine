@@ -94,7 +94,6 @@ private:
 	sge::Handle <sge::ModelResource> modelHandle;
 
 	sge::EntityManager* EManager;
-	sge::SystemManager* sysManager;
 	sge::Entity* camentity;
 	sge::TransformComponent* camtransform;
 	sge::CameraComponent* camcomponent;

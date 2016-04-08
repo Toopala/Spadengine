@@ -33,7 +33,7 @@ namespace sge
 		testSys = new TestSystem();
 		physSys = new PhysicsSystem();
 		tranSys = new TransformSystem();
-		spritSys = new SpriteRenderingSystem(renderer);
+		//spritSys = new SpriteRenderingSystem(renderer);
 		systems.emplace(typeid(TestComponent).hash_code(), testSys);
 		systems.emplace(typeid(InputComponent).hash_code(), testSys);
 		systems.emplace(typeid(TransformComponent).hash_code(), tranSys);
