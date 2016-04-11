@@ -12,7 +12,7 @@ namespace sge
 	class SpriteComponent;
 	class InputComponent;
 	class PhysicsComponent;
-	class Texture;
+	struct Texture;
 	class Renderer;
 	
 

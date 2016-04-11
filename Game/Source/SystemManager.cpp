@@ -57,7 +57,7 @@ namespace sge
 		testSys->update();
 		physSys->update();
 		tranSys->update();
-		spritSys->update();
+		//spritSys->update();
 	}
 
 }

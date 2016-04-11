@@ -27,13 +27,10 @@ namespace sge
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
 #endif
-		//init();
 	}
 
 	Spade::~Spade()
 	{
-		quit();
-		delete window;
 	}
 
 	void Spade::init()
@@ -62,6 +59,8 @@ namespace sge
 		delete mouseInput;
 		delete keyboardInput;
 		delete gamepadInput;
+		delete renderer;
+		delete window;
 
 		SDL_Quit();
 	}	

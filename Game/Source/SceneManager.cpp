@@ -9,7 +9,7 @@ namespace sge
 
 	SceneManager::~SceneManager()
 	{
-		for (auto&scene : scenes)
+		for (auto scene : scenes)
 		{
 			delete scene;
 		}
