@@ -1,49 +1,62 @@
 #pragma once
 
-//#include <OpenAL/al.h>
-//#include <OpenAL/alc.h>
-#include <OpenAL/alut.h>
 #include <iostream>
-#pragma warning (disable : 4996)		// HAX
-#define NUM_BUFFERS 7
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#include "Core/Math.h"
+
+namespace
+{
+	ALCdevice*  audioDevice = NULL;
+	ALCcontext* audioContext = NULL;
+
+	float listenerVolume = 100.f;
+	sge::math::vec3 listenerPosition(0.0f, 0.f, 0.f);
+	sge::math::vec3 listenerDirection(0.0f, 0.0f, -1.0f);
+	sge::math::vec3 listenerUpVector(0.0f, 1.0f, 0.0f);
+}
 
 namespace sge
 {
-	class Audio
+	class AudioContext
 	{
 	public:
-		Audio()
-		{
-			// OpenAL initialization
-			//init();
-		}
+		// Constructor
+		AudioContext();
+		// Destructor
+		~AudioContext();
 
-		// List of audio devices
-		static void listAudioDevices(const ALCchar *devices);
-		
-		// AL format
-		static inline ALenum toALFormat(short channels, short samples);
+		// Check if an OpenAL extension is supported
+		static bool isExtensionSupported(const std::string& extension);
 
+		// Change the global volume of all the sounds and musics
+		static void setGlobalVolume(float volume);
 
-		// Context initialization
-		void init();
+		// Get the current value of the global volume
+		static float getGlobalVolume();
 
-		// Display errors
-		ALvoid displayALError(ALbyte *szText, ALint errorCode);
+		// Set position of the listener in the scene
+		// Default position is the (0, 0, 0).
+		static void sePosition(const sge::math::vec3& position);
 
-		~Audio()
-		{
+		// Get the current position of the listener in the scene
+		static sge::math::vec3 getPosition();
 
-		}
+		// Set the forward vector of the listener in the scene
+		static void setDirection(const sge::math::vec3& direction);
+
+		// Get the current forward vector of the listener in the scene
+		static sge::math::vec3 getDirection();
+
+		// Set the upward vector of the listener in the scene
+		static void setUpVector(const sge::math::vec3 upVector);
+
+		// Get the current upward vector of the listener in the scene
+		static sge::math::vec3 getUpVector();
+
+		// Checking for OpenAL errors
+		void alCheckError(const char* file, unsigned int line, const char* expression);
 
 	private:
-		ALint error;
-		ALCcontext *context;
-		ALCdevice *device;
-		ALuint buffers[NUM_BUFFERS], *source;
-		ALenum format;
-		ALsizei size, freq;
-		ALvoid *data;
-		ALboolean loop;
 	};
 }

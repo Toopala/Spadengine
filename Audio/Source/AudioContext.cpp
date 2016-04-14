@@ -2,131 +2,101 @@
 
 namespace sge
 {
-	void Audio::listAudioDevices(const ALCchar *devices)
+	// Constructor
+	AudioContext::AudioContext()
 	{
-		const ALCchar *device = devices, *next = devices + 1;
-		size_t len = 0;
+		audioDevice = alcOpenDevice(NULL);
 
-		fprintf(stdout, "Devices list:\n");
-		fprintf(stdout, "----------\n");
-		while (device && *device != '\0' && next && *next != '\0') {
-			fprintf(stdout, "%s\n", device);
-			len = strlen(device);
-			device += (len + 1);
-			next += (len + 2);
+		if (audioDevice)
+		{
+			// Create context
+
+			audioContext = alcCreateContext(audioDevice, NULL);
+			
+			if (audioContext)
+			{
+				// Set the current context
+				alcMakeContextCurrent(audioContext);
+
+				// Apply the listener properties
+				float orientation[] = { 
+					listenerDirection.x,
+					listenerDirection.y,
+					listenerDirection.z,
+					listenerUpVector.x,
+					listenerUpVector.y,
+					listenerUpVector.z
+				};
+			}
 		}
-		fprintf(stdout, "----------\n");
+	}
+
+	void AudioContext::alCheckError(const char* file, unsigned int line, const char* expression)
+	{
+		// Get the last error
+		ALenum errorCode = alGetError();
+
+		if (errorCode != AL_NO_ERROR)
+		{
+			std::string fileString = file;
+			std::string error = "Unknown error";
+			std::string description = "No description";
+
+			// Decode the error code
+			switch (errorCode)
+			{
+			case AL_INVALID_NAME:
+			{
+				error = "AL_INVALID_NAME";
+				description = "A bad name (ID) has been specified.";
+				break;
+			}
+
+			case AL_INVALID_ENUM:
+			{
+				error = "AL_INVALID_ENUM";
+				description = "An unacceptable value has been specified for an enumerated argument.";
+				break;
+			}
+
+			case AL_INVALID_VALUE:
+			{
+				error = "AL_INVALID_VALUE";
+				description = "A numeric argument is out of range.";
+				break;
+			}
+
+			case AL_INVALID_OPERATION:
+			{
+				error = "AL_INVALID_OPERATION";
+				description = "The specified operation is not allowed in the current state.";
+				break;
+			}
+
+			case AL_OUT_OF_MEMORY:
+			{
+				error = "AL_OUT_OF_MEMORY";
+				description = "There is not enough memory left to execute the command.";
+				break;
+			}
+			}
+		}
 	}
 	
-	ALenum Audio::toALFormat(short channels, short samples)
+	// Destructor
+	AudioContext::~AudioContext()
 	{
-		bool stereo = (channels > 1);
-		
-		switch (samples)
-		{
-		case 16:
-			if (stereo)
-			{
-				return AL_FORMAT_STEREO16;
-			}
-			else
-			{
-				return AL_FORMAT_MONO16;
-			}
-		case 8:
-			if (stereo)
-			{
-				return AL_FORMAT_STEREO8;
-			}
-			else
-			{
-				return AL_FORMAT_MONO8;
-			}
-		default:
-			return -1;
-		}
-	}
-
-	// Display errors
-	ALvoid Audio::displayALError(ALbyte *szText, ALint errorCode)
-	{
-		printf("%s%s", szText, alGetString(errorCode));
-	}
-
-	// Init
-	void Audio::init()
-	{
-		// Open AL init
-		// Open device
-		device = alcOpenDevice(NULL);
-
-		// Creating context
-		context = alcCreateContext(device, NULL);
-
-		// Activating context
-		alcMakeContextCurrent(context);
-
-		// Setting listeners
-		ALfloat listenerPos[] = { 0.0, 0.0, 0.0 };
-		ALfloat listenerVel[] = { 0.0, 0.0, 0.0 };
-		ALfloat	listenerOri[] = { 0.0, 0.0, -1.0, 0.0, 1.0, 0.0 };		// Listener facing into the screen
-		
-		// Setting listener attributes
-		alListenerfv(AL_POSITION, listenerPos);	// Position
-		alListenerfv(AL_VELOCITY, listenerVel); // Velocity
-		alListenerfv(AL_ORIENTATION, listenerOri); // Orientation
-		alGenBuffers(NUM_BUFFERS, buffers);		// Generate buffers
-
-		// Loading ahem_test.wav file
-		alutLoadWAVFile("../Samples/Assets/Audio/ahem_test.wav", &format, &data, &size, &freq, &loop);
-		if ((error = alGetError()) != AL_NO_ERROR)
-		{
-			displayALError("alutLoadWAVFile ahem_test.wav : ", error);
-			// Delete buffers
-			alDeleteBuffers(NUM_BUFFERS, buffers);
-			return;
-		}
-		// Copy ahem_test.wav data into AL buffer 0
-		alBufferData(buffers[NUM_BUFFERS], format, data, size, freq);
-		if ((error = alGetError()) != AL_NO_ERROR)
-		{
-			displayALError("alBufferData buffer 0 : ", error);
-			// Delete buffers
-			alDeleteBuffers(NUM_BUFFERS, buffers);
-			return;
-		}
-		// Unload ahem_test.wav
-		alutUnloadWAV(format, data, size, freq);
-		if ((error = alGetError()) != AL_NO_ERROR)
-		{
-			displayALError("alutUnloadWAV : ", error);
-			// Delete buffers
-			alDeleteBuffers(NUM_BUFFERS, buffers);
-			return;
-		}
-		// Generate sources
-		alGenSources(1, source);
-		if ((error = alGetError()) != AL_NO_ERROR)
-		{
-			displayALError("alGenSources 1 : ", error);
-			// Delete buffers
-			alDeleteBuffers(NUM_BUFFERS, buffers);
-			return;
-		}
-
-		// Attach buffer 0 to source
-		alSourcei(source[0], AL_BUFFER, buffers[0]);
-		if ((error = alGetError()) != AL_NO_ERROR)
-		{
-			displayALError("alSourcei AL_BUFFER 0 : ", error);
-		}
-
-		// Exit, clean up
-		alDeleteBuffers(NUM_BUFFERS, buffers);
-		context = alcGetCurrentContext();
-		device = alcGetContextsDevice(context);
+		// Destroy context
 		alcMakeContextCurrent(NULL);
-		alcDestroyContext(context);
-		alcCloseDevice(device);
+		if (audioContext)
+		{
+			alcDestroyContext(audioContext);
+		}
+
+		// Destroy device
+		if (audioDevice)
+		{
+			alcCloseDevice(audioDevice);
+		}
 	}
 }
