@@ -121,7 +121,8 @@ namespace sge
 			displayALError("alSourcei AL_BUFFER 0 : ", error);
 		}
 
-		// Exit
+		// Exit, clean up
+		alDeleteBuffers(NUM_BUFFERS, buffers);
 		context = alcGetCurrentContext();
 		device = alcGetContextsDevice(context);
 		alcMakeContextCurrent(NULL);
