@@ -51,6 +51,17 @@ SamplerState textureSampler;
 
 float4 main(VOut vout) : SV_TARGET
 {
+	PointLight pointLights2[NUM_POINT_LIGHTS];
+	int numberOfLights2 = 1;
+	pointLights2[0].position = float3(0.0, 0.0, 0.0);
+	pointLights2[0].constant = float(1.0);
+	pointLights2[0].mylinear = float(0.09);
+	pointLights2[0].quadratic = float(0.032);
+	pointLights2[0].ambient = float3(0.05, 0.05, 0.05);
+	pointLights2[0].diffuse = float3(0.8, 0.8, 0.8);
+	pointLights2[0].specular = float3(1.0, 1.0, 1.0);
+	
+
 	float3 normal = normalize(vout.normal);
 	normal = normalTex.Sample(textureSampler, vout.texcoords).rgb;
 	normal = normalize(normal * 2.0 - 1.0);
@@ -58,7 +69,7 @@ float4 main(VOut vout) : SV_TARGET
 	float3 viewDir = mul(vout.TBNVout , normalize(viewPos - vout.tangentFragPos));
 
 		float3 result = CalculateDirectionLight(dirLight, normal, viewDir, vout);
-		for (int i = 0; i < numberOfLights; i++)
+		for (int i = 0; i < numberOfLights2; i++)
 			result += CalculatePointLight(pointLights[i], normal, vout.tangentFragPos, viewDir, vout);
 
 	return float4(result, 1.0);
