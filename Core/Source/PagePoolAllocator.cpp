@@ -2,7 +2,7 @@
 
 namespace sge
 {
-	PagePoolAllocator allocator;
+	
 
 	PagePoolAllocator::PagePoolAllocator()
 	{
@@ -126,4 +126,5 @@ namespace sge
 
 		return page;
 	}
+	PagePoolAllocator allocator;
 }
