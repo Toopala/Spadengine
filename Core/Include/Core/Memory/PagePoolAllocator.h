@@ -75,7 +75,7 @@ namespace sge
 		template <typename T, typename... Args>
 		T* create(Args... args)
 		{
-			T *obj = (T*)allocate(sizeof(T*));
+			T *obj = (T*)allocate(sizeof(T));
 			new (obj)T(args...);
 
 			return obj;

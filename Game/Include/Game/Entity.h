@@ -9,9 +9,10 @@ namespace sge
 	class Entity
 	{
 	public:
-		Entity();
-		~Entity();
-		
+		Entity()
+		{
+
+		}
 		/** \brief Getter function for Components.
 		*
 		* Gets a Component pointer of the called type T.

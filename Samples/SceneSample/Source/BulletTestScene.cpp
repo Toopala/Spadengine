@@ -57,9 +57,9 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
-BulletTestScene::BulletTestScene()
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 {
-	modelSystem = new sge::ModelRenderingSystem(sge::Spade::getInstance().getRenderer());
+	modelSystem = new sge::ModelRenderingSystem(engine->getRenderer());
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
@@ -80,25 +80,25 @@ BulletTestScene::BulletTestScene()
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = sge::Spade::getInstance().getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = sge::Spade::getInstance().getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
+	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	pipeline = sge::Spade::getInstance().getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindPipeline(pipeline);
+	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
+	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
 	//Assimp test
-	modelHandle = sge::Spade::getInstance().getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
-	modelHandle.getResource<sge::ModelResource>()->setRenderer(sge::Spade::getInstance().getRenderer());
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
 
-	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
+	EManager = new sge::EntityManager();
 
 	modentity = EManager->createEntity();
 
-	modcomponent = new sge::ModelComponent(modentity);
-	modentity->setComponent(modcomponent);
-
 	modtransform = new sge::TransformComponent(modentity);
 	modentity->setComponent(modtransform);
+
+	modcomponent = new sge::ModelComponent(modentity);
+	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
 	modcomponent->setRenderingSystem(modelSystem);
@@ -106,13 +106,13 @@ BulletTestScene::BulletTestScene()
 	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
-
 	modentity2 = EManager->createEntity();
-	modcomponent2 = new sge::ModelComponent(modentity2);
-	modentity2->setComponent(modcomponent2);
 
 	modtransform = new sge::TransformComponent(modentity2);
 	modentity2->setComponent(modtransform);
+
+	modcomponent2 = new sge::ModelComponent(modentity2);
+	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle);
 	modcomponent2->setRenderingSystem(modelSystem);
@@ -127,7 +127,7 @@ BulletTestScene::BulletTestScene()
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->bindViewport(&viewport);
+	engine->getRenderer()->getDevice()->bindViewport(&viewport);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -217,15 +217,13 @@ BulletTestScene::BulletTestScene()
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
 
-	EManager = new sge::EntityManager(sge::Spade::getInstance().getRenderer());
-
 	camentity = EManager->createEntity();
-
-	camcomponent = new sge::CameraComponent(camentity);
-	camentity->setComponent(camcomponent);
 
 	camtransform = new sge::TransformComponent(camentity);
 	camentity->setComponent(camtransform);
+
+	camcomponent = new sge::CameraComponent(camentity);
+	camentity->setComponent(camcomponent);
 
 	cameraPos = glm::vec3(5.0f, 10.0f, 50.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -275,29 +273,30 @@ BulletTestScene::~BulletTestScene()
 	delete wall3Shape;
 	delete wall4Shape;
 
-
 	delete dynamicsWorld;
 	delete solver;
 	delete collisionConfiguration;
 	delete dispatcher;
 	delete broadphase;
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->debindPipeline(pipeline);
+	sge::ResourceManager::getMgr().release(modelHandle);
+
+	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(vertexShader);
-	sge::Spade::getInstance().getRenderer()->getDevice()->deleteShader(pixelShader);
+	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
+	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->deletePipeline(pipeline);
+	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 
-	sge::Spade::getInstance().getResourceManager()->release(modelHandle);
+	
 }
 
 void BulletTestScene::update(float step)
 {
 	dynamicsWorld->stepSimulation(step, 10);
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
 		int randomx = sge::random(10, 500);
 		int randomy = sge::random(10, 500);
@@ -307,7 +306,7 @@ void BulletTestScene::update(float step)
 		
 	}
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_P))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
 	{
 		int randomx = sge::random(-10, 10);
 		int randomy = sge::random(-10, 10);
@@ -317,27 +316,27 @@ void BulletTestScene::update(float step)
 	}
 
 	// Physics test with second object
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_A))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(-2, 0, 0));
 		
 		
 	}
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_D))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3( 2, 0, 0));
 
 		
 	}
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(0, -0, -2));
 
 		
 	}
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_S))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(0, 0, 2));
 
@@ -359,16 +358,16 @@ void BulletTestScene::update(float step)
 	modentity2->getComponent<sge::TransformComponent>()->setAngle(trans2.getRotation().getAngle());
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans2.getRotation().getAxis().getX(), trans2.getRotation().getAxis().getY(), trans2.getRotation().getAxis().getZ()));
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
-		sge::Spade::getInstance().stop();
+		engine->stop();
 	}
 
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
 	{
 		camentity->getComponent<sge::CameraComponent>()->enableMouse();
 	}
-	if (sge::Spade::getInstance().keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
 	{
 		camentity->getComponent<sge::CameraComponent>()->disableMouse();
 	}
@@ -378,12 +377,12 @@ void BulletTestScene::update(float step)
 }
 void BulletTestScene::draw()
 {
-	sge::Spade::getInstance().getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
+	engine->getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
 
-	modentity->getComponent<sge::ModelComponent>()->render(sge::Spade::getInstance().getRenderer()->getDevice());
-	modentity2->getComponent<sge::ModelComponent>()->render(sge::Spade::getInstance().getRenderer()->getDevice());
+	modentity->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
+	modentity2->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 
-	sge::Spade::getInstance().getRenderer()->getDevice()->swap();
+	engine->getRenderer()->getDevice()->swap();
 }
 
 void BulletTestScene::interpolate(float alpha)

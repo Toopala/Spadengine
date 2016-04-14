@@ -128,30 +128,30 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 
 	//Assimp test
 	
-	modelHandle = engine->getResourceManager()->load<sge::ModelResource>("../Assets/suzanne.dae");		
-	modelHandle2 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/suzanne.dae");		
+	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());		
 	
 	// DON'T RELEASE HANDLES BEFORE USE
-	//engine->getResourceManager()->release(modelHandle);
-	engine->getResourceManager()->release(modelHandle2);
+	//sge::ResourceManager::getMgr().release(modelHandle);
+	sge::ResourceManager::getMgr().release(modelHandle2);
 
 	sge::Handle <sge::ModelResource> modelHandle3;
-	modelHandle3 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle3 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	sge::Handle <sge::ModelResource> modelHandle4;
-	modelHandle4 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle4 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	sge::Handle <sge::ModelResource> modelHandle5;
-	modelHandle5 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle5 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	sge::Handle <sge::ModelResource> modelHandle6;
-	modelHandle6 = engine->getResourceManager()->load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle6 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 
-	engine->getResourceManager()->release(modelHandle3);
-	engine->getResourceManager()->release(modelHandle4);
-	engine->getResourceManager()->release(modelHandle5);
-	engine->getResourceManager()->release(modelHandle6);
+	sge::ResourceManager::getMgr().release(modelHandle3);
+	sge::ResourceManager::getMgr().release(modelHandle4);
+	sge::ResourceManager::getMgr().release(modelHandle5);
+	sge::ResourceManager::getMgr().release(modelHandle6);
 
-	engine->getResourceManager()->printResources();
+	sge::ResourceManager::getMgr().printResources();
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -211,7 +211,7 @@ TestScene::~TestScene()
 
 	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 
-	engine->getResourceManager()->release(modelHandle);
+	sge::ResourceManager::getMgr().release(modelHandle);
 }
 
 void TestScene::update(float step)

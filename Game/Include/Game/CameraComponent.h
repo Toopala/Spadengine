@@ -2,13 +2,11 @@
 
 #include "Game/RenderingComponent.h"
 #include "Core/Math.h"
-#include "Spade/Spade.h"
-
 namespace sge
 {
 	class TransformComponent;
 
-	class CameraComponent : public RenderingComponent
+	class CameraComponent : public Component
 	{
 	public:
 		CameraComponent(Entity* ent);

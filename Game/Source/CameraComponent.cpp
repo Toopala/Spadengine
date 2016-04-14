@@ -1,14 +1,15 @@
 #include "Game/CameraComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
+#include "Core/Assert.h"
 
+#include <SDL2/SDL.h>
 #include <iostream>
 
 namespace sge
 {
 	CameraComponent::CameraComponent(Entity* ent) : 
-		RenderingComponent(ent)
-		//renderingSystem(nullptr)
+		Component(ent)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -45,7 +46,7 @@ namespace sge
 	{
 		if (mouseEnabled)
 		{
-			Spade::getInstance().mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
+			//Spade::getInstance().mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
 
 			mousseX += mouseXpos;
 			mousseY += mouseYpos;
@@ -104,8 +105,8 @@ namespace sge
 	void CameraComponent::disableMouse()
 	{
 		std::cout << enableX << " " << enableY << std::endl;
-		enableX = Spade::getInstance().mouseInput->getMouseXPosition();
-		enableY = Spade::getInstance().mouseInput->getMouseYPosition();
+		//enableX = Spade::getInstance().mouseInput->getMouseXPosition();
+		//enableY = Spade::getInstance().mouseInput->getMouseYPosition();
 		mouseEnabled = false;
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 	}

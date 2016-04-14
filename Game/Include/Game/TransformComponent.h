@@ -8,6 +8,7 @@ namespace sge
 	class TransformComponent : public Component
 	{
 	public:
+		TransformComponent() : Component(nullptr) {};
 		TransformComponent(Entity* ent);
 		TransformComponent(Entity* ent, const sge::math::vec3& position, const sge::math::vec3& scale, float rotation);
 		~TransformComponent();
