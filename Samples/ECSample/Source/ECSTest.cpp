@@ -3,6 +3,7 @@
 #include "Game/InputComponent.h"
 #include "Game/TestComponent.h"
 #include "Game/SystemManager.h"
+#include "Game/ComponentFactory.h"
 #include "SDL2/SDL.h"
 #include "Core/Math.h"
 #include "Renderer/Window.h"
@@ -20,32 +21,29 @@ int main(int argc, char** argv)
 	sge::Renderer renderer(window);
 	renderer.init();
 
+	sge::ComponentFactory<sge::TransformComponent> transFactor;
+
 	// Create EntityManager
 	
-	sge::EntityManager* EManager = new sge::EntityManager(&renderer);
-
-
+	sge::EntityManager EManager;
 	// Create an entity through the manager
 
-	sge::Entity* player1 = EManager->createEntity();
-	sge::Entity* player2 = EManager->createEntity();
+	unsigned nakki = sizeof(sge::Entity);
+
+	sge::Entity* player1 = EManager.createEntity();
+	sge::Entity* player2 = EManager.createEntity();
+
+	player1->setComponent(transFactor.create(player1));
+	player1->setComponent(transFactor.create(player1));
 
 
 	// Give the entity a certain component
-
-	EManager->setComponent(player1, new sge::TestComponent(player1));
-	EManager->setComponent(player2, new sge::TestComponent(player2));
-
-	EManager->setComponent(player1, new sge::InputComponent(player1));
-
 	// Looooop
 
 	bool running = true;
 	while (running)
 	{
 		renderer.getDevice()->clear(0.5f, 0.0f, 0.7f, 1.0f);
-
-		EManager->updateSystems();
 
 		while (SDL_PollEvent(&event)) 
 		{
@@ -66,12 +64,6 @@ int main(int argc, char** argv)
 	}
 
 	// Testing component deletion
-
-	EManager->removeComponent<sge::TestComponent>(*player1);
-	EManager->removeComponent<sge::TestComponent>(*player2);
-
-	EManager->removeComponent<sge::InputComponent>(*player1);
-
 	renderer.deinit();
 
 	return 0;

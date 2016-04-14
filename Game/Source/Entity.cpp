@@ -4,16 +4,6 @@
 
 namespace sge
 {
-	Entity::Entity()
-	{
-		std::cout << "Entity created." << std::endl;
-	}
-
-
-	Entity::~Entity()
-	{
-	}
-
 	void Entity::setComponent(Component* comp)
 	{
 		SGE_ASSERT(comp != nullptr); 

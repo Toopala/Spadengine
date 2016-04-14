@@ -24,23 +24,9 @@ namespace sge
 
 		void quit();
 
-        static Spade& getInstance()
-        {
-            static Spade spade;
-            return spade;
-        }
-
-        Spade(const Spade&) = delete;
-        void operator=(const Spade&) = delete;
-
 		SceneManager* getSceneManager()
 		{
 			return sceneManager;
-		}
-
-		ResourceManager* getResourceManager()
-		{
-			return resourceManager;
 		}
 
 		Renderer* getRenderer()
@@ -65,7 +51,6 @@ namespace sge
 		sge::Window* window;
 		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
-		sge::ResourceManager* resourceManager;
 		sge::Renderer* renderer;
 
 		bool running;

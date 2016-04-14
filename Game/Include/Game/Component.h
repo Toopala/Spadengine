@@ -29,6 +29,7 @@ namespace sge
 		}
 
 	private:
+		bool alive;
 		Entity* parent; /**< Pointer to the parent Entity. */
 	};
 }

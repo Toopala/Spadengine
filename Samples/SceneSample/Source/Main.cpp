@@ -4,9 +4,10 @@
 
 int main(int argc, char** argv)
 {
-	sge::Spade::getInstance().init();
-	sge::Spade::getInstance().run(new BulletTestScene());
-	sge::Spade::getInstance().quit();
+	sge::Spade spade;
+	spade.init();
+	spade.run(new BulletTestScene(&spade));
+	spade.quit();
 
 	return 0;
 };

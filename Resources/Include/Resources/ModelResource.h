@@ -24,8 +24,6 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/GraphicsDevice.h"
 
-#include "Spade/Spade.h"
-
 struct Vertex {
 	// Position
 	sge::math::vec3 Position;
@@ -60,14 +58,14 @@ namespace sge
 			this->textures = textures;
 		}
 
-		void createBuffers()
+		void createBuffers(GraphicsDevice* device)
 		{
 			//plaa
-			vertexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
-			indexBuffer = sge::Spade::getInstance().getRenderer()->getDevice()->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
-			sge::Spade::getInstance().getRenderer()->getDevice()->bindVertexBuffer(vertexBuffer);
-			sge::Spade::getInstance().getRenderer()->getDevice()->bindIndexBuffer(indexBuffer);
-			sge::Spade::getInstance().getRenderer()->getDevice()->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
+			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
+			indexBuffer = device->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
+			device->bindVertexBuffer(vertexBuffer);
+			device->bindIndexBuffer(indexBuffer);
+			device->copyData(vertexBuffer, sizeof(Vertex) * vertices.size(), vertices.data());
 		}
 
 		sge::Buffer* getVertexBuffer()

@@ -6,8 +6,7 @@ namespace sge
 	class System
 	{
 	public:
-		System();
-		virtual ~System();
+		virtual ~System() {};
 		
 		/** \brief Pure virtual function for Component addition
 		*
@@ -16,5 +15,6 @@ namespace sge
 		* \param Component* comp : Component to be added.
 		*/
 		virtual void addComponent(Component* comp) = 0;
+		virtual void update() = 0;
 	};
 }

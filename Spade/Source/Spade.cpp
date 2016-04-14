@@ -37,24 +37,23 @@ namespace sge
 	{
 		std::cout << "Spade init says hello" << std::endl;
 
+		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
+		renderer = new Renderer(*window);
+		renderer->init();
+		step = 1.0f / 60.0f;
 
 		mouseInput = new sge::MouseInput();
 		keyboardInput = new sge::KeyboardInput();
 		gamepadInput = new sge::GamepadInput();
 		eventManager = new EventManager(mouseInput, keyboardInput, gamepadInput);
 		sceneManager = new SceneManager();
-		resourceManager = new ResourceManager();
-
-		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-		renderer = new Renderer(*window);
-		renderer->init();
-		step = 1.0f / 60.0f;
 	}
 
 	void Spade::quit()
 	{
 		std::cout << "Spade quit says hello" << std::endl;
 
+		delete eventManager;
 		delete sceneManager;
 		delete mouseInput;
 		delete keyboardInput;
