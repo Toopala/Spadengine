@@ -27,5 +27,11 @@
     <FxCompile Include="Source\SimpleVertexShader.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
+    <FxCompile Include="Source\PixelShaderLights.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\VertexShaderLights.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
