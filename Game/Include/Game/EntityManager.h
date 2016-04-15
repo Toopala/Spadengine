@@ -12,11 +12,11 @@ namespace sge
 	public:
 		/** \brief Creates a transformable Entity.
 		*
-		* Creates an Entity that only contains a transform component.
-		* \return Pointer to a default constructed Entity.
+		* Creates an empty Entity and adds it to the manager's container.
+		* \return Pointer to an empty Entity.
 		*/
 		Entity* createEntity();
 	private:
-		std::vector<Entity*> entities;
+		std::vector<Entity*> entities; /**< Vector of Entity pointers. */
 	};
 }

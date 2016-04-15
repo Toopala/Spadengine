@@ -95,7 +95,6 @@
     <ClCompile Include="Source\PhysicsComponent.cpp" />
     <ClCompile Include="Source\PhysicsSystem.cpp" />
     <ClCompile Include="Source\RenderingComponent.cpp" />
-    <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SpriteComponent.cpp" />
     <ClCompile Include="Source\SpriteRenderingSystem.cpp" />

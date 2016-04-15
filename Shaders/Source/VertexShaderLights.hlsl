@@ -7,8 +7,6 @@ struct VOut
 	float3x3 TBNVout : TBN;
 };
 
-#define NUM_POINT_LIGHTS = 40;
-
 cbuffer UniformData : register(b0)
 {
 	float4x4 PV;

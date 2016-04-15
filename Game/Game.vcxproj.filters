@@ -28,9 +28,6 @@
     <ClCompile Include="Source\SceneManager.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene.cpp">
-      <Filter>Source Files\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="Source\EventManager.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>

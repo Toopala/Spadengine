@@ -107,6 +107,8 @@ namespace sge
 	{
 		SpriteComponent* spriteComponent = dynamic_cast<SpriteComponent*>(component);
 
+        spriteComponent->setRenderingSystem(this);
+
 		if (spriteComponent)
 		{
 			components.push_back(spriteComponent);

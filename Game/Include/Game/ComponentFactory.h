@@ -19,13 +19,26 @@ namespace sge
 			components.clear();
 		};
 
+		/** \brief Creates a component.
+		*
+		* Creates a Component of type T, adds it to the factory's container
+		* and returns a pointer to it.
+		* \param Entity* entity : Pointer to an Entity
+		* \return Pointer to a type of Component.
+		*/
 		T* create(Entity* entity)
 		{
 			T* component = allocator.create<T>(entity);
+            entity->setComponent(component);
 			components.push_back(component);
 			return component;
 		}
 
+		/** \brief Removes a component.
+		*
+		* Removes a component of type T.
+		* \param T* component : Pointer to a type of Component
+		*/
 		void remove(T* component)
 		{
 			allocator.destroy<T>(component);
@@ -33,6 +46,6 @@ namespace sge
 		}
 
 	private:
-		std::vector<T*> components;
+		std::vector<T*> components; /**< Vector of Component pointers */
 	};
 }
