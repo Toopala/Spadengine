@@ -28,11 +28,13 @@ int main(int argc, char** argv)
 	sge::EntityManager EManager;
 	// Create an entity through the manager
 
-	unsigned nakki = sizeof(sge::Entity);
+	
 
 	sge::Entity* player1 = EManager.createEntity();
 	sge::Entity* player2 = EManager.createEntity();
 
+
+	// Give Entities components by asking the factory of that specific component type.
 	player1->setComponent(transFactor.create(player1));
 	player1->setComponent(transFactor.create(player1));
 
