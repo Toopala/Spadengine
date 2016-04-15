@@ -18,6 +18,7 @@ namespace sge
 		void renderModel(ModelComponent* model);
 
 		void setVP(const math::mat4& VP);
+		void setCamPos(const math::vec3& POS);
 
 		void update();
 		void addComponent(Component* component);
@@ -30,11 +31,42 @@ namespace sge
 		const math::mat4* VP;
 
 		Buffer* uniformBuffer;
+		Buffer* uniformBuffer2;
 
 		struct UniformDataComponent
 		{
 			sge::math::mat4 PV;
 			sge::math::mat4 M;
 		} uniformData;
+
+		struct DirLight
+		{
+			sge::math::vec3 direction;
+
+			sge::math::vec3 ambient;
+			sge::math::vec3 diffuse;
+			sge::math::vec3 specular;
+		};
+
+		struct PointLight
+		{
+			sge::math::vec3 position;
+
+			float constant;
+			float mylinear;
+			float quadratic;
+
+			sge::math::vec3 ambient;
+			sge::math::vec3 diffuse;
+			sge::math::vec3 specular;
+		};
+
+		struct UniformDataComponent2
+		{
+			int numberOfLights = 1;
+			DirLight dirLight;
+			PointLight pointLights[40];
+			sge::math::vec3 CamPos;
+		} uniformData2;
 	};
 }
