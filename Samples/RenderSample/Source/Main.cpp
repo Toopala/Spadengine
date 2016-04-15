@@ -42,7 +42,7 @@ sge::ComponentFactory<sge::SpriteComponent>* spriteFactory;
 sge::math::mat4 VP = sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-void createSprite(sge::Texture* texture, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
+sge::Entity* createSprite(sge::Texture* texture, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
 {
 	// TODO kinda hax function. We need a proper way (a factory?) to create sprites.
     sge::Entity* entity = entityManager->createEntity();
@@ -59,6 +59,8 @@ void createSprite(sge::Texture* texture, const sge::math::vec3& position, const 
 	sprite->setColor(color);
 
     systemManager->addComponent(sprite);
+
+    return entity;
 }
 
 int main(int argc, char** argv)
@@ -109,8 +111,8 @@ int main(int argc, char** argv)
     systemManager->addSystem(spriteRenderer, typeid(sge::SpriteComponent).hash_code());
     spriteRenderer->setVP(VP);
 
-    createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
-    createSprite(texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+    auto sprite = createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+    auto sprite2 = createSprite(texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
 	
 	// Loop
 	SDL_Event event;
@@ -137,6 +139,9 @@ int main(int argc, char** argv)
 		}
 
 		// Update
+        alpha += 0.001f;
+        sprite->getComponent<sge::TransformComponent>()->setAngle(-alpha);
+        sprite2->getComponent<sge::TransformComponent>()->setAngle(alpha);
 
 		// Rendering
 		renderer.begin();
