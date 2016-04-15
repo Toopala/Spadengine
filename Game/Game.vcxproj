@@ -42,6 +42,7 @@
     <Import Project="..\Config\Properties\Resources.props" />
     <Import Project="..\Config\Properties\assimpDebug.props" />
     <Import Project="..\Config\Properties\stb_image.props" />
+    <Import Project="..\Config\Properties\freetype.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -54,6 +55,7 @@
     <Import Project="..\Config\Properties\Resources.props" />
     <Import Project="..\Config\Properties\assimpRelease.props" />
     <Import Project="..\Config\Properties\stb_image.props" />
+    <Import Project="..\Config\Properties\freetype.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -100,6 +102,8 @@
     <ClCompile Include="Source\SystemManager.cpp" />
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
+    <ClCompile Include="Source\TextComponent.cpp" />
+    <ClCompile Include="Source\TextRenderingSystem.cpp" />
     <ClCompile Include="Source\TransformComponent.cpp" />
     <ClCompile Include="Source\TransformSystem.cpp" />
   </ItemGroup>
@@ -124,6 +128,8 @@
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />
     <ClInclude Include="Include\Game\TestSystem.h" />
+    <ClInclude Include="Include\Game\TextComponent.h" />
+    <ClInclude Include="Include\Game\TextRenderingSystem.h" />
     <ClInclude Include="Include\Game\TransformComponent.h" />
     <ClInclude Include="Include\Game\TransformSystem.h" />
   </ItemGroup>

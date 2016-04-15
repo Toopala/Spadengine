@@ -27,10 +27,10 @@
     <ClInclude Include="Include\Resources\ModelResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Resources\TextResource.h">
+    <ClInclude Include="Include\Resources\ShaderResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Resources\ShaderResource.h">
+    <ClInclude Include="Include\Resources\FontResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClCompile Include="Source\ModelResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TextResource.cpp">
+    <ClCompile Include="Source\ShaderResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ShaderResource.cpp">
+    <ClCompile Include="Source\FontResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

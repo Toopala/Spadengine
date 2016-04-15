@@ -104,7 +104,7 @@
     <ClInclude Include="Include\Resources\Resource.h" />
     <ClInclude Include="Include\Resources\ResourceManager.h" />
     <ClInclude Include="Include\Resources\ShaderResource.h" />
-    <ClInclude Include="Include\Resources\TextResource.h" />
+    <ClInclude Include="Include\Resources\FontResource.h" />
     <ClInclude Include="Include\Resources\TextureResource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -113,7 +113,7 @@
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\ShaderResource.cpp" />
     <ClCompile Include="Source\StbImageImplementation.cpp" />
-    <ClCompile Include="Source\TextResource.cpp" />
+    <ClCompile Include="Source\FontResource.cpp" />
     <ClCompile Include="Source\TextureResource.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
