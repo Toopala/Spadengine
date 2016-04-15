@@ -7,14 +7,14 @@ namespace sge
 	*
 	*	An initialization which uses time(NULL) as seed to generate random number sequence.
 	*/
-	void randomInitialize();
+	void randomSeed();
 
 	/** \brief Initializes with given seed.
 	*
 	*	An initialization which uses the given seed to generate a number sequence.
 	*	\param const unsigned int &seed : The seed number
 	*/
-	void randomInitialize(const unsigned int &seed);
+	void setSeed(const unsigned int &seed);
 
 	/** \brief Generates a random integer from given range.
 	*

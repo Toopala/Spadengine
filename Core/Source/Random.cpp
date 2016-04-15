@@ -2,12 +2,12 @@
 
 namespace sge
 {
-	void randomInitialize()
+	void randomSeed()
 	{
 		srand(time(NULL));
 	}
 
-	void randomInitialize(const unsigned int &seed)
+	void setSeed(const unsigned int &seed)
 	{
 		srand(seed);
 	}
