@@ -2,6 +2,7 @@
 
 #include "Game/Component.h"
 #include <vector>
+#include <string>
 #include <algorithm>
 
 namespace sge
@@ -9,9 +10,9 @@ namespace sge
 	class Entity
 	{
 	public:
-		Entity()
+        Entity() : tag("generic")
 		{
-
+         
 		}
 		/** \brief Getter function for Components.
 		*
@@ -59,7 +60,18 @@ namespace sge
 		*/
 		void setComponent(Component* comp); 
 
+        void setTag(const std::string& tag)
+        {
+            this->tag = tag;
+        }
+
+        const std::string& getTag()
+        {
+            return tag;
+        }
+
 	private:
+        std::string tag;
 		std::vector<Component*> components; /**< Vector of Component pointers */
 	};
 }
