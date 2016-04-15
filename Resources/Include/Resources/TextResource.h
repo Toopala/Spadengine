@@ -34,7 +34,6 @@ namespace sge
 		sge::math::vec2 getScale();
 		float getRotation();
 		sge::math::vec2 getBounds();
-		sge::math::vec2 getGlobalBounds();
 
 	private:
 		FT_Library library;

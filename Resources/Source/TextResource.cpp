@@ -135,9 +135,4 @@ namespace sge
 		}
 		return pen;
 	}
-
-	sge::math::vec2 TextResource::getGlobalBounds()
-	{
-		return getBounds() * textScale;
-	}
 }
