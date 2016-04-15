@@ -1,11 +1,11 @@
 #pragma once
 
 #include <stdlib.h>
-#include "Core/Assert.h"
-#include "Core/Types.h"
 #include <vector>
 #include <map>
-#include <iostream>
+
+#include "Core/Assert.h"
+#include "Core/Types.h"
 
 namespace sge
 {
