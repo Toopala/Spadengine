@@ -22,32 +22,33 @@
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
-#include "Game/SpriteComponent.h"
-#include "Game/SpriteRenderingSystem.h"
-#include "Game/TransformComponent.h"
-#include "Game/Entity.h"
-
 #include "Resources/ResourceManager.h"
 #include "Resources/TextureResource.h"
 
+#include "Game/EntityManager.h"
+#include "Game/Entity.h"
+#include "Game/SystemManager.h"
+#include "Game/SpriteRenderingSystem.h"
+#include "Game/SpriteComponent.h"
+#include "Game/TransformComponent.h"
+#include "Game/ComponentFactory.h"
+
 // TODO global is no no. :(
-std::vector<sge::Entity*> entities;
-std::vector<sge::TransformComponent*> transforms;
-std::vector<sge::SpriteComponent*> sprites;
+sge::SystemManager* systemManager;
+sge::EntityManager* entityManager;
+sge::ComponentFactory<sge::TransformComponent>* transformFactory;
+sge::ComponentFactory<sge::SpriteComponent>* spriteFactory;
 
 sge::math::mat4 VP = sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 sge::Viewport viewport = { 0, 0, 1280, 720 };
 
-void createSprite(sge::SpriteRenderingSystem* system, sge::Texture* texture, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
+void createSprite(sge::Texture* texture, const sge::math::vec3& position, const sge::math::vec3& scale, const sge::math::vec4& color, float rotation = 0)
 {
 	// TODO kinda hax function. We need a proper way (a factory?) to create sprites.
-	sge::Entity* entity = new sge::Entity();
+    sge::Entity* entity = entityManager->createEntity();
 
-	sge::TransformComponent* transform = new sge::TransformComponent(entity);
-	entity->setComponent(transform);
-
-	sge::SpriteComponent* sprite = new sge::SpriteComponent(entity);
-	entity->setComponent(sprite);
+    sge::TransformComponent* transform = transformFactory->create(entity);
+    sge::SpriteComponent* sprite = spriteFactory->create(entity);
 
 	transform->setPosition(position);
 	transform->setScale(scale);
@@ -56,13 +57,8 @@ void createSprite(sge::SpriteRenderingSystem* system, sge::Texture* texture, con
 	
 	sprite->setTexture(texture);
 	sprite->setColor(color);
-    sprite->setRenderingSystem(system);
 
-	entities.push_back(entity);
-	sprites.push_back(sprite);
-	transforms.push_back(transform);
-
-    system->addComponent(sprite);
+    systemManager->addComponent(sprite);
 }
 
 int main(int argc, char** argv)
@@ -83,6 +79,11 @@ int main(int argc, char** argv)
 
 
     sge::ResourceManager::getMgr().printResources();
+
+    transformFactory = new sge::ComponentFactory<sge::TransformComponent>();
+    spriteFactory = new sge::ComponentFactory<sge::SpriteComponent>();
+    systemManager = new sge::SystemManager();
+    entityManager = new sge::EntityManager();
 
 	// TODO load layout description from external file (shader.reflect).
 
@@ -105,10 +106,11 @@ int main(int argc, char** argv)
 	// data, since transparent data should be sorted by their depth.
 
     sge::SpriteRenderingSystem* spriteRenderer = new sge::SpriteRenderingSystem(&renderer);
+    systemManager->addSystem(spriteRenderer, typeid(sge::SpriteComponent).hash_code());
     spriteRenderer->setVP(VP);
 
-    createSprite(spriteRenderer, texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
-    createSprite(spriteRenderer, texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+    createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
+    createSprite(texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
 	
 	// Loop
 	SDL_Event event;
@@ -135,42 +137,24 @@ int main(int argc, char** argv)
 		}
 
 		// Update
-		// TODO add fixed timestep.
-		alpha += 0.0001f;
-		transforms.back()->setAngle(alpha);
 
 		// Rendering
 		renderer.begin();
 
-        spriteRenderer->update();
+        systemManager->updateSystems();
 
 		renderer.end();
 	}
 
 	// Deinit
 
-	for (auto sprite : sprites)
-	{
-		delete sprite;
-	}
-
-	for (auto transform : transforms)
-	{
-		delete transform;
-	}
-
-	for (auto entity : entities)
-	{
-		delete entity;
-	}
-
     renderer.getDevice()->deleteTexture(texture);
 
     delete spriteRenderer;
-
-	sprites.clear();
-	transforms.clear();
-	entities.clear();
+    delete systemManager;
+    delete entityManager;
+    delete transformFactory;
+    delete spriteFactory;
 
 	renderer.deinit();
 

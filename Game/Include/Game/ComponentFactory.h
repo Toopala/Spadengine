@@ -22,6 +22,7 @@ namespace sge
 		T* create(Entity* entity)
 		{
 			T* component = allocator.create<T>(entity);
+            entity->setComponent(component);
 			components.push_back(component);
 			return component;
 		}
