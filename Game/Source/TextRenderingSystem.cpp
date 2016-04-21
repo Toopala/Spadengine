@@ -76,55 +76,64 @@ namespace sge
 		renderer->getDevice()->bindPipeline(pipeline);
 
 		sge::Font* font = text->getFont();
+		FT_GlyphSlot slot = font->face->glyph;
 
+		// Updates textures if text has changed since previous rendering
 		if (text->getText() != previousText)
 		{
-			while (characters.size() != 0)
+			while (charTextures.size() != 0)
 			{
-				characters.erase(characters.begin());
+				charTextures.erase(charTextures.begin());
 			}
 
 			for (int i = 0; i < text->getText().size(); i++)
 			{
 				FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
-				sge::Texture* texture = renderer->getDevice()->createTexture(font->face->glyph->bitmap.width, font->face->glyph->bitmap.rows, font->face->glyph->bitmap.buffer);
-				Character character =
+
+				unsigned char* expandedData = new unsigned char[2 * slot->bitmap.width * slot->bitmap.rows];
+				for (int j = 0; j < slot->bitmap.rows; j++)
 				{
-					texture,
-					math::vec2(font->face->glyph->bitmap.width, font->face->glyph->bitmap.rows),
-					math::vec2(font->face->glyph->bitmap_left, font->face->glyph->bitmap_top),
-					font->face->glyph->advance.x
-				};
-				characters.push_back(character);
+					for (int k = 0; k < slot->bitmap.width; k++)
+					{
+						expandedData[2 * (k + j * slot->bitmap.width)] = 255;
+						expandedData[2 * (k + j * slot->bitmap.width) + 1] = (k >= slot->bitmap.width || j >= slot->bitmap.rows) ? 0 : slot->bitmap.buffer[k + slot->bitmap.width * j];
+					}
+				}
+
+				sge::Texture* texture = renderer->getDevice()->createTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
+
+				charTextures.push_back(texture);
+				delete[] expandedData;
 
 				previousText = text->getText();
 			}
 		}
 		
-
+		// Render text
+		sge::math::vec2 pen = { 0, 0 };
 		for (int i = 0; i < text->getText().size(); i++)
 		{
-			sge::Texture* texture = characters[i].texture;
+			sge::Texture* texture = charTextures[i];
 
 			if (texture)
 			{
 				renderer->getDevice()->bindTexture(texture, 0);
-			}
+			}		
 
 			uniformData.MVP = *VP * text->getParent()->getComponent<TransformComponent>()->getMatrix();
 			uniformData.color = text->getColor();
 
 			renderer->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
 			renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
-
 			renderer->getDevice()->draw(6);
 
 			if (texture)
 			{
 				renderer->getDevice()->debindTexture(texture, 0);
 			}
-		}
 
+			pen.x += slot->advance.x + slot->bitmap_left >> 6;
+		}
 		renderer->getDevice()->debindPipeline(pipeline);
 	}
 
