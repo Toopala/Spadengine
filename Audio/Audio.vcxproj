@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Audio\AudioContext.h" />
+    <ClInclude Include="Include\Audio\AudioListener.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AudioContext.cpp" />

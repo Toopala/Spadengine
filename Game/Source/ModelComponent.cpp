@@ -38,5 +38,6 @@ namespace sge
 		this->modelHandle = modelHandle;
 		diffTexture = modelHandle->getResource<ModelResource>()->getDiffuseTexture();
 		normTexture = modelHandle->getResource<ModelResource>()->getNormalTexture();
+		specTexture = modelHandle->getResource<ModelResource>()->getSpecularTexture();
 	}
 }

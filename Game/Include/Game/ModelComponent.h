@@ -38,5 +38,6 @@ namespace sge
 	public:
 		Texture* diffTexture;
 		Texture* normTexture;
+		Texture* specTexture;
 	};
 }

@@ -64,11 +64,11 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	std::vector<char> vShaderData;
 
 #ifdef DIRECTX11
-	loadBinaryShader("../Assets/Shaders/VertexShader.cso", vShaderData);
-	loadBinaryShader("../Assets/Shaders/PixelShader.cso", pShaderData);
+	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
+	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShader.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShader.glsl", pShaderData);
+	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderData);
+	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderData);
 #endif
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
@@ -87,7 +87,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
 
 	EManager = new sge::EntityManager();
