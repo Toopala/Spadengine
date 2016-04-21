@@ -21,6 +21,16 @@ namespace sge
 			position = p;
 		}
 
+        void addPosition(const math::vec3& p)
+        {
+            position += p;
+        }
+
+        void addAngle(float a)
+        {
+            angle += a;
+        }
+
 		void setScale(const math::vec3& s)
 		{
 			scale = s;

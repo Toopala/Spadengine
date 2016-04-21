@@ -76,6 +76,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>XCOPY "$(SolutionDir)..\ThirdParty\SDL\lib\x86\SDL2.dll" "$(TargetDir)" /D /K /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Include\Renderer\DX11\DX11VertexLayout.h" />
