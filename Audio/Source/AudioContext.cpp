@@ -1,4 +1,5 @@
 #include "Audio/AudioContext.h"
+#include <memory>
 
 namespace sge
 {
