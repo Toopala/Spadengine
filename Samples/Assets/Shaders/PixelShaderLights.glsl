@@ -2,7 +2,7 @@
 
 in vec2 texcoords;
 in vec3 normals;
-in vec3 tangentFragPos;
+in vec3 fragPosition;
 in mat3 TBNVout;
 
 out vec4 outColor;
@@ -70,50 +70,47 @@ void main()
 	normal = texture(normalTex, texcoords).rgb;
 	normal = normalize(normal * 2.0 - 1.0);
 
-	vec3 TangentViewPos = TBNVout * viewPos;
-		vec3 viewDir = normalize(TangentViewPos - tangentFragPos);
-
-		vec3 result = CalculateDirectionLight(dirLight2, normal, viewDir);
+	vec3 viewDir = TBNVout * normalize(viewPos - fragPosition);
+    
+	vec3 result = CalculateDirectionLight(dirLight2, normal, viewDir);
 	
-		for (int i = 0; i < numberOfLights; i++)
-			result += CalculatePointLight(pointLights2[i], normal, viewDir);
-
+	for (int i = 0; i < numberOfLights; i++)
+		result += CalculatePointLight(pointLights2[i], normal, viewDir);
+    
 	outColor = vec4(result, 1.0);
 }
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-		vec3 tangentLightDir = -light.direction * TBNVout;
-		vec3 lightDir = normalize(tangentLightDir);
-		// Diffuse shading
-		float diff = max(dot(normal, lightDir), 0.0);
+	vec3 lightDir = TBNVout * normalize(-light.direction);
+	// Diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-		vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	// Combine results
 	vec3 ambient = light.ambient * texture(diffuseTex, texcoords).rgb;
-		vec3 diffuse = light.diffuse * diff * texture(diffuseTex, texcoords).rgb;
-		vec3 specular = light.specular * spec * texture(specularTex, texcoords).rgb;
-		return (ambient + diffuse + specular);
+	vec3 diffuse = light.diffuse * diff * texture(diffuseTex, texcoords).rgb;
+	vec3 specular = light.specular * spec * texture(specularTex, texcoords).rgb;
+	return (ambient + diffuse + specular);
 }
 
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 {
-	vec3 lightPosTBN = TBNVout * light.position;
-		vec3 lightDir = normalize(lightPosTBN - tangentFragPos);
-		// Diffuse shading
-		float diff = max(dot(normal, lightDir), 0.0);
+	vec3 lightDir = TBNVout * normalize(light.position - fragPosition);
+	// Diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	// Attenuation
-	float distance = length(lightPosTBN - tangentFragPos);
+	float distance = length(light.position - fragPosition);
 	float attenuation = 1.0f / (light.constant + light.mylinear * distance + light.quadratic * (distance * distance));
 	// Combine results
 	vec3 ambient = light.ambient * texture(diffuseTex, texcoords).rgb;
-		vec3 diffuse = light.diffuse * diff * texture(diffuseTex, texcoords).rgb;
-		vec3 specular = light.specular * spec * texture(specularTex, texcoords).rgb;
-		ambient *= attenuation;
+	vec3 diffuse = light.diffuse * diff * texture(diffuseTex, texcoords).rgb;
+	vec3 specular = light.specular * spec * texture(specularTex, texcoords).rgb;
+	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;
 	return (ambient + diffuse + specular);

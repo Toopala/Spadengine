@@ -92,6 +92,7 @@ namespace sge
 		std::vector<unsigned int>* getIndexArray();
 		sge::Texture* getDiffuseTexture();
 		sge::Texture* getNormalTexture();
+		sge::Texture* getSpecularTexture();
 
 		void createBuffers();
 

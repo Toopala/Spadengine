@@ -23,16 +23,17 @@ namespace sge
 
 		renderer->getDevice()->bindPipeline(model->getPipeline());
 
-		//renderer->getDevice()->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
+		renderer->getDevice()->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
 		renderer->getDevice()->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
+
 		renderer->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
-		//renderer->getDevice()->bindPixelUniformBuffer(uniformBuffer2, 1);
+		renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+		renderer->getDevice()->bindPixelUniformBuffer(uniformBuffer2, 1);
+		renderer->getDevice()->copyData(uniformBuffer2, sizeof(uniformData2), &uniformData2);
 
 		renderer->getDevice()->bindTexture(model->diffTexture, 0);
 		renderer->getDevice()->bindTexture(model->normTexture, 1);
-
-		renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
-		//renderer->getDevice()->copyData(uniformBuffer2, sizeof(uniformData2), &uniformData2);
+		renderer->getDevice()->bindTexture(model->specTexture, 2);
 
 		renderer->getDevice()->draw(model->getModelResource()->getVerticeArray()->size());
 		renderer->getDevice()->debindPipeline(model->getPipeline());

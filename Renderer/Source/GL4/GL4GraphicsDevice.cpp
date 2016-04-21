@@ -187,6 +187,35 @@ namespace sge
 			glDeleteProgram(gl4Pipeline->program);
 		}
 
+
+		GLint numberOfUniformBlocks = 0;
+		GLuint* uniformBlocks;
+
+		glGetProgramInterfaceiv(gl4Pipeline->program, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numberOfUniformBlocks);
+
+		uniformBlocks = new GLuint[numberOfUniformBlocks];
+
+		for (GLint i = 0; i < numberOfUniformBlocks; i++)
+		{
+			const GLenum props[] = { GL_BLOCK_INDEX };
+			const GLenum props2[] = { GL_BUFFER_BINDING };
+
+			GLint index;
+			GLint binding;
+			GLchar name[512];
+			GLsizei size;
+
+			//glGetProgramResourceiv(gl4Pipeline->program, GL_UNIFORM, i, 1, props, 1, nullptr, &index);
+			glGetProgramResourceiv(gl4Pipeline->program, GL_UNIFORM_BLOCK, i, 1, props2, 1, nullptr, &binding);
+			glGetProgramResourceName(gl4Pipeline->program, GL_UNIFORM_BLOCK, i, 512, &size, name);
+			index = glGetUniformBlockIndex(gl4Pipeline->program, name);
+			std::cout << "Found uniform block: " << name << " at index " << index << " with binding " << binding << std::endl;
+
+			//glUniformBlockBinding(gl4Pipeline->program, uniformBlocks[index], index);
+		}
+
+		std::cout << "Active uniform blocks: " << numberOfUniformBlocks << std::endl;
+
 		glBindVertexArray(0);
 
 		checkError();
@@ -354,8 +383,6 @@ namespace sge
 	{
 		SGE_ASSERT(impl->pipeline);
 
-		bindBuffer(buffer);
-
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 
 		checkError();
@@ -364,8 +391,6 @@ namespace sge
 	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
 	{
 		SGE_ASSERT(impl->pipeline);
-
-		bindBuffer(buffer);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 

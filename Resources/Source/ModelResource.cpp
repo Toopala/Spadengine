@@ -50,6 +50,19 @@ namespace sge
 		return nullptr;
 	}
 
+	sge::Texture* ModelResource::getSpecularTexture()
+	{
+		for (size_t i = 0; i < meshes[0].textures.size(); i++)
+		{
+			if (meshes[0].textures[i].getTypeName() == "texture_specular")
+			{
+				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+			}
+		}
+
+		return nullptr;
+	}
+
 	void ModelResource::createBuffers()
 	{
 		for (auto &mesh : meshes)
@@ -169,8 +182,11 @@ namespace sge
 			// 1. Diffuse maps
 			std::vector<sge::TextureResource> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-			// 2. Specular maps
-			std::vector<sge::TextureResource> specularMaps = this->loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+			// 2. Normal maps
+			std::vector<sge::TextureResource> normalMaps = this->loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+			// 3. Secular maps
+			std::vector<sge::TextureResource> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		}
 
