@@ -32,16 +32,21 @@ namespace sge
 
         Pipeline* pipeline;
         Buffer* vertexBuffer;
-        Buffer* uniformBuffer;
+        Buffer* vertexUniformBuffer;
+        Buffer* pixelUniformBuffer;
         Shader* vertexShader;
         Shader* pixelShader;
 
         const math::mat4* VP;
 
-        struct UniformData
+        struct VertexUniformData
         {
             math::mat4 MVP;
+        } vertexUniformData;
+
+        struct PixelUniformData
+        {
             math::vec4 color;
-        } uniformData;
+        } pixelUniformData;
 	};
 }

@@ -354,8 +354,6 @@ namespace sge
 	{
 		SGE_ASSERT(impl->pipeline);
 
-		bindBuffer(buffer);
-
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 
 		checkError();
@@ -364,8 +362,6 @@ namespace sge
 	void GraphicsDevice::bindPixelUniformBuffer(Buffer* buffer, size_t slot)
 	{
 		SGE_ASSERT(impl->pipeline);
-
-		bindBuffer(buffer);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, reinterpret_cast<GL4Buffer*>(buffer)->id);
 

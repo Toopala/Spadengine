@@ -54,7 +54,8 @@ namespace sge
 
         pipeline = renderer->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
         vertexBuffer = renderer->getDevice()->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
-        uniformBuffer = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(UniformData));
+        vertexUniformBuffer = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(vertexUniformData));
+        pixelUniformBuffer = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(pixelUniformData));
 
         renderer->getDevice()->bindPipeline(pipeline);
         renderer->getDevice()->bindVertexBuffer(vertexBuffer);
@@ -67,7 +68,8 @@ namespace sge
         renderer->getDevice()->deleteShader(vertexShader);
         renderer->getDevice()->deleteShader(pixelShader);
         renderer->getDevice()->deleteBuffer(vertexBuffer);
-        renderer->getDevice()->deleteBuffer(uniformBuffer);
+        renderer->getDevice()->deleteBuffer(vertexUniformBuffer);
+        renderer->getDevice()->deleteBuffer(pixelUniformBuffer);
         renderer->getDevice()->deletePipeline(pipeline);
     }
 
@@ -82,11 +84,14 @@ namespace sge
             renderer->getDevice()->bindTexture(texture, 0);
         }
         
-        uniformData.MVP = *VP * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
-        uniformData.color = sprite->getColor();
+        vertexUniformData.MVP = *VP * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
+        pixelUniformData.color = sprite->getColor();
 
-        renderer->getDevice()->bindVertexUniformBuffer(uniformBuffer, 0);
-        renderer->getDevice()->copyData(uniformBuffer, sizeof(uniformData), &uniformData);
+        renderer->getDevice()->bindVertexUniformBuffer(vertexUniformBuffer, 0);
+        renderer->getDevice()->copyData(vertexUniformBuffer, sizeof(vertexUniformData), &vertexUniformData);
+
+        renderer->getDevice()->bindPixelUniformBuffer(pixelUniformBuffer, 1);
+        renderer->getDevice()->copyData(pixelUniformBuffer, sizeof(pixelUniformData), &pixelUniformData);
 
         renderer->getDevice()->draw(6);
 
