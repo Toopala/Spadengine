@@ -76,7 +76,7 @@ void main()
 		vec3 result = CalculateDirectionLight(dirLight2, normal, viewDir);
 	
 		for (int i = 0; i < numberOfLights; i++)
-			result += CalculatePointLight(pointLights2[i], normal, viewDir);
+			//result += CalculatePointLight(pointLights2[i], normal, viewDir);
 
 	outColor = vec4(result, 1.0);
 }
@@ -84,7 +84,7 @@ void main()
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 {
 		vec3 tangentLightDir = -light.direction * TBNVout;
-		vec3 lightDir = normalize(tangentLightDir);
+		vec3 lightDir = normalize(tangentLightDir - tangentFragPos);
 		// Diffuse shading
 		float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
