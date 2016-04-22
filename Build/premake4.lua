@@ -1,4 +1,7 @@
-solution "Spadengine"
+solution {"Spadengine"}
+	premake.gcc.cc = 'clang'
+	premake.gcc.cxx = 'clang++'
+	
 	
 	defines {"OPENGL4"}
 	configurations { "DEBUG", "RELEASE" }
@@ -41,6 +44,7 @@ solution "Spadengine"
 		language "C++"
 		files { "../Core/**.cpp" }
 		includedirs { "../Core/Include/",
+				"../Core/Include/Core/Memory/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/" }
 		links {"SDL2"}
@@ -73,10 +77,12 @@ solution "Spadengine"
 		files {"../Game/**.cpp"}	
 		includedirs { "../Game/Include/",
 				"../Core/Include/",
+				"../Core/Include/Core/Memory/",
 				"../HID/Include/",
 				"../Renderer/Include/",
 				"../Resources/Include/",
 				"../Spade/Include/",
+				"../ThirdParty/freetype/include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/",
@@ -98,7 +104,7 @@ solution "Spadengine"
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/"}
-		links { "Core", "Game", "HID", "Renderer", "Resources", "Assimp", "glad", "SDL2"}
+		links { "Core", "Game", "Renderer", "Resources", "Assimp", "glad", "SDL2"}
 
 	project "Resources"
 		kind "StaticLib"
@@ -136,7 +142,8 @@ solution "Spadengine"
 				"../ThirdParty/assimp/include/",
 				"../Samples/Sample/Include/"}
 		links { "SDL2", "Core", "Renderer", "glad","dl","assimp", "Resources" }
-	
+
+
 	project "ECSample"
 		kind "ConsoleApp"
 		language "C++"
@@ -169,6 +176,23 @@ solution "Spadengine"
 				"../ThirdParty/assimp/include/"}
 		links {"Core", "Renderer", "Game", "Resources","SDL2","glad","dl","assimp"}
 
+	project "PowerSample"
+		kind "ConsoleApp"
+		language "C++"
+		files {"../Samples/PowerSample/**.cpp"}
+		includedirs {"../Samples/PowerSample/Include/",
+				"../Core/Include/",
+				"../Game/Include/",
+				"../HID/Include",
+				"../Resources/Include/",
+				"../Renderer/Include/",
+				"../Spade/Include/",
+				"../ThirdParty/glad/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/SDL/include/",
+				"../ThirdParty/stb_image/Include/"}		
+		links {"Spade","Renderer","HID","Game","Resources","Core","assimp","glad", "dl", "SDL2"}
+
 	project "SceneSample"
 		kind "ConsoleApp"
 		language "C++"
@@ -188,6 +212,6 @@ solution "Spadengine"
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/stb_image/Include/"}
-		links {"Core", "Game", "HID", "Renderer", "Resources", "Spade", "assimp", "Bullet", "glad", "SDL2", "dl"}
+		links {"Spade","Renderer","HID","Game","Resources","Core","assimp","glad", "dl", "SDL2","Bullet"}
 	 
 	

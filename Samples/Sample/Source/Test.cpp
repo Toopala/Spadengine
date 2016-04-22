@@ -307,11 +307,9 @@ int main(int argc, char** argv)
 //		// Mouse Look sample
 		if (useMouse)
 		{
-#ifdef _WIN32
 			SDL_GetRelativeMouseState(&mouseXpos, &mouseYpos);
 
 			mouseLook(mouseXpos, mouseYpos);
-#endif
 			V = sge::math::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 			uniformData.PV = P*V;
@@ -322,7 +320,7 @@ int main(int argc, char** argv)
 		while (accumulator >= step)
 		{
 			// Eemeli nyt oikeasti t‰m‰ rotate tehd‰‰n n‰in! Muuten tulee salmiakkia.
-			uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(0.0f, 0.0f, 1.0f));
+			uniformData.M = sge::math::rotate(sge::math::mat4(), alpha, glm::vec3(1.0f, 0.0f, 1.0f));
 
 			accumulator -= step;
 		}
