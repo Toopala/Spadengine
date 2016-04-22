@@ -5,11 +5,12 @@ namespace sge
 	TextureResource::TextureResource(const std::string& resourcePath) : sge::Resource(resourcePath)
 	{
 		data = stbi_load(resourcePath.c_str(), &width, &height, &comp, STBI_rgb_alpha);
+		// TODO CREATE TEXTURE
 	}
 
 	TextureResource::~TextureResource()
 	{
-		//stbi_image_free(data);
+		//stbi_image_free(data); ??
 	}
 
 	unsigned char* TextureResource::getData()
@@ -25,6 +26,11 @@ namespace sge
 	std::string TextureResource::getTypeName()
 	{
 		return typeName;
+	}
+
+	Texture TextureResource::getTexture()
+	{
+		return texture;
 	}
 
 	void TextureResource::setTypename(const std::string& type)

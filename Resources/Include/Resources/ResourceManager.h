@@ -21,12 +21,12 @@
 //
 // The handles and the manager keep track of the resource instances
 // and make sure they are not unloaded before all the references are cleared.
+//
+// When handle is no longer needed, release it to keep track of references.
 
 namespace sge
 {
-
-
-	template<class T>
+	template<typename T>
 	class Handle;
 
 	class ResourceManager
@@ -36,7 +36,8 @@ namespace sge
 		ResourceManager();
 		~ResourceManager();
 
-		template <class T>
+		// This function generates a new resource into our Handle.
+		template <typename T>
 		Handle<T> load(const std::string &filename)
 		{
 			if (filename.empty())
@@ -48,6 +49,7 @@ namespace sge
 			Handle<T> handle(this);
 			unsigned int index;
 
+			// Create a new resource pointer of our template type.
 			T* resource = new T(filename);
 
 			if (freeSlots.empty())
@@ -65,10 +67,11 @@ namespace sge
 				magicNumbers[index] = handle.getMagic();
 			}
 
+			// Assertion to make sure our resource "chain" doesn't break
 			pathVec.push_back(filename);
-
 			SGE_ASSERT(pathVec.at(index) == filename);
 
+			// Finally we add +1 to our resource references.
 			std::unordered_map<std::string, sge::Resource*>::iterator it;
 			it = userData.find(filename);
 
@@ -80,53 +83,54 @@ namespace sge
 			return handle;
 		};
 
-
+		// Function for releasing the handle after it's become unnecessary.
 		template <class T>
 		void release(Handle<T> handle)
 		{
 			unsigned int index = handle.getIndex();
 
 			SGE_ASSERT(index < pathVec.size());
-			SGE_ASSERT(magicNumbers[index] == handle.getMagic());
+			SGE_ASSERT(magicNumbers[index] == handle.getMagic()); // We make sure we are releasing the correct handle by comparing the magic numbers.
 
 			magicNumbers[index] = 0;
-			freeSlots.push_back(index);
+			freeSlots.push_back(index); // A new free slot is added to our list.
 
 			std::unordered_map<std::string, sge::Resource*>::iterator it;
 			std::string filename = pathVec.at(index);
 			it = userData.find(filename);
 
-			if (it != userData.end())
+			if (it != userData.end()) // References are decreased after release.
 			{
 				(*it).second->decreaseRef();
 			}
 
-			if ((*it).second->getReferenceCount() == 0)
+			if ((*it).second->getReferenceCount() == 0) // If references have reached 0, we'll remove resource from memory.
 			{
 				(*it).second->~Resource();
 			}
 
-			std::cout << "Handle was released." << std::endl;
+			std::cout << filename << " | Handle released. References: " << (*it).second->getReferenceCount() << std::endl;
 		};
 
+		// Function to retrieve a resource pointer from our handle.
 		template <typename T>
 		T* getResource(sge::Handle<T>& handle)
 		{
-			std::string resPath = pathVec.at(handle.getIndex());
+			std::string path = pathVec.at(handle.getIndex());
 
 			std::unordered_map<std::string, sge::Resource*>::iterator it;
-			it = userData.find(resPath);
+			it = userData.find(path);
 			return static_cast<T*>((*it).second);
 		}
 
-        static ResourceManager& getMgr()
-        {
-            static ResourceManager resMgr;
-            return resMgr;
-        }
+		static ResourceManager& getMgr()
+		{
+			static ResourceManager resMgr;
+			return resMgr;
+		}
 
-        ResourceManager(const ResourceManager&) = delete;
-        void operator=(const ResourceManager&) = delete;
+		ResourceManager(const ResourceManager&) = delete;
+		void operator=(const ResourceManager&) = delete;
 
 		void printResources();
 
@@ -141,9 +145,10 @@ namespace sge
 		// Free slots are used to optimise resource storing.
 		std::vector<unsigned int> freeSlots;
 
-		// Resource paths
+		// Resource paths.
 		std::vector<std::string> pathVec;
 
+		// Deletes all loaded resources.
 		void releaseAll();
 
 	};
@@ -172,12 +177,14 @@ namespace sge
 			{
 				unsigned m_Index : MAX_BITS_INDEX;	// Index into resource array
 				unsigned m_Magic : MAX_BITS_MAGIC;	// Magic number to check
-			}MAXBITS;
+
+			} MAXBITS;
 
 			unsigned int m_Handle;
-		}HANDLE;
+		} HANDLE;
 
 		ResourceManager* refManager;
+
 	public:
 
 		template <typename T>
@@ -188,26 +195,38 @@ namespace sge
 
 		// Creation sets the handle to null for error check purposes.
 		// Handle needs to be initialized before it can be properly used.
+
 		Handle() : refManager(nullptr) { HANDLE.m_Handle = 0; }
+
 		Handle(ResourceManager* refManager) : refManager(refManager) { HANDLE.m_Handle = 0; }
+
 		void init(unsigned int index);
 
 		// Methods for managing our Handle
-		unsigned int getIndex()		const { return (HANDLE.MAXBITS.m_Index); }
-		unsigned int getMagic()		const { return (HANDLE.MAXBITS.m_Magic); }
-		unsigned int getHandle()	const { return (HANDLE.m_Handle); }
-		bool isNull()				const { return (!HANDLE.m_Handle); }
 
-		operator unsigned int()		const { return(HANDLE.m_Handle); }
+		unsigned int getIndex()		const
+		{
+			return (HANDLE.MAXBITS.m_Index);
+		}
+
+		unsigned int getMagic()		const
+		{
+			return (HANDLE.MAXBITS.m_Magic);
+		}
+
+		bool isNull()				const
+		{
+			return (!HANDLE.m_Handle);
+		}
+
 	};
 
+	// Initialization gives our handle its index and magic numbers.
 	template <typename TAG>
 	void Handle<TAG>::init(unsigned int index)
 	{
-		// Check if the handle is valid.
+		// Check if the handle is valid and within allocated range.
 		SGE_ASSERT(isNull());
-
-		// Check that the index is within allocated range.
 		SGE_ASSERT(index <= HANDLE.MAX_INDEX);
 
 		static unsigned int s_AutoMagic = 0;
@@ -220,20 +239,4 @@ namespace sge
 		HANDLE.MAXBITS.m_Index = index;
 		HANDLE.MAXBITS.m_Magic = s_AutoMagic;
 	}
-
-	// ----------------------------------------------------
-	// Overwriting operators for simpler Handle comparisons.
-	template <typename TAG>
-	inline bool operator != (Handle <TAG> h1, Handle <TAG> h2)
-	{
-		return (h1.GetHandle() != h2.GetHandle());
-	}
-
-	template <typename TAG>
-	inline bool operator == (Handle <TAG> h1, Handle <TAG> h2)
-	{
-		return (h1.GetHandle() == h2.GetHandle());
-	}
-
-
 }
