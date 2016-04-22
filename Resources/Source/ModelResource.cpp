@@ -219,7 +219,7 @@ namespace sge
 				// If texture hasn't been loaded already, load it
 				std::string temp(str.C_Str());
 				temp = "../Assets/" + temp;
-				sge::TextureResource* texture = new sge::TextureResource(temp);
+				sge::TextureResource* texture = new sge::TextureResource(temp, nullptr);
 				texture->setTypename(typeName);
 				textures.push_back(*texture);
 				this->textures_loaded.push_back(*texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
