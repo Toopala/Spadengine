@@ -10,9 +10,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)/../Renderer/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <PostBuildEvent>
-      <Command>XCOPY "$(SolutionDir)../ThirdParty/SDL/lib/x86/SDL2.dll" "$(TargetDir)" /D /K /Y &lt;NUL:</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

@@ -20,7 +20,10 @@ namespace sge
 
         void renderSprite(SpriteComponent* sprite);
 
-        void setVP(const math::mat4& VP);
+        void setVP(const math::mat4& vp)
+        {
+            viewProj = vp;
+        }
 
 		void update();
 		void addComponent(Component* component);
@@ -37,7 +40,7 @@ namespace sge
         Shader* vertexShader;
         Shader* pixelShader;
 
-        const math::mat4* VP;
+        math::mat4 viewProj;
 
         struct VertexUniformData
         {

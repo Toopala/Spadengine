@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Game/RenderingComponent.h"
+#include "Renderer/Viewport.h"
+#include "Game/Component.h"
 #include "Core/Math.h"
+
 namespace sge
 {
 	class TransformComponent;
@@ -10,45 +12,34 @@ namespace sge
 	{
 	public:
 		CameraComponent(Entity* ent);
-		~CameraComponent();
 
-		void setupCamera(float FOV, float aspectRatio, float near, float far, bool enableMouse, sge::math::vec3 POS, sge::math::vec3 front, sge::math::vec3 up);
+        // TODO we can't have a general setup method because we need to support both ortho and perspective projections.
 		void update();
-		void render(GraphicsDevice* device); // TODO: Render some cone object
-		void setRenderingSystem(); //TODO
 
-		sge::math::mat4 getVp();
+        void setPerspective(float fov, float aspectRatio, float near, float far);
+        void setOrtho(float left, float right, float top, float bottom, float near, float far);
 
-		void enableMouse();
-		void disableMouse();
+        void setViewport(int x, int y, unsigned int width, unsigned int height);
+        void setViewport(const Viewport& viewport);
 
-		void setFrontByVector(sge::math::vec3 front);
-		void setPosition(sge::math::vec3 POS);
-		void setSensitivity(float sensitivity);
+        Viewport* getViewport()
+        {
+            return  &viewport;
+        }
 
-		sge::math::vec3 getFront();
+        const sge::math::mat4& getViewProj()
+        {
+            return viewProj;
+        }
+
 	private:
-		sge::math::mat4 V;
-		sge::math::mat4 P;
-		sge::math::mat4 VP;
+        void updateView();
 
-		glm::vec3 cameraFront;
-		glm::vec3 cameraPos;
-		glm::vec3 cameraUp;
+        Viewport viewport;
 
-		float lastX, lastY;
-		float yaw, pitch;
+		math::mat4 viewProj;
+		math::mat4 proj;
 
-		int mouseXpos, mouseYpos;
-		int mousseX, mousseY;
-
-		bool mouseEnabled;
-
-		float sensitivity;
-
-		TransformComponent* transform;
-		// SomeObjectRenderingSystem* renderingsystem;
-
-		int enableX, enableY;
+        TransformComponent* transform;
 	};
 }

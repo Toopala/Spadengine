@@ -10,6 +10,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)/../Spade/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>XCOPY "$(SolutionDir)..\ThirdParty\SDL\lib\x86\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:
+XCOPY "$(SolutionDir)..\ThirdParty\assimp\lib\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:
+XCOPY "$(SolutionDir)..\ThirdParty\OpenAL\lib\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

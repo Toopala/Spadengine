@@ -84,7 +84,7 @@ namespace sge
             renderer->getDevice()->bindTexture(texture, 0);
         }
         
-        vertexUniformData.MVP = *VP * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
+        vertexUniformData.MVP = viewProj * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
         pixelUniformData.color = sprite->getColor();
 
         renderer->getDevice()->bindVertexUniformBuffer(vertexUniformBuffer, 0);
@@ -101,11 +101,6 @@ namespace sge
         }
 
         renderer->getDevice()->debindPipeline(pipeline);
-    }
-
-    void SpriteRenderingSystem::setVP(const math::mat4& VP)
-    {
-        this->VP = &VP;
     }
 
 	void SpriteRenderingSystem::addComponent(Component* component)

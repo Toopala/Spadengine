@@ -8,13 +8,9 @@ namespace sge
 	class TransformComponent : public Component
 	{
 	public:
-		TransformComponent() : Component(nullptr) {};
 		TransformComponent(Entity* ent);
-		TransformComponent(Entity* ent, const sge::math::vec3& position, const sge::math::vec3& scale, float rotation);
-		~TransformComponent();
 
-		// TODO do we need update??????
-		void update() {}
+        void update() {};
 
 		void setPosition(const math::vec3& p)
 		{
@@ -41,6 +37,16 @@ namespace sge
 			rotationVector = rv;
 		}
 
+        void setFront(const math::vec3& f)
+        {
+            front = f;
+        }
+
+        void setUp(const math::vec3& u)
+        {
+            up = u;
+        }
+
 		void setAngle(float a)
 		{
 			angle = a;
@@ -61,6 +67,16 @@ namespace sge
 			return rotationVector;
 		}
 
+        const math::vec3& getFront()
+        {
+            return front;
+        }
+
+        const math::vec3& getUp()
+        {
+            return up;
+        }
+
 		float getAngle()
 		{
 			return angle;
@@ -75,9 +91,15 @@ namespace sge
 		}
 
 	private:
+
+        // TODO rotationvector and front? Do we need them both?
+
 		math::vec3 position;
 		math::vec3 scale;
 		math::vec3 rotationVector;
+        math::vec3 front;
+        math::vec3 up;
+
 		float angle;
 	};
 

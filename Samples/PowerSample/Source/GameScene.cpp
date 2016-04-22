@@ -25,17 +25,13 @@ GameScene::GameScene(sge::Spade* engine) :
         textureResource.getResource<sge::TextureResource>()->getSize().x,
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData())),
-    spriteRenderingSystem(engine->getRenderer()),
-    VP(sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f, 0.1f, 1000.0f)),
-    viewport({ 0, 0, 1280, 720 })
+    spriteRenderingSystem(engine->getRenderer())
 {
     // TODO initialization should be easier.
-    // TODO get VP from camera.
     // TODO downloading resources and creating textures is messy.
-    // TODO binding viewport? Getting device from renderer from spade is a long way.
+
     createPlayer();
-    spriteRenderingSystem.setVP(VP);
-    engine->getRenderer()->getDevice()->bindViewport(&viewport);
+    createCamera();
 }
 
 GameScene::~GameScene()
@@ -76,6 +72,18 @@ void GameScene::update(float step)
         // TODO weird but works?
         engine->stop();
     }
+
+    camera->getComponent<sge::TransformComponent>()->addPosition({ 32.0f * step, 0.0f, 0.0f });
+
+    // TODO update camera where? What if we have multiple cameras? Do we need a system for them?
+    camera->getComponent<sge::CameraComponent>()->update();
+
+    // TODO binding viewport? Getting device from renderer from spade is a long way.
+    // Also looks awful.
+    engine->getRenderer()->getDevice()->bindViewport(camera->getComponent<sge::CameraComponent>()->getViewport());
+
+    // TODO can we simplify this? Do we need to set VP every frame manually?
+    spriteRenderingSystem.setVP(camera->getComponent<sge::CameraComponent>()->getViewProj());
 }
 
 void GameScene::interpolate(float alpha)
@@ -122,4 +130,9 @@ void GameScene::createCamera()
     auto cameracomponent = cameraFactory.create(camera);
 
     transform->setPosition({ 0.0f, 0.0f, 0.0f });
+    transform->setFront({ 0.0f, 0.0f, -1.0f });
+    transform->setUp({ 0.0f, 1.0f, 0.0f });
+
+    cameracomponent->setOrtho(0.0f, 1280.0f, 720.0f, 0.0f, 0.1f, 1000.0f);
+    cameracomponent->setViewport(0, 0, 1280, 720);
 }

@@ -228,8 +228,11 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	cameraPos = glm::vec3(5.0f, 10.0f, 50.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	camentity->getComponent<sge::CameraComponent>()->setupCamera(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f, false, cameraPos, cameraFront, cameraUp);
-	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getVp());
+    camentity->getComponent<sge::CameraComponent>()->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camentity->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
+    camentity->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+    camentity->getComponent<sge::TransformComponent>()->setUp(cameraUp);
+	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
 }
 
 BulletTestScene::~BulletTestScene()
@@ -363,17 +366,17 @@ void BulletTestScene::update(float step)
 		engine->stop();
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
-	{
-		camentity->getComponent<sge::CameraComponent>()->enableMouse();
-	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
-	{
-		camentity->getComponent<sge::CameraComponent>()->disableMouse();
-	}
+	//if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
+	//{
+	//	camentity->getComponent<sge::CameraComponent>()->enableMouse();
+	//}
+	//if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
+	//{
+	//	camentity->getComponent<sge::CameraComponent>()->disableMouse();
+	//}
 
 	camentity->getComponent<sge::CameraComponent>()->update();
-	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getVp());
+	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
 }
 void BulletTestScene::draw()
 {

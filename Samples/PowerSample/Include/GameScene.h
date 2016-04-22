@@ -40,7 +40,6 @@ private:
     sge::Handle<sge::TextureResource> textureResource;
     sge::Texture* texture;
     sge::math::mat4 VP;
-    sge::Viewport viewport;
 
     sge::EntityManager entityManager;
 
