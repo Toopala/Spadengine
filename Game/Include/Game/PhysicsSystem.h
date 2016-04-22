@@ -16,5 +16,15 @@ namespace sge
 
 	private:
 		std::vector<PhysicsComponent*> comps;
+
+		// Bullet init
+		
+		/*btDiscreteDynamicsWorld* dynamicsWorld;
+		btSequentialImpulseConstraintSolver* solver;
+		btDefaultCollisionConfiguration* collisionConfiguration;
+		btCollisionDispatcher* dispatcher;
+		btBroadphaseInterface* broadphase;*/
+
+
 	};
 }

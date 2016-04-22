@@ -4,6 +4,13 @@ namespace sge
 {
 	PhysicsSystem::PhysicsSystem() : System()
 	{
+		/*solver = new btSequentialImpulseConstraintSolver();
+		collisionConfiguration = new btDefaultCollisionConfiguration();
+		dispatcher = new btCollisionDispatcher(collisionConfiguration);
+		broadphase = new btDbvtBroadphase();
+
+
+		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);*/
 	}
 
 
