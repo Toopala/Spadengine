@@ -46,6 +46,8 @@
     <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpDebug.props" />
     <Import Project="..\..\Config\Properties\bulletphysics.props" />
+    <Import Project="..\..\Config\Properties\OpenAL.props" />
+    <Import Project="..\..\Config\Properties\Audio.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -62,6 +64,8 @@
     <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpRelease.props" />
     <Import Project="..\..\Config\Properties\bulletphysics.props" />
+    <Import Project="..\..\Config\Properties\OpenAL.props" />
+    <Import Project="..\..\Config\Properties\Audio.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
