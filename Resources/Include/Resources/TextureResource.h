@@ -17,7 +17,7 @@ namespace sge
 		*
 		*	\param const std::string& resourcePath : The path to the texture that is going to be loaded.
 		*/
-		TextureResource(const std::string& resourcePath, GraphicsDevice* device);
+		TextureResource(const std::string& resourcePath);
 
 		/** \brief The destructor.*/
 		~TextureResource();
