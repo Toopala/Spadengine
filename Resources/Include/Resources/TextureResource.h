@@ -1,9 +1,11 @@
 #pragma once
 
 #include "stb_image.h"
-
+#include "Renderer/Texture.h"
+#include "Renderer/GraphicsDevice.h"
 #include "Resources/Resource.h"
 #include "Core/Math.h"
+
 
 namespace sge
 {
@@ -38,6 +40,12 @@ namespace sge
 		*/
 		std::string getTypeName();
 
+		/** \brief Gets the texture.
+		*
+		*	\return Returns the texture.
+		*/
+		Texture getTexture();
+
 		/** \brief Sets the typename.
 		*
 		*	\param const std::string& typeName : The name of the desired type.
@@ -50,5 +58,6 @@ namespace sge
 		int comp;				/**<  Number of components in texture. */
 		std::string typeName;	/**<  Type of the texture. */
 		unsigned char* data;	/**<  Texture data pointer. */
+		Texture texture;		/**<  Texture class. */
 	};
 }
