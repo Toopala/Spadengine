@@ -8,12 +8,12 @@ solution {"Spadengine"}
 
 	configuration "Debug"
 		defines { "DEBUG" }
-		flags   { "Symbols" }
+		flags   { "Symbols","NoExceptions" }
 		buildoptions { "-std=c++11" }
 
 	configuration "Release"
 		defines { "NDEBUG","RELEASE_BUILD" }
-		flags   { "Optimize" }
+		flags   { "Optimize","NoExceptions"}
 		buildoptions { "-std=c++11" }
 
 -- THIRD PARTY LIBRARIES
@@ -123,7 +123,13 @@ solution {"Spadengine"}
 	project "Audio"
 		kind "StaticLib"
 		language "C++"
-		includedirs {"../Audio/Include/"}
+		files {"../Audio/**.cpp"}
+		includedirs {"../Audio/Include/",
+				"../Core/Include/",
+				"../ThirdParty/glm/include/",
+				"../ThirdParty/OpenAL/include/",
+				"../ThirdParty/SDL/include/"}
+		links {"Core","SDL2","openal"}
 
 -- SPADE SAMPLES
 	project "Sample"
@@ -148,7 +154,7 @@ solution {"Spadengine"}
 		kind "ConsoleApp"
 		language "C++"
 		location "../Samples/ECSample"
-		files {"../Samples/RenderSample/**.cpp"}
+		files {"../Samples/ECSample/**.cpp"}
 		includedirs {"../Core/Include/",
 				"../Renderer/Include/",
 				"../Game/Include/",
@@ -191,7 +197,7 @@ solution {"Spadengine"}
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/stb_image/Include/"}		
-		links {"Spade","Renderer","HID","Game","Resources","Core","assimp","glad", "dl", "SDL2"}
+		links {"Spade","Game","Renderer","HID","Resources","Core","assimp","glad", "dl", "SDL2"}
 
 	project "SceneSample"
 		kind "ConsoleApp"
@@ -199,6 +205,7 @@ solution {"Spadengine"}
 		location "../Samples/SceneSample/"
 		files {"../Samples/SceneSample/**.cpp"}
 		includedirs {"../Samples/SceneSample/Include/",
+				"../Audio/Include/",
 				"../Core/Include/",	
 				"../Game/Include/",
 				"../HID/Include/",
@@ -206,12 +213,13 @@ solution {"Spadengine"}
 				"../Resources/Include/",
 				"../Spade/Include/",
 				"../ThirdParty/assimp/include/",
+				"../ThirdParty/OpenAL/include/",
 				"../ThirdParty/bulletphysics/include/",
 				"../ThirdParty/bulletphysics/include/Bullet/",
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/stb_image/Include/"}
-		links {"Spade","Renderer","HID","Game","Resources","Core","assimp","glad", "dl", "SDL2","Bullet"}
+		links {"Spade","Game","Audio","Renderer","HID","Resources","Core","assimp","glad", "dl", "SDL2","Bullet","openal"}
 	 
 	
