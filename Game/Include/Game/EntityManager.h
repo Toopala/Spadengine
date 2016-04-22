@@ -7,6 +7,7 @@
 
 namespace sge
 {
+
 	class EntityManager
 	{
 	public:
