@@ -10,7 +10,7 @@ namespace sge
 {
 	CameraComponent::CameraComponent(Entity* ent) : 
 		Component(ent),
-        viewport({ 0.0f, 0.0f, 0.0f, 0.0f }),
+        viewport({ 0, 0, 0, 0 }),
         viewProj(0.0f),
         proj(0.0f),
         transform(nullptr)
