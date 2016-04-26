@@ -73,11 +73,17 @@ int main(int argc, char** argv)
     renderer.init();
 
     sge::Handle<sge::TextureResource> textureResource = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
+    sge::Handle<sge::TextureResource> textureResource2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade2.png");
 
     sge::Texture* texture = renderer.getDevice()->createTexture(
         textureResource.getResource<sge::TextureResource>()->getSize().x, 
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData());
+
+    sge::Texture* texture2 = renderer.getDevice()->createTexture(
+        textureResource2.getResource<sge::TextureResource>()->getSize().x,
+        textureResource2.getResource<sge::TextureResource>()->getSize().y,
+        textureResource2.getResource<sge::TextureResource>()->getData());
 
 
     sge::ResourceManager::getMgr().printResources();
@@ -111,8 +117,8 @@ int main(int argc, char** argv)
     systemManager->addSystem(spriteRenderer, typeid(sge::SpriteComponent).hash_code());
     spriteRenderer->setVP(VP);
 
-    auto sprite = createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 128.0f, 256.0f, 1.0f }, { 1.0f, 0.0f, 0.3f, 0.6f });
-    auto sprite2 = createSprite(texture, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
+    auto sprite = createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 192.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 0.6f });
+    auto sprite2 = createSprite(texture2, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
 	
 	// Loop
 	SDL_Event event;
