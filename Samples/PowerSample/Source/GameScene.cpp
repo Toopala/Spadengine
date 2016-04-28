@@ -33,9 +33,10 @@ GameScene::GameScene(sge::Spade* engine) :
     cameras.push_back(createCamera(640, 360,    640, 360));
     cameras.push_back(createCamera(0,   360,    640, 360));
 
-    entities.push_back(createEntity(256.0f, 256.0f, 256.0f, 256.0f, 1.0f ));
+    entities.push_back(createEntity(256.0f, 256.0f, 256.0f, 256.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f ));
     entities.back()->setTag("BEHNID");
-    entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 3.0f ));
+    entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
+    entities.back()->setTag("FRONT");
 }
 
 GameScene::~GameScene()
@@ -107,7 +108,7 @@ void GameScene::draw()
     engine->getRenderer()->end();
 }
 
-sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth)
+sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
 {
     // TODO this should be easier.
     sge::Entity* player = entityManager.createEntity();
@@ -121,7 +122,7 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
     transform->setAngle(45.0f);
 
     sprite->setTexture(texture);
-    sprite->setColor({ 0.0f, 0.5f, 0.5f, 0.2f });
+    sprite->setColor({ r, g, b, a });
     
     for (auto camera : cameras)
     {

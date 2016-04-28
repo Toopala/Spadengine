@@ -16,6 +16,8 @@
 #include "Resources/ShaderResource.h"
 #include "Resources/TextureResource.h"
 
+#include <climits>
+
 namespace sge
 {
     SpriteRenderingSystem::SpriteRenderingSystem(Renderer* renderer) :
@@ -80,6 +82,8 @@ namespace sge
         // TODO EBIN HAX :D
         static int pass = 0;
 
+        //std::cout << sprite->getParent()->getTag() << " " << sprite->key.fields.translucent << " " << sprite->key.fields.depth << " " << sprite->key.bits << std::endl;
+
         renderer->getDevice()->bindPipeline(pipeline);
 
         sge::Texture* texture = sprite->getTexture();
@@ -136,8 +140,14 @@ namespace sge
             for (auto camera : sprite->cameras)
             {
                 // We need to update key! Depth is based on distance from camera to sprite center.
-                sprite->key.fields.depth = math::dot(sprite->transform->getPosition(), 
-                    camera->getParent()->getComponent<TransformComponent>()->getFront());
+                uint32 distance = static_cast<uint32>(math::dot(sprite->transform->getPosition(), 
+                    camera->getParent()->getComponent<TransformComponent>()->getPosition() + 
+                    camera->getParent()->getComponent<TransformComponent>()->getFront()));
+
+                if (sprite->getColor().a < 1.0f)
+                    sprite->key.fields.depth = UINT32_MAX - distance;
+                else
+                    sprite->key.fields.depth = distance;
 
                 renderer->pushCommand(sprite->key, std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
             }

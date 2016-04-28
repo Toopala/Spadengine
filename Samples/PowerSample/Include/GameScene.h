@@ -31,7 +31,7 @@ public:
 
     // TODO just a temporary way to create entities.
     // OR a proper way?
-    sge::Entity* createEntity(float x, float y, float width, float height, float depth);
+    sge::Entity* createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a);
     sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
 
 private:
