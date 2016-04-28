@@ -65,7 +65,7 @@ namespace sge
 		{
 			int numberOfLights;
 			DirLight dirLight;
-			PointLight pointLights[10];
+			PointLight pointLights[40];
 			sge::math::vec3 CamPos;
 		} uniformData2;
 	};

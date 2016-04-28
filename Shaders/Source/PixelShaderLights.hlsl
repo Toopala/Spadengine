@@ -51,70 +51,68 @@ SamplerState textureSampler;
 
 float4 main(VOut vout) : SV_TARGET
 {
-	PointLight pointLights2[NUM_POINT_LIGHTS];
-	pointLights2[0].position = float3(1.0, 2.0, 0.0);
-	pointLights2[0].constant = float(1.0);
-	pointLights2[0].mylinear = float(0.09);
-	pointLights2[0].quadratic = float(0.032);
-	pointLights2[0].ambient = float3(0.05, 0.05, 0.05);
-	pointLights2[0].diffuse = float3(0.8, 0.8, 0.8);
-	pointLights2[0].specular = float3(1.0, 1.0, 1.0);
-	
-	DirLight dirLight2;
-
-	dirLight2.direction = float3(0.0f, -1.0f, 0.0f);
-	dirLight2.ambient = float3(0.05, 0.05, 0.05);
-	dirLight2.diffuse = float3(0.8, 0.8, 0.8);
-	dirLight2.specular = float3(0.5, 0.5, 0.5);
+	//PointLight pointLights2[NUM_POINT_LIGHTS];
+	//pointLights2[0].position = float3(1.0, 2.0, 0.0);
+	//pointLights2[0].constant = float(1.0);
+	//pointLights2[0].mylinear = float(0.09);
+	//pointLights2[0].quadratic = float(0.032);
+	//pointLights2[0].ambient = float3(0.05, 0.05, 0.05);
+	//pointLights2[0].diffuse = float3(0.8, 0.8, 0.8);
+	//pointLights2[0].specular = float3(1.0, 1.0, 1.0);
+	//
+	//DirLight dirLight2;
+    //
+	//dirLight2.direction = float3(0.0f, -1.0f, 0.0f);
+	//dirLight2.ambient = float3(0.05, 0.05, 0.05);
+	//dirLight2.diffuse = float3(0.8, 0.8, 0.8);
+	//dirLight2.specular = float3(0.5, 0.5, 0.5);
 
 	float3 normal = normalize(vout.normal);
-	//normal = normalTex.Sample(textureSampler, vout.texcoords).rgb;
-	//normal = normalize(normal * 2.0 - 1.0);
+	normal = normalTex.Sample(textureSampler, vout.texcoords).rgb;
+	normal = normalize(normal * 2.0 - 1.0);
 
-	//float3 TangentViewPos = mul(vout.TBNVout, viewPos);
-		float3 viewDir = normalize(viewPos - vout.fragPos);
-
-		float3 result = CalculateDirectionLight(dirLight2, normal, viewDir, vout);
 	
-		for (int i = 0; i < numberOfLights; i++)
-			result += CalculatePointLight(pointLights2[i], normal, vout.fragPos, viewDir, vout);
+	float3 viewDir = mul(vout.TBNVout , normalize(viewPos - vout.fragPos));
+
+	float3 result = CalculateDirectionLight(dirLight, normal, viewDir, vout);
+	
+	for (int i = 0; i < numberOfLights; i++)
+		result += CalculatePointLight(pointLights[i], normal, vout.fragPos, viewDir, vout);
 
 	return float4(result, 1.0);
 }
 
 float3 CalculateDirectionLight(DirLight light, float3 normal, float3 viewDir, VOut vout)
 {
-		//float3 tangentLightDir = mul(-light.direction, vout.TBNVout);
-		float3 lightDir = normalize(-light.direction);
-		// Diffuse shading
-		float diff = max(dot(normal, lightDir), 0.0);
+	float3 lightDir = mul(vout.TBNVout , normalize(-light.direction));
+	// Diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-		float3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	float3 reflectDir = mul(vout.TBNVout , reflect(-lightDir, normal));
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	// Combine results
 	float3 ambient = light.ambient * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
-		float3 diffuse = light.diffuse * diff * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
-		float3 specular = light.specular * spec * specularTex.Sample(textureSampler, vout.texcoords).rgb;
-		return (ambient + diffuse + specular);
+	float3 diffuse = light.diffuse * diff * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
+	float3 specular = light.specular * spec * specularTex.Sample(textureSampler, vout.texcoords).rgb;
+	return (ambient + diffuse + specular);
 }
 
 float3 CalculatePointLight(PointLight light, float3 normal, float3 fragPos, float3 viewDir, VOut vout)
 {
-	//float3 lightPosTBN = mul(vout.TBNVout, light.position);
-		float3 lightDir = normalize(light.position - fragPos);
-		// Diffuse shading
-		float diff = max(dot(normal, lightDir), 0.0);
+	float3 lightDir = mul(vout.TBNVout , normalize(light.position - fragPos));
+	// Diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-	float3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	float3 reflectDir = mul(vout.TBNVout , reflect(-lightDir, normal));
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	// Attenuation
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0f / (light.constant + light.mylinear * distance + light.quadratic * (distance * distance));
 	// Combine results
 	float3 ambient = light.ambient * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
-		float3 diffuse = light.diffuse * diff * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
-		float3 specular = light.specular * spec * specularTex.Sample(textureSampler, vout.texcoords).rgb;
-		ambient *= attenuation;
+	float3 diffuse = light.diffuse * diff * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;
+	float3 specular = light.specular * spec * specularTex.Sample(textureSampler, vout.texcoords).rgb;
+	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;
 	return (ambient + diffuse + specular);

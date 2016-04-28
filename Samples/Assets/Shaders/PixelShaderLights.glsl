@@ -11,7 +11,7 @@ layout(binding = 0) uniform sampler2D diffuseTex;
 layout(binding = 1) uniform sampler2D normalTex;
 layout(binding = 2) uniform sampler2D specularTex;
 
-#define NUM_POINT_LIGHTS 10
+#define NUM_POINT_LIGHTS 40
 
 float shininess = 0.9;
 
