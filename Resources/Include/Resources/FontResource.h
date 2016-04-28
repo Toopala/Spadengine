@@ -11,7 +11,7 @@ namespace sge
 	struct Font
 	{
 		FT_Face face;
-		float characterSize = 30;
+		float characterSize = 20;
 	};
 
 	class FontResource : public sge::Resource

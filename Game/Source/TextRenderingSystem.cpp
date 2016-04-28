@@ -102,13 +102,12 @@ namespace sge
 					}
 				}
 
-				sge::Texture* texture = renderer->getDevice()->createTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
+				sge::Texture* texture = renderer->getDevice()->createTextTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
 
 				charTextures.push_back(texture);
 				delete[] expandedData;
-
-				previousText = text->getText();
 			}
+			previousText = text->getText();
 		}
 		
 		// Render text
@@ -126,19 +125,17 @@ namespace sge
 				renderer->getDevice()->bindTexture(texture, 0);
 			}
 
-			/*
 			pen.y = slot->metrics.vertBearingY / 32 - font->characterSize;
+
+			
 
 			if (slot->metrics.height / 64 - slot->metrics.horiBearingY / 64 > 0)
 			{
-				pen.y += slot->metrics.height / 64 - slot->metrics.horiBearingY / 64;
+				pen.y = slot->metrics.height / 64 - slot->metrics.horiBearingY / 64;
 			}
-			*/
 
-			text->getParent()->getComponent<TransformComponent>()->addPosition(glm::vec3(pen.x, pen.y, 0));
-			text->getParent()->getComponent<TransformComponent>()->setScale(text->getParent()->getComponent<TransformComponent>()->getScale() * font->characterSize);
-
-			std::cout << slot->bitmap.width << "," << slot->bitmap.rows << std::endl;
+			text->getParent()->getComponent<TransformComponent>()->addPosition(glm::vec3(pen.x * 2, pen.y, 0));
+			text->getParent()->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(slot->bitmap.width, slot->bitmap.rows, 1));
 
 			vertexUniformData.MVP = *VP * text->getParent()->getComponent<TransformComponent>()->getMatrix();
 			pixelUniformData.color = text->getColor();
@@ -155,12 +152,11 @@ namespace sge
 				renderer->getDevice()->debindTexture(texture, 0);
 			}
 
-			pen.x += slot->advance.x >> 6;
-			pen.y += slot->advance.y >> 6;
-
-			text->getParent()->getComponent<TransformComponent>()->setPosition(originalPosition);
-			text->getParent()->getComponent<TransformComponent>()->setScale(originalScale);
+			pen.x = slot->advance.x >> 6;
 		}
+
+		text->getParent()->getComponent<TransformComponent>()->setPosition(originalPosition);
+		text->getParent()->getComponent<TransformComponent>()->setScale(originalScale);
 		renderer->getDevice()->debindPipeline(pipeline);
 	}
 

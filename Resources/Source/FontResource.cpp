@@ -36,7 +36,7 @@ namespace sge
 
 	void FontResource::setCharacterSize(float size)
 	{
-		error = FT_Set_Char_Size(font.face, 64 * font.characterSize, 64 * font.characterSize, 300, 300);
+		error = FT_Set_Char_Size(font.face, 64 * size, 64 * size, 300, 300);
 		if (error)
 		{
 			std::cout << "An error occurred while trying to set character size." << std::endl;

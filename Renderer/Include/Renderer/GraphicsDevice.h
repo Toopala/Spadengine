@@ -37,6 +37,7 @@ namespace sge
 		void deleteShader(Shader* shader);
 
 		Texture* createTexture(size_t width, size_t height, unsigned char* source);
+		Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
 		void deleteTexture(Texture* texture);
 
 		void bindPipeline(Pipeline* pipeline);
