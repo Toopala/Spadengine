@@ -25,11 +25,11 @@ namespace sge
         const math::vec4& getColor();
         Texture* getTexture();
 		
+        TransformComponent* transform;
 	private:
         Texture* texture;
 		math::vec4 color;
-
-		TransformComponent* transform;
+		
         SpriteRenderingSystem* renderingSystem;
 	};
 }
