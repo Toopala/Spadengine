@@ -14,16 +14,21 @@ namespace sge
 		void update();
 		void addComponent(Component* comp);
 
+		btDiscreteDynamicsWorld* getWorld()
+		{
+			return dynamicsWorld;
+		}
+
 	private:
 		std::vector<PhysicsComponent*> comps;
 
 		// Bullet init
 		
-		/*btDiscreteDynamicsWorld* dynamicsWorld;
+		btDiscreteDynamicsWorld* dynamicsWorld;
 		btSequentialImpulseConstraintSolver* solver;
 		btDefaultCollisionConfiguration* collisionConfiguration;
 		btCollisionDispatcher* dispatcher;
-		btBroadphaseInterface* broadphase;*/
+		btBroadphaseInterface* broadphase;
 
 
 	};
