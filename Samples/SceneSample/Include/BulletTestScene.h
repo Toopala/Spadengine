@@ -93,6 +93,7 @@ private:
 	UniformData2 uniformData2;
 
 	sge::Handle <sge::ModelResource> modelHandle;
+	sge::Handle <sge::ModelResource> modelHandleFloor;
 
 	sge::EntityManager* EManager;
 	sge::Entity* camentity;
@@ -101,9 +102,13 @@ private:
 
 	sge::Entity* modentity;
 	sge::Entity* modentity2;
+	sge::Entity* modentityFloor;
 	sge::TransformComponent* modtransform;
+	sge::TransformComponent* modtransform2;
+	sge::TransformComponent* modtransformFloor;
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
+	sge::ModelComponent* modcomponentFloor;
 
 	sge::ModelRenderingSystem* modelSystem;
 

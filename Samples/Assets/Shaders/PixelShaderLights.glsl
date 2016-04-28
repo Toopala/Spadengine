@@ -50,35 +50,37 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir);
 
 void main()
 {
-	//PointLight pointLights2[NUM_POINT_LIGHTS];
-	//pointLights2[0].position = vec3(0.0, 4.0, 0.0);
-	//pointLights2[0].constant = float(1.0);
-	//pointLights2[0].mylinear = float(0.09);
-	//pointLights2[0].quadratic = float(0.032);
-	//pointLights2[0].ambient = vec3(0.05, 0.05, 0.05);
-	//pointLights2[0].diffuse = vec3(0.8, 0.8, 0.8);
-	//pointLights2[0].specular = vec3(1.0, 1.0, 1.0);
-	//
-	//DirLight dirLight2;
-	//
-	//dirLight;
-	//pointLights;
+	PointLight pointLights2[NUM_POINT_LIGHTS];
+	pointLights2[0].position = vec3(0.0, 4.0, 0.0);
+	pointLights2[0].constant = float(1.0);
+	pointLights2[0].mylinear = float(0.0014);
+	pointLights2[0].quadratic = float(0.000007);
+	pointLights2[0].ambient = vec3(0.05, 0.05, 0.05);
+	pointLights2[0].diffuse = vec3(0.8, 0.8, 0.8);
+	pointLights2[0].specular = vec3(1.0, 1.0, 1.0);
+	
+	DirLight dirLight2;
+	
+	dirLight;
+	pointLights;
     
-	//dirLight2.direction = vec3(0.0, 0.0, -1.0);
-	//dirLight2.ambient = vec3(0.05, 0.05, 0.05);
-	//dirLight2.specular = vec3(0.5, 0.5, 0.5);
-	//dirLight2.diffuse = vec3(0.8, 0.8, 0.8);
+	dirLight2.direction = vec3(-1.0, -1.0, -1.0);
+	dirLight2.ambient = vec3(0.05, 0.05, 0.05);
+	dirLight2.specular = vec3(0.5, 0.5, 0.5);
+	dirLight2.diffuse = vec3(0.8, 0.8, 0.8);
 
+	vec3 viewPos2 = vec3(5.0, 10.0, 50.0);
+	
 	vec3 normal = normalize(normals);
 	normal = texture(normalTex, texcoords).rgb;
 	normal = normalize(normal * 2.0 - 1.0);
 	
-	vec3 viewDir = TBNVout * normalize(viewPos - fragPosition);
+	vec3 viewDir = TBNVout * normalize(viewPos2 - fragPosition);
     
-	vec3 result = CalculateDirectionLight(dirLight, normal, viewDir);
+	vec3 result = CalculateDirectionLight(dirLight2, normal, viewDir);
 	
-	for (int i = 0; i < numberOfLights; i++)
-		result += CalculatePointLight(pointLights[i], normal, viewDir);
+	for (int i = 0; i < 1; i++)
+		result += CalculatePointLight(pointLights2[i], normal, viewDir);
     
 	outColor = vec4(result, 1.0);
 }

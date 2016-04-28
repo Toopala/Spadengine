@@ -25,7 +25,7 @@ namespace sge
 		uniformData2.pointLights[0].diffuse = math::vec3(0.8, 0.8, 0.8);
 		uniformData2.pointLights[0].specular = math::vec3(1.0, 1.0, 1.0);
 
-		uniformData2.dirLight.direction = math::vec3(0.0, 0.0, -1.0);
+		uniformData2.dirLight.direction = math::vec3(-1.0, -1.0, -1.0);
 		uniformData2.dirLight.ambient = math::vec3(0.05, 0.05, 0.05);
 		uniformData2.dirLight.diffuse = math::vec3(0.8, 0.8, 0.8);
 		uniformData2.dirLight.specular = math::vec3(0.5, 0.5, 0.5);

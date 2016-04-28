@@ -95,6 +95,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
 	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
 
+	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
+	modelHandleFloor.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+
 	EManager = new sge::EntityManager();
 
 	modentity = EManager->createEntity();
@@ -113,8 +116,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 
 	modentity2 = EManager->createEntity();
 
-	modtransform = new sge::TransformComponent(modentity2);
-	modentity2->setComponent(modtransform);
+	modtransform2 = new sge::TransformComponent(modentity2);
+	modentity2->setComponent(modtransform2);
 
 	modcomponent2 = new sge::ModelComponent(modentity2);
 	modentity2->setComponent(modcomponent2);
@@ -125,12 +128,30 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
+	modentityFloor = EManager->createEntity();
+
+	modtransformFloor = new sge::TransformComponent(modentityFloor);
+	modentityFloor->setComponent(modtransformFloor);
+
+	modcomponentFloor = new sge::ModelComponent(modentityFloor);
+	modentityFloor->setComponent(modcomponentFloor);
+
+	modcomponentFloor->setModelResource(&modelHandleFloor);
+	modcomponentFloor->setRenderingSystem(modelSystem);
+
+	modentityFloor->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityFloor->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityFloor->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
 	viewport = { 0, 0, 1280, 720 };
 
 	modcomponent->setPipeline(pipeline);
 	modcomponent2->setPipeline(pipeline);
+	modcomponentFloor->setPipeline(pipeline);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
 
 	engine->getRenderer()->getDevice()->bindViewport(&viewport);
 
@@ -289,6 +310,7 @@ BulletTestScene::~BulletTestScene()
 	delete broadphase;
 
 	sge::ResourceManager::getMgr().release(modelHandle);
+	sge::ResourceManager::getMgr().release(modelHandleFloor);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 
@@ -396,6 +418,7 @@ void BulletTestScene::draw()
 
 	modentity->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 	modentity2->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
+	modentityFloor->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 
 	engine->getRenderer()->getDevice()->swap();
 }
