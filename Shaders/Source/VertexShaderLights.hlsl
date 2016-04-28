@@ -1,7 +1,7 @@
 struct VOut
 {
 	float4 position : SV_POSITION;
-	float3 tangentFragPos : TANGENT0;
+	float3 fragPos : TANGENT0;
 	float3 normal : NORMAL0;
 	float2 texcoords : TEXCOORD0;
 	float3x3 TBNVout : TBN;
@@ -32,7 +32,7 @@ VOut main(
 
 	float3x3 TBN = transpose(float3x3(T, B, N));
 
-	output.tangentFragPos = mul(TBN, fragPos.xyz);
+	output.fragPos = fragPos.xyz;
 
 	output.TBNVout = TBN;
 	output.normal = normal;

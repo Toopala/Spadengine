@@ -8,7 +8,7 @@ float shininess = 0.5;
 struct VOut
 {
 	float4 position : SV_POSITION;
-	float3 tangentFragPos : TANGENT0;
+	float3 fragPos : TANGENT0;
 	float3 normal : NORMAL0;
 	float2 texcoords : TEXCOORD0;
 	float3x3 TBNVout: TBN;
@@ -37,7 +37,7 @@ struct PointLight
 };
 
 float3 CalculateDirectionLight(DirLight light, float3 normal, float3 viewDir, VOut vout);
-float3 CalculatePointLight(PointLight light, float3 normal, float3 tangentFragPos, float3 viewDir, VOut vout);
+float3 CalculatePointLight(PointLight light, float3 normal, float3 fragPos, float3 viewDir, VOut vout);
 
 cbuffer UniformData : register(b1)
 {
@@ -68,24 +68,24 @@ float4 main(VOut vout) : SV_TARGET
 	dirLight2.specular = float3(0.5, 0.5, 0.5);
 
 	float3 normal = normalize(vout.normal);
-	normal = normalTex.Sample(textureSampler, vout.texcoords).rgb;
-	normal = normalize(normal * 2.0 - 1.0);
+	//normal = normalTex.Sample(textureSampler, vout.texcoords).rgb;
+	//normal = normalize(normal * 2.0 - 1.0);
 
-	float3 TangentViewPos = mul(vout.TBNVout, viewPos);
-		float3 viewDir = normalize(TangentViewPos - vout.tangentFragPos);
+	//float3 TangentViewPos = mul(vout.TBNVout, viewPos);
+		float3 viewDir = normalize(viewPos - vout.fragPos);
 
 		float3 result = CalculateDirectionLight(dirLight2, normal, viewDir, vout);
 	
 		for (int i = 0; i < numberOfLights; i++)
-			result += CalculatePointLight(pointLights2[i], normal, vout.tangentFragPos, viewDir, vout);
+			result += CalculatePointLight(pointLights2[i], normal, vout.fragPos, viewDir, vout);
 
 	return float4(result, 1.0);
 }
 
 float3 CalculateDirectionLight(DirLight light, float3 normal, float3 viewDir, VOut vout)
 {
-		float3 tangentLightDir = mul(-light.direction, vout.TBNVout);
-		float3 lightDir = normalize(tangentLightDir);
+		//float3 tangentLightDir = mul(-light.direction, vout.TBNVout);
+		float3 lightDir = normalize(-light.direction);
 		// Diffuse shading
 		float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
@@ -98,17 +98,17 @@ float3 CalculateDirectionLight(DirLight light, float3 normal, float3 viewDir, VO
 		return (ambient + diffuse + specular);
 }
 
-float3 CalculatePointLight(PointLight light, float3 normal, float3 tangentFragPos, float3 viewDir, VOut vout)
+float3 CalculatePointLight(PointLight light, float3 normal, float3 fragPos, float3 viewDir, VOut vout)
 {
-	float3 lightPosTBN = mul(vout.TBNVout, light.position);
-		float3 lightDir = normalize(lightPosTBN - vout.tangentFragPos);
+	//float3 lightPosTBN = mul(vout.TBNVout, light.position);
+		float3 lightDir = normalize(light.position - fragPos);
 		// Diffuse shading
 		float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
 	float3 reflectDir = reflect(-lightDir, normal);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	// Attenuation
-	float distance = length(lightPosTBN - vout.tangentFragPos);
+	float distance = length(light.position - fragPos);
 	float attenuation = 1.0f / (light.constant + light.mylinear * distance + light.quadratic * (distance * distance));
 	// Combine results
 	float3 ambient = light.ambient * diffuseTex.Sample(textureSampler, vout.texcoords).rgb;

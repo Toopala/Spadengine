@@ -106,4 +106,6 @@ private:
 	sge::ModelComponent* modcomponent2;
 
 	sge::ModelRenderingSystem* modelSystem;
+
+	float alpha;
 };

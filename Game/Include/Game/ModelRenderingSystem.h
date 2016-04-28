@@ -63,7 +63,7 @@ namespace sge
 
 		struct UniformDataComponent2
 		{
-			int numberOfLights = 1;
+			int numberOfLights;
 			DirLight dirLight;
 			PointLight pointLights[40];
 			sge::math::vec3 CamPos;
