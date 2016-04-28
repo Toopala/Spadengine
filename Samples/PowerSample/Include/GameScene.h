@@ -30,13 +30,14 @@ public:
     void draw();
 
     // TODO just a temporary way to create entities.
-    void createPlayer();
-    void createCamera();
+    // OR a proper way?
+    sge::Entity* createEntity(float x, float y, float width, float height, float depth);
+    sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
 
 private:
     sge::Spade* engine;
-    sge::Entity* player;
-    sge::Entity* camera;
+    std::vector<sge::Entity*> entities;
+    std::vector<sge::Entity*> cameras;
     sge::Handle<sge::TextureResource> textureResource;
     sge::Texture* texture;
     sge::math::mat4 VP;

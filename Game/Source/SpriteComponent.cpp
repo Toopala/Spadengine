@@ -13,6 +13,7 @@ namespace sge
         renderingSystem(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
+        key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
 		// We need transform!
 		SGE_ASSERT(transform);
@@ -25,6 +26,7 @@ namespace sge
 		renderingSystem(system)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
+        key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
 		// We need transform!
 		SGE_ASSERT(transform);
@@ -43,8 +45,7 @@ namespace sge
 
 	void SpriteComponent::update()
 	{
-        key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
-        key.fields.depth = static_cast<uint64>(transform->getPosition().z);
+        // TODO Does nothing... DO WE NEED UPDATE OR NOT??
 	}
 
 	void SpriteComponent::setColor(const math::vec4& color)

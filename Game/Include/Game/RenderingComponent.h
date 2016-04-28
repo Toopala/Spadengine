@@ -1,5 +1,9 @@
 #pragma once
+
+#include <vector>
+
 #include "Game/Component.h"
+#include "Game/CameraComponent.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/RenderCommand.h"
 
@@ -13,6 +17,7 @@ namespace sge
 		virtual void render(GraphicsDevice* device) = 0;
 
 		RenderCommand key;
+        std::vector<CameraComponent*> cameras;
 	};
 }
 
