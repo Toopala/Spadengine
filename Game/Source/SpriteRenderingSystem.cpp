@@ -3,6 +3,8 @@
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
 
+#include "Core/Math.h"
+
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/VertexLayout.h"
 #include "Renderer/Shader.h"
@@ -75,6 +77,9 @@ namespace sge
 
     void SpriteRenderingSystem::renderSprite(SpriteComponent* sprite)
     {
+        // TODO EBIN HAX :D
+        static int pass = 0;
+
         renderer->getDevice()->bindPipeline(pipeline);
 
         sge::Texture* texture = sprite->getTexture();
@@ -83,8 +88,10 @@ namespace sge
         {
             renderer->getDevice()->bindTexture(texture, 0);
         }
+
+        renderer->getDevice()->bindViewport(sprite->cameras[pass]->getViewport());
         
-        vertexUniformData.MVP = viewProj * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
+        vertexUniformData.MVP = sprite->cameras[pass]->getViewProj() * sprite->getParent()->getComponent<TransformComponent>()->getMatrix();
         pixelUniformData.color = sprite->getColor();
 
         renderer->getDevice()->bindVertexUniformBuffer(vertexUniformBuffer, 0);
@@ -101,6 +108,10 @@ namespace sge
         }
 
         renderer->getDevice()->debindPipeline(pipeline);
+
+        // TODO EBIN HAX continued :D
+        if (++pass > 3)
+            pass = 0;
     }
 
 	void SpriteRenderingSystem::addComponent(Component* component)
@@ -120,7 +131,16 @@ namespace sge
         for (auto sprite : components)
         {
             sprite->update();
-            renderer->pushCommand(sprite->key, std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+
+            // Render sprite for all cameras.
+            for (auto camera : sprite->cameras)
+            {
+                // We need to update key! Depth is based on distance from camera to sprite center.
+                sprite->key.fields.depth = math::dot(sprite->transform->getPosition(), 
+                    camera->getParent()->getComponent<TransformComponent>()->getFront());
+
+                renderer->pushCommand(sprite->key, std::bind(&sge::SpriteComponent::render, sprite, std::placeholders::_1));
+            }
         }
     }
 }
