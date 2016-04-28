@@ -13,8 +13,22 @@ namespace sge
 	ModelRenderingSystem::ModelRenderingSystem(Renderer* renderer) :
 		renderer(renderer)
 	{
-		uniformBuffer = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData));
-		uniformBuffer2 = renderer->getDevice()->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(uniformData2));
+		uniformBuffer = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
+		uniformBuffer2 = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData2));
+	
+		uniformData2.numberOfLights = 0;
+		uniformData2.pointLights[0].position = math::vec3(0.0, 4.0, 0.0);
+		uniformData2.pointLights[0].constant = float(1.0);
+		uniformData2.pointLights[0].mylinear = float(0.09);
+		uniformData2.pointLights[0].quadratic = float(0.032);
+		uniformData2.pointLights[0].ambient = math::vec3(0.05, 0.05, 0.05);
+		uniformData2.pointLights[0].diffuse = math::vec3(0.8, 0.8, 0.8);
+		uniformData2.pointLights[0].specular = math::vec3(1.0, 1.0, 1.0);
+
+		uniformData2.dirLight.direction = math::vec3(0.0, 0.0, -1.0);
+		uniformData2.dirLight.ambient = math::vec3(0.05, 0.05, 0.05);
+		uniformData2.dirLight.diffuse = math::vec3(0.8, 0.8, 0.8);
+		uniformData2.dirLight.specular = math::vec3(0.5, 0.5, 0.5);
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)
@@ -64,7 +78,7 @@ namespace sge
 		for (auto model : components)
 		{
 			model->update();
-			renderer->pushCommand(model->key, std::bind(&sge::ModelComponent::render, model, std::placeholders::_1));
+			renderer->pushCommand(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
 		}
 	}
 }

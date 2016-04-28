@@ -17,7 +17,7 @@
 #include "Core/Random.h"
 #include "Game/TransformComponent.h"
 
-#include "Audio/AudioContext.h"
+#include"Audio/Audio.h"
 
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
@@ -59,14 +59,14 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0f)
 {
 	modelSystem = new sge::ModelRenderingSystem(engine->getRenderer());
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
-	// Audio context testing
-	sge::AudioContext audioContext;
+	// Audio test
+	sge::Audio mixer;
 
 #ifdef DIRECTX11
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
@@ -238,6 +238,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
     camentity->getComponent<sge::TransformComponent>()->setFront(cameraFront);
     camentity->getComponent<sge::TransformComponent>()->setUp(cameraUp);
 	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
+	modelSystem->setCamPos(cameraPos);
 }
 
 BulletTestScene::~BulletTestScene()
@@ -379,9 +380,15 @@ void BulletTestScene::update(float step)
 	//{
 	//	camentity->getComponent<sge::CameraComponent>()->disableMouse();
 	//}
+	alpha += 0.01f;
+	float x = 20.0f*cos(alpha);
+	float z = 20.0f*sin(alpha);
+
+	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
 
 	camentity->getComponent<sge::CameraComponent>()->update();
 	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
+	modelSystem->setCamPos(camentity->getComponent<sge::TransformComponent>()->getPosition());
 }
 void BulletTestScene::draw()
 {

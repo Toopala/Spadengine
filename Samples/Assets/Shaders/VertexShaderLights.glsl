@@ -8,7 +8,7 @@ in vec2 inTexcoords;
 
 out vec2 texcoords;
 out vec3 normals;
-out vec3 fragPos;
+out vec3 fragPosition;
 out mat3 TBNVout;
 
 layout (std140, binding = 0) uniform MVPUniform
@@ -28,8 +28,8 @@ void main()
 	vec3 N = normalize(normalMatrix * inNormal);
 	
 	mat3 TBN = transpose(mat3(T, B, N));
-	fragPos = fragPos;
+	fragPosition = fragPos;
 	
 	TBNVout = TBN;
-	normals = inNormal;
+	normals = N;
 }

@@ -310,6 +310,43 @@ namespace sge
 		return &gl4Texture->header;
 	}
 
+	Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
+	{
+		GL4Texture* gl4Texture = new GL4Texture();
+
+		glGenTextures(1, &gl4Texture->id);
+		checkError();
+
+		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
+
+		checkError();
+		// TODO testing anisotropic filtering
+		// TODO check for anisotropy support
+		float maxValue;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
+
+		checkError();
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+		checkError();
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, 0x190A, GL_UNSIGNED_BYTE, source);
+
+		checkError();
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		checkError();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		checkError();
+
+		return &gl4Texture->header;
+	}
+
 	void GraphicsDevice::deleteTexture(Texture* texture)
 	{
 		GL4Texture* gl4Texture = reinterpret_cast<GL4Texture*>(texture);
