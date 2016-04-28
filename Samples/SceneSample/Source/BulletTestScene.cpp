@@ -17,7 +17,7 @@
 #include "Core/Random.h"
 #include "Game/TransformComponent.h"
 
-#include "Audio/AudioContext.h"
+#include"Audio/Audio.h"
 
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
@@ -65,8 +65,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine)
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
-	// Audio context testing
-	sge::AudioContext audioContext;
+	// Audio test
+	sge::Audio mixer;
 
 #ifdef DIRECTX11
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);

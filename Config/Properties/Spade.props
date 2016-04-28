@@ -13,7 +13,7 @@
     <PostBuildEvent>
       <Command>XCOPY "$(SolutionDir)..\ThirdParty\SDL\lib\x86\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:
 XCOPY "$(SolutionDir)..\ThirdParty\assimp\lib\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:
-XCOPY "$(SolutionDir)..\ThirdParty\OpenAL\lib\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:</Command>
+XCOPY "$(SolutionDir)..\ThirdParty\portaudio\lib\*.dll" "$(TargetDir)" /D /K /Y &lt;NUL:</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
