@@ -16,7 +16,7 @@ namespace sge
 		uniformBuffer = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
 		uniformBuffer2 = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData2));
 	
-		uniformData2.numberOfLights = 1;
+		uniformData2.numberOfLights = 0;
 		uniformData2.pointLights[0].position = math::vec3(0.0, 4.0, 0.0);
 		uniformData2.pointLights[0].constant = float(1.0);
 		uniformData2.pointLights[0].mylinear = float(0.09);

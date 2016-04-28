@@ -11,7 +11,7 @@ layout(binding = 0) uniform sampler2D diffuseTex;
 layout(binding = 1) uniform sampler2D normalTex;
 layout(binding = 2) uniform sampler2D specularTex;
 
-#define NUM_POINT_LIGHTS 40
+#define NUM_POINT_LIGHTS 10
 
 float shininess = 0.9;
 
@@ -50,6 +50,25 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir);
 
 void main()
 {
+	//PointLight pointLights2[NUM_POINT_LIGHTS];
+	//pointLights2[0].position = vec3(0.0, 4.0, 0.0);
+	//pointLights2[0].constant = float(1.0);
+	//pointLights2[0].mylinear = float(0.09);
+	//pointLights2[0].quadratic = float(0.032);
+	//pointLights2[0].ambient = vec3(0.05, 0.05, 0.05);
+	//pointLights2[0].diffuse = vec3(0.8, 0.8, 0.8);
+	//pointLights2[0].specular = vec3(1.0, 1.0, 1.0);
+	//
+	//DirLight dirLight2;
+	//
+	//dirLight;
+	//pointLights;
+    
+	//dirLight2.direction = vec3(0.0, 0.0, -1.0);
+	//dirLight2.ambient = vec3(0.05, 0.05, 0.05);
+	//dirLight2.specular = vec3(0.5, 0.5, 0.5);
+	//dirLight2.diffuse = vec3(0.8, 0.8, 0.8);
+
 	vec3 normal = normalize(normals);
 	normal = texture(normalTex, texcoords).rgb;
 	normal = normalize(normal * 2.0 - 1.0);
