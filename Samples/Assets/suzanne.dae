@@ -17,6 +17,9 @@
     <image id="NormalMapTile_png" name="NormalMapTile_png">
       <init_from>NormalMapTile.png</init_from>
     </image>
+	<image id="Untitled" name="Untitled">
+      <init_from>Untitled.png</init_from>
+    </image>
   </library_images>
   <library_effects>
     <effect id="Material_001-effect">
@@ -29,6 +32,16 @@
         <newparam sid="Seamless_marble_texture__11__jpg-sampler">
           <sampler2D>
             <source>Seamless_marble_texture__11__jpg-surface</source>
+          </sampler2D>
+        </newparam>
+		 <newparam sid="Untitled-surface">
+          <surface type="2D">
+            <init_from>Untitled</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Untitled-sampler">
+          <sampler2D>
+            <source>Untitled-surface</source>
           </sampler2D>
         </newparam>
         <newparam sid="NormalMapTile_png-surface">
@@ -53,7 +66,7 @@
               <texture texture="Seamless_marble_texture__11__jpg-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
-              <color sid="specular">0.8652174 0.8652174 0.8652174 1</color>
+              <texture texture="Untitled-sampler" texcoord="Cube-mesh-map-0"/>
             </specular>
             <shininess>
               <float sid="shininess">50</float>

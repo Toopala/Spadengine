@@ -42,9 +42,9 @@ layout(location = 5)  out  vec4 VtxGeoOutput5;
 #define Output5 VtxGeoOutput5
 layout(location = 6)  out  vec4 VtxGeoOutput6;
 #define Output6 VtxGeoOutput6
-vec4 Temp[3];
-ivec4 Temp_int[3];
-uvec4 Temp_uint[3];
+vec4 Temp[2];
+ivec4 Temp_int[2];
+uvec4 Temp_uint[2];
 void main()
 {
     Input0 = dcl_Input0;
@@ -60,32 +60,27 @@ void main()
     Temp[1] = UniformDataVS.PV[0] * Temp[0].xxxx + Temp[1];
     Temp[1] = UniformDataVS.PV[2] * Temp[0].zzzz + Temp[1];
     Output0 = UniformDataVS.PV[3] * Temp[0].wwww + Temp[1];
-    Temp[1].x = dot(UniformDataVS.M[0].xyz, Input3.xyz);
-    Temp[1].y = dot(UniformDataVS.M[1].xyz, Input3.xyz);
-    Temp[1].z = dot(UniformDataVS.M[2].xyz, Input3.xyz);
-    Temp[0].w = dot(Temp[1].xyz, Temp[1].xyz);
-    Temp[0].w = inversesqrt(Temp[0].w);
-    Temp[1].xyz = Temp[0].www * Temp[1].xyz;
-    Temp[2].xyz = Temp[0].yyy * Temp[1].xyz;
-    Output5.xyz = Temp[1].xyz;
-    Temp[1].x = dot(UniformDataVS.M[0].xyz, Input2.xyz);
-    Temp[1].y = dot(UniformDataVS.M[1].xyz, Input2.xyz);
-    Temp[1].z = dot(UniformDataVS.M[2].xyz, Input2.xyz);
-    Temp[0].y = dot(Temp[1].xyz, Temp[1].xyz);
-    Temp[0].y = inversesqrt(Temp[0].y);
-    Temp[1].xyz = Temp[0].yyy * Temp[1].xyz;
-    Temp[0].xyw = Temp[1].xyz * Temp[0].xxx + Temp[2].xyz;
-    Output4.xyz = Temp[1].xyz;
-    Temp[1].x = dot(UniformDataVS.M[0].xyz, Input1.xyz);
-    Temp[1].y = dot(UniformDataVS.M[1].xyz, Input1.xyz);
-    Temp[1].z = dot(UniformDataVS.M[2].xyz, Input1.xyz);
-    Temp[1].w = dot(Temp[1].xyz, Temp[1].xyz);
-    Temp[1].w = inversesqrt(Temp[1].w);
-    Temp[1].xyz = Temp[1].www * Temp[1].xyz;
-    Output1.xyz = Temp[1].xyz * Temp[0].zzz + Temp[0].xyw;
-    Output6.xyz = Temp[1].xyz;
+    Output1.xyz = Temp[0].xyz;
     Output2.xyz = Input1.xyz;
     Output3.xy = Input4.xy;
+    Temp[0].x = dot(UniformDataVS.M[0].xyz, Input2.xyz);
+    Temp[0].y = dot(UniformDataVS.M[1].xyz, Input2.xyz);
+    Temp[0].z = dot(UniformDataVS.M[2].xyz, Input2.xyz);
+    Temp[0].w = dot(Temp[0].xyz, Temp[0].xyz);
+    Temp[0].w = inversesqrt(Temp[0].w);
+    Output4.xyz = Temp[0].www * Temp[0].xyz;
+    Temp[0].x = dot(UniformDataVS.M[0].xyz, Input3.xyz);
+    Temp[0].y = dot(UniformDataVS.M[1].xyz, Input3.xyz);
+    Temp[0].z = dot(UniformDataVS.M[2].xyz, Input3.xyz);
+    Temp[0].w = dot(Temp[0].xyz, Temp[0].xyz);
+    Temp[0].w = inversesqrt(Temp[0].w);
+    Output5.xyz = Temp[0].www * Temp[0].xyz;
+    Temp[0].x = dot(UniformDataVS.M[0].xyz, Input1.xyz);
+    Temp[0].y = dot(UniformDataVS.M[1].xyz, Input1.xyz);
+    Temp[0].z = dot(UniformDataVS.M[2].xyz, Input1.xyz);
+    Temp[0].w = dot(Temp[0].xyz, Temp[0].xyz);
+    Temp[0].w = inversesqrt(Temp[0].w);
+    Output6.xyz = Temp[0].www * Temp[0].xyz;
     gl_Position = vec4(phase0_Output0);
     return;
 }
