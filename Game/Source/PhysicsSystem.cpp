@@ -4,15 +4,20 @@ namespace sge
 {
 	PhysicsSystem::PhysicsSystem() : System()
 	{
-		/*solver = new btSequentialImpulseConstraintSolver();
+		solver = new btSequentialImpulseConstraintSolver();
 		collisionConfiguration = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfiguration);
 		broadphase = new btDbvtBroadphase();
 
 
-		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);*/
+		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	}
 
+
+	/*if (comps.back()->getBody<btRigidBody>() != nullptr)
+		{
+			dynamicsWorld->addRigidBody(comps.back()->getBody<btRigidBody>());
+		}*/
 
 	PhysicsSystem::~PhysicsSystem()
 	{

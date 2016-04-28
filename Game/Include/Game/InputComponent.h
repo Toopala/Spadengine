@@ -13,6 +13,5 @@ namespace sge
 		void update();
 	private:
 		SDL_Event event;
-		Entity* parent;
 	};
 }
