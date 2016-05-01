@@ -8,6 +8,8 @@
 
 #include "Resources/ModelResource.h"
 
+#include "Core/Math.h"
+
 namespace sge
 {
 	ModelRenderingSystem::ModelRenderingSystem(Renderer* renderer) :
@@ -53,16 +55,6 @@ namespace sge
 		renderer->getDevice()->debindPipeline(model->getPipeline());
 	}
 
-	void ModelRenderingSystem::setVP(const math::mat4& VP)
-	{
-		uniformData.PV = VP;
-	}
-
-	void ModelRenderingSystem::setCamPos (const math::vec3& POS)
-	{
-		uniformData2.CamPos = POS;
-	}
-
 	void ModelRenderingSystem::addComponent(Component* component)
 	{
 		ModelComponent* modelComponent = dynamic_cast<ModelComponent*>(component);
@@ -77,8 +69,25 @@ namespace sge
 	{
 		for (auto model : components)
 		{
-			model->update();
+			//model->update();
+
+            // We need to update key! Depth is based on distance from camera to sprite center.
+            // DOES THIS EVEN WORK! >:(
+            uint32 distance = static_cast<uint32>(math::dot(model->getParent()->getComponent<TransformComponent>()->getPosition(),
+                camera->getParent()->getComponent<TransformComponent>()->getPosition() +
+                camera->getParent()->getComponent<TransformComponent>()->getFront()));
+
+            model->key.fields.depth = distance;
+
 			renderer->pushCommand(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
 		}
 	}
+
+    void ModelRenderingSystem::setCamera(CameraComponent* camera)
+    {
+        this->camera = camera;
+
+        uniformData.PV = camera->getViewProj();
+        uniformData2.CamPos = camera->getParent()->getComponent<TransformComponent>()->getPosition();
+    }
 }

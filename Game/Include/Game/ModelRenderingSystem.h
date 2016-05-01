@@ -8,6 +8,7 @@ namespace sge
 {
 	class Renderer;
 	class ModelComponent;
+    class CameraComponent;
 	struct Buffer;
 
 	class ModelRenderingSystem : public System
@@ -17,8 +18,7 @@ namespace sge
 
 		void renderModel(ModelComponent* model);
 
-		void setVP(const math::mat4& VP);
-		void setCamPos(const math::vec3& POS);
+        void setCamera(CameraComponent* camera);
 
 		void update();
 		void addComponent(Component* component);
@@ -28,7 +28,7 @@ namespace sge
 
 		Renderer* renderer;
 		
-		const math::mat4* VP;
+        CameraComponent* camera;
 
 		Buffer* uniformBuffer;
 		Buffer* uniformBuffer2;

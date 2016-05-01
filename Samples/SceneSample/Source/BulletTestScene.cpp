@@ -258,8 +258,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
     camentity->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
     camentity->getComponent<sge::TransformComponent>()->setFront(cameraFront);
     camentity->getComponent<sge::TransformComponent>()->setUp(cameraUp);
-	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
-	modelSystem->setCamPos(cameraPos);
+    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
 }
 
 BulletTestScene::~BulletTestScene()
@@ -409,8 +408,7 @@ void BulletTestScene::update(float step)
 	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
 
 	camentity->getComponent<sge::CameraComponent>()->update();
-	modelSystem->setVP(camentity->getComponent<sge::CameraComponent>()->getViewProj());
-	modelSystem->setCamPos(camentity->getComponent<sge::TransformComponent>()->getPosition());
+    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
 }
 void BulletTestScene::draw()
 {

@@ -218,6 +218,7 @@ namespace sge
 	{
 		float clear[] = { r, g, b, a };
 		impl->context->ClearRenderTargetView(impl->renderTargetView, clear);
+        impl->context->ClearDepthStencilView(impl->depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
 	Buffer* GraphicsDevice::createBuffer(BufferType type, BufferUsage usage, size_t size)
@@ -401,7 +402,7 @@ namespace sge
 		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
 		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-		depthStencilDesc.DepthEnable = FALSE;
+		depthStencilDesc.DepthEnable = TRUE;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
