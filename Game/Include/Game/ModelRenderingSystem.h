@@ -41,32 +41,31 @@ namespace sge
 
 		struct DirLight
 		{
-			sge::math::vec3 direction;
-
-			sge::math::vec3 ambient;
-			sge::math::vec3 diffuse;
-			sge::math::vec3 specular;
+			sge::math::vec4 direction;
+			sge::math::vec4 ambient;
+			sge::math::vec4 diffuse;
+			sge::math::vec4 specular;
 		};
 
 		struct PointLight
 		{
-			sge::math::vec3 position;
+			sge::math::vec4 position;
+            sge::math::vec4 ambient;
+            sge::math::vec4 diffuse;
+            sge::math::vec4 specular;
 
 			float constant;
 			float mylinear;
 			float quadratic;
-
-			sge::math::vec3 ambient;
-			sge::math::vec3 diffuse;
-			sge::math::vec3 specular;
+            float pad;
 		};
 
 		struct UniformDataComponent2
 		{
-			int numberOfLights;
 			DirLight dirLight;
 			PointLight pointLights[40];
-			sge::math::vec3 CamPos;
+			sge::math::vec4 CamPos;
+            int numofpl;
 		} uniformData2;
 	};
 }

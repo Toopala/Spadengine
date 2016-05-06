@@ -18,19 +18,21 @@ namespace sge
 		uniformBuffer = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
 		uniformBuffer2 = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData2));
 	
-		uniformData2.numberOfLights = 0;
-		uniformData2.pointLights[0].position = math::vec3(0.0, 4.0, 0.0);
-		uniformData2.pointLights[0].constant = float(1.0);
-		uniformData2.pointLights[0].mylinear = float(0.09);
-		uniformData2.pointLights[0].quadratic = float(0.032);
-		uniformData2.pointLights[0].ambient = math::vec3(0.05, 0.05, 0.05);
-		uniformData2.pointLights[0].diffuse = math::vec3(0.8, 0.8, 0.8);
-		uniformData2.pointLights[0].specular = math::vec3(1.0, 1.0, 1.0);
+		uniformData2.pointLights[0].position = math::vec4(0.0, 4.0, 0.0, 1.0);
+        uniformData2.pointLights[0].constant = float(1.0);
+        uniformData2.pointLights[0].mylinear = float(0.09);
+        uniformData2.pointLights[0].quadratic = float(0.032);
+        uniformData2.pointLights[0].pad = 0.0f;
+        uniformData2.pointLights[0].ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
+        uniformData2.pointLights[0].diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
+        uniformData2.pointLights[0].specular = math::vec4(1.0, 1.0, 1.0, 1.0);
 
-		uniformData2.dirLight.direction = math::vec3(-1.0, -1.0, -1.0);
-		uniformData2.dirLight.ambient = math::vec3(0.05, 0.05, 0.05);
-		uniformData2.dirLight.diffuse = math::vec3(0.8, 0.8, 0.8);
-		uniformData2.dirLight.specular = math::vec3(0.5, 0.5, 0.5);
+        uniformData2.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
+        uniformData2.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
+        uniformData2.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
+        uniformData2.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
+
+        uniformData2.numofpl = 0;
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)
@@ -88,6 +90,6 @@ namespace sge
         this->camera = camera;
 
         uniformData.PV = camera->getViewProj();
-        uniformData2.CamPos = camera->getParent()->getComponent<TransformComponent>()->getPosition();
+        uniformData2.CamPos = math::vec4(camera->getParent()->getComponent<TransformComponent>()->getPosition(), 1.0f);
     }
 }
