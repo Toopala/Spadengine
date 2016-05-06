@@ -32,7 +32,7 @@ namespace sge
         uniformData2.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
         uniformData2.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
 
-        uniformData2.numofpl = 0;
+        uniformData2.numofpl = 1;
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)
