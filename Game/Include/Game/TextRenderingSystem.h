@@ -13,6 +13,14 @@ namespace sge
 	struct Shader;
 	struct Texture;
 
+	struct Character
+	{
+		sge::math::vec2 size;
+		sge::math::vec2 horiBearing;
+		sge::math::vec2 vertBearing;
+		sge::math::vec2 metrics;
+	};
+
 	class TextRenderingSystem : public System
 	{
 	public:
@@ -29,6 +37,7 @@ namespace sge
 	private:
 		std::vector<TextComponent*> components;
 		std::vector<sge::Texture*> charTextures;
+		std::vector<Character> characters;
 
 		std::string previousText = "";
 

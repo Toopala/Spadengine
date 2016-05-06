@@ -86,6 +86,7 @@ namespace sge
 			while (charTextures.size() != 0)
 			{
 				charTextures.erase(charTextures.begin());
+				characters.erase(characters.begin());
 			}
 
 			for (int i = 0; i < text->getText().size(); i++)
@@ -103,7 +104,12 @@ namespace sge
 				}
 
 				sge::Texture* texture = renderer->getDevice()->createTextTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
-
+				Character character;
+				character.size = sge::math::vec2(slot->bitmap.width, slot->bitmap.rows);
+				character.horiBearing = sge::math::vec2(slot->metrics.horiBearingX, slot->metrics.horiBearingY);
+				character.vertBearing = sge::math::vec2(slot->metrics.vertBearingX, slot->metrics.vertBearingY);
+				character.metrics = sge::math::vec2(slot->metrics.width, slot->metrics.height);
+				characters.push_back(character);
 				charTextures.push_back(texture);
 				delete[] expandedData;
 			}
@@ -116,8 +122,6 @@ namespace sge
 		sge::math::vec3 originalScale = text->getParent()->getComponent<TransformComponent>()->getScale();
 		for (int i = 0; i < text->getText().size(); i++)
 		{
-			FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
-
 			sge::Texture* texture = charTextures[i];
 
 			if (texture)
@@ -125,20 +129,19 @@ namespace sge
 				renderer->getDevice()->bindTexture(texture, 0);
 			}
 
-			pen.y = slot->metrics.vertBearingY / 32 - font->characterSize;
-
-			
-
-			if (slot->metrics.height / 64 - slot->metrics.horiBearingY / 64 > 0)
+			pen.y = characters[i].vertBearing.y / 32 - font->characterSize;
+			if (characters[i].metrics.y / 64 - characters[i].horiBearing.y / 64 > 0)
 			{
-				pen.y = slot->metrics.height / 64 - slot->metrics.horiBearingY / 64;
+				pen.y += characters[i].metrics.y / 64 - characters[i].horiBearing.y / 64;
 			}
 
-			text->getParent()->getComponent<TransformComponent>()->addPosition(glm::vec3(pen.x * 2, pen.y, 0));
-			text->getParent()->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(slot->bitmap.width, slot->bitmap.rows, 1));
+			text->getParent()->getComponent<TransformComponent>()->setPosition(originalPosition + glm::vec3(pen.x, pen.y, 0));
+			text->getParent()->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(characters[i].size.x, characters[i].size.y, 1));
 
 			vertexUniformData.MVP = *VP * text->getParent()->getComponent<TransformComponent>()->getMatrix();
 			pixelUniformData.color = text->getColor();
+
+			pen.x += originalScale.x * characters[i].size.x * 2;
 
 			renderer->getDevice()->bindVertexUniformBuffer(vertexUniformBuffer, 0);
 			renderer->getDevice()->copyData(vertexUniformBuffer, sizeof(vertexUniformData), &vertexUniformData);
@@ -151,8 +154,6 @@ namespace sge
 			{
 				renderer->getDevice()->debindTexture(texture, 0);
 			}
-
-			pen.x = slot->advance.x >> 6;
 		}
 
 		text->getParent()->getComponent<TransformComponent>()->setPosition(originalPosition);
