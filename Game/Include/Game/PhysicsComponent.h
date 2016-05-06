@@ -14,15 +14,15 @@ namespace sge
 
 		void update();
 
-		void setBody(btCollisionObject* bodyType)
+		/*void setBody(btRigidBody* bodyType)
 		{
 			body = bodyType;
-		}
+		}*/
 		
-		void setShape(btCollisionShape* objectShape)
+		/*void setShape(btCollisionShape* objectShape)
 		{
 			shape = objectShape;
-		}
+		}*/
 		
 		template <typename T>
 		T* getBody()
@@ -41,16 +41,19 @@ namespace sge
 			return body;
 		}*/
 
+		btRigidBody* createBody(btCollisionShape* objectShape, btQuaternion& rotation, btVector3& location, btScalar& objectMass, btVector3& inertia);
+
+
 	private:
 		btTransform trans;
-		btCollisionObject* body;
+		btRigidBody* body;
 		btCollisionShape* shape;
 	};
 }
 
 /*
 
-btJokuVittu* createBody(btquaternion, btvector3, btscalar, jokusimpukka shape, btVector3 siika, float restitution, float friction);
+btJokuVittu* createBody(btquaternion, btvector3, btscalar, jokusimpukka shape, btVector3 siika);
 
 btDefaultMotionState* motistate
 = new btdefaultmotionstate(btTransfrom(btquaternion, btvector3);

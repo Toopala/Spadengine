@@ -26,4 +26,16 @@ namespace sge
 			getParent()->getComponent<TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 		}
 	}
+
+	btRigidBody* PhysicsComponent::createBody(btCollisionShape* objectShape, btQuaternion& rotation, btVector3& location, btScalar& objectMass, btVector3& inertia)
+	{
+		shape = objectShape;
+		btDefaultMotionState* motiState
+			= new btDefaultMotionState(btTransform(rotation, location));
+		btScalar mass = objectMass;
+		btVector3 fallInertia = inertia;
+		btRigidBody::btRigidBodyConstructionInfo consInfo(mass, motiState, shape, fallInertia);
+		body = new btRigidBody(consInfo);
+		return body;
+	}
 }
