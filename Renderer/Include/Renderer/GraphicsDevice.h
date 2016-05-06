@@ -9,6 +9,7 @@ namespace sge
 	class Window;
 	struct Buffer;
 	struct Pipeline;
+    struct RenderTarget;
 	struct Shader;
 	struct Texture;
 	struct VertexLayoutDescription;
@@ -33,15 +34,21 @@ namespace sge
 		Pipeline* createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader);
 		void deletePipeline(Pipeline* pipeline);
 
+        RenderTarget* createRenderTarget(Texture* texture);
+        void deleteRenderTarget(RenderTarget* renderTarget);
+
 		Shader* createShader(ShaderType type, const char* source, size_t size);
 		void deleteShader(Shader* shader);
 
-		Texture* createTexture(size_t width, size_t height, unsigned char* source);
+		Texture* createTexture(size_t width, size_t height, unsigned char* source = 0);
 		Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
 		void deleteTexture(Texture* texture);
 
 		void bindPipeline(Pipeline* pipeline);
 		void debindPipeline(Pipeline* pipeline);
+
+        void bindRenderTarget(RenderTarget* renderTarget);
+        void debindRenderTarget(RenderTarget* renderTarget);
 
 		void bindVertexBuffer(Buffer* buffer);
 		void bindIndexBuffer(Buffer* buffer);

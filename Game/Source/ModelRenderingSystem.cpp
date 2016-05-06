@@ -4,7 +4,7 @@
 #include "Game/Entity.h"
 
 #include "Renderer/GraphicsDevice.h"
-#include "Renderer/Renderer.h"
+#include "Game/RenderingSystem.h"
 
 #include "Resources/ModelResource.h"
 
@@ -12,7 +12,7 @@
 
 namespace sge
 {
-	ModelRenderingSystem::ModelRenderingSystem(Renderer* renderer) :
+    ModelRenderingSystem::ModelRenderingSystem(RenderingSystem* renderer) :
 		renderer(renderer)
 	{
 		uniformBuffer = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
@@ -32,7 +32,7 @@ namespace sge
         uniformData2.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
         uniformData2.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
 
-        uniformData2.numofpl = 1;
+        uniformData2.numofpl = 0;
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)

@@ -97,9 +97,9 @@
     <ClCompile Include="Source\PhysicsComponent.cpp" />
     <ClCompile Include="Source\PhysicsSystem.cpp" />
     <ClCompile Include="Source\RenderingComponent.cpp" />
+    <ClCompile Include="Source\RenderingSystem.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SpriteComponent.cpp" />
-    <ClCompile Include="Source\SpriteRenderingSystem.cpp" />
     <ClCompile Include="Source\SystemManager.cpp" />
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
@@ -119,12 +119,12 @@
     <ClInclude Include="Include\Game\PhysicsComponent.h" />
     <ClInclude Include="Include\Game\PhysicsSystem.h" />
     <ClInclude Include="Include\Game\RenderingComponent.h" />
+    <ClInclude Include="Include\Game\RenderingSystem.h" />
     <ClInclude Include="Include\Game\Scene.h" />
     <ClInclude Include="Include\Game\InputComponent.h" />
     <ClInclude Include="Include\Game\SceneManager.h" />
     <ClInclude Include="Include\Game\EventManager.h" />
     <ClInclude Include="Include\Game\SpriteComponent.h" />
-    <ClInclude Include="Include\Game\SpriteRenderingSystem.h" />
     <ClInclude Include="Include\Game\System.h" />
     <ClInclude Include="Include\Game\SystemManager.h" />
     <ClInclude Include="Include\Game\TestComponent.h" />

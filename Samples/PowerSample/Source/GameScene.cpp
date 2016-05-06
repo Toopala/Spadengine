@@ -2,6 +2,7 @@
 #include "Spade/Spade.h"
 #include "Game/Entity.h"
 #include "Renderer/Texture.h"
+#include "Renderer/RenderTarget.h"
 
 /*
 TODO
@@ -23,7 +24,8 @@ GameScene::GameScene(sge::Spade* engine) :
         textureResource.getResource<sge::TextureResource>()->getSize().x,
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData())),
-    spriteRenderingSystem(engine->getRenderer())
+    targetTexture(nullptr),
+    renderTarget(nullptr)
 {
     // TODO initialization should be easier.
     // TODO downloading resources and creating textures is messy.
@@ -35,14 +37,20 @@ GameScene::GameScene(sge::Spade* engine) :
 
     entities.push_back(createEntity(256.0f, 256.0f, 256.0f, 256.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f ));
     entities.back()->setTag("BEHNID");
+
     entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
     entities.back()->setTag("FRONT");
+
+    targetTexture = engine->getRenderer()->getDevice()->createTexture(1280, 720);
+    renderTarget = engine->getRenderer()->getDevice()->createRenderTarget(targetTexture);
 }
 
 GameScene::~GameScene()
 {
     // TODO this should probably be not deleted here, but in the texture resource.
     engine->getRenderer()->getDevice()->deleteTexture(texture);
+    engine->getRenderer()->getDevice()->deleteTexture(targetTexture);
+    engine->getRenderer()->getDevice()->deleteRenderTarget(renderTarget);
 }
 
 void GameScene::update(float step)
@@ -103,9 +111,10 @@ void GameScene::interpolate(float alpha)
 void GameScene::draw()
 {
     // TODO should we move begin and end to somewhere else?
+    engine->getRenderer()->getDevice()->bindRenderTarget(renderTarget);
     engine->getRenderer()->begin();
-    spriteRenderingSystem.update();
     engine->getRenderer()->end();
+    engine->getRenderer()->getDevice()->debindRenderTarget(renderTarget);
 }
 
 sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
@@ -129,8 +138,7 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
         sprite->cameras.push_back(camera->getComponent<sge::CameraComponent>());
     }
 
-    // TODO should spriterenderingsystem give you the components? Could make things nicer.
-    spriteRenderingSystem.addComponent(sprite);
+    
 
     return player;
 }

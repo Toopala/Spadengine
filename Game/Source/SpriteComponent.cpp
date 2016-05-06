@@ -1,7 +1,6 @@
 #include "Game/SpriteComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
-#include "Game/SpriteRenderingSystem.h"
 #include "Core/Assert.h"
 
 namespace sge

@@ -1,6 +1,5 @@
 #include "Game/Scene.h"
 #include "Game/EntityManager.h"
-#include "Game/SpriteRenderingSystem.h"
 #include "Game/ComponentFactory.h"
 #include "Game/TransformComponent.h"
 #include "Game/SpriteComponent.h"
@@ -17,6 +16,7 @@ namespace sge
     class Spade;
     class Entity;
     struct Texture;
+    struct RenderTarget;
 }
 
 class GameScene : public sge::Scene
@@ -40,12 +40,11 @@ private:
     std::vector<sge::Entity*> cameras;
     sge::Handle<sge::TextureResource> textureResource;
     sge::Texture* texture;
+    sge::Texture* targetTexture;
+    sge::RenderTarget* renderTarget;
     sge::math::mat4 VP;
 
     sge::EntityManager entityManager;
-
-    // TODO do we really need system manager? ._.
-    sge::SpriteRenderingSystem spriteRenderingSystem;
     
     // Component factories
     // TODO maybe we should use one factory for all component types? Using it could be nicer.

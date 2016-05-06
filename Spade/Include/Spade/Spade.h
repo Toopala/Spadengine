@@ -7,7 +7,7 @@
 
 #include "SDL2/SDL.h"
 #include "Game/EventManager.h"
-#include "Renderer/Renderer.h"
+#include "Game/RenderingSystem.h"
 #include "Resources/ResourceManager.h"
 
 namespace sge
@@ -29,7 +29,7 @@ namespace sge
 			return sceneManager;
 		}
 
-		Renderer* getRenderer()
+        RenderingSystem* getRenderer()
 		{
 			return renderer;
 		}
@@ -51,7 +51,7 @@ namespace sge
 		sge::Window* window;
 		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
-		sge::Renderer* renderer;
+        sge::RenderingSystem* renderer;
 
 		bool running;
 		float step;

@@ -14,7 +14,7 @@ namespace sge
 	class ModelRenderingSystem : public System
 	{
 	public:
-		ModelRenderingSystem(Renderer* renderer);
+        ModelRenderingSystem(RenderingSystem* renderer);
 
 		void renderModel(ModelComponent* model);
 
@@ -26,7 +26,7 @@ namespace sge
 	private:
 		std::vector<ModelComponent*> components;
 
-		Renderer* renderer;
+        RenderingSystem* renderer;
 		
         CameraComponent* camera;
 
