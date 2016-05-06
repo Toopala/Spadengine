@@ -20,19 +20,20 @@ namespace sge
 	
 		uniformData2.pointLights[0].position = math::vec4(0.0, 4.0, 0.0, 1.0);
         uniformData2.pointLights[0].constant = float(1.0);
-        uniformData2.pointLights[0].mylinear = float(0.09);
-        uniformData2.pointLights[0].quadratic = float(0.032);
+        uniformData2.pointLights[0].mylinear = float(0.022);
+        uniformData2.pointLights[0].quadratic = float(0.0019);
         uniformData2.pointLights[0].pad = 0.0f;
-        uniformData2.pointLights[0].ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
-        uniformData2.pointLights[0].diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
-        uniformData2.pointLights[0].specular = math::vec4(1.0, 1.0, 1.0, 1.0);
+        uniformData2.pointLights[0].ambient = math::vec4(0.05, 0.0125, 0.0125, 1.0);
+        uniformData2.pointLights[0].diffuse = math::vec4(0.8, 0.2, 0.2, 1.0);
+        uniformData2.pointLights[0].specular = math::vec4(1.0, 0.25, 0.25, 1.0);
 
         uniformData2.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
         uniformData2.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
         uniformData2.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
         uniformData2.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
 
-        uniformData2.numofpl = 0;
+        uniformData2.numofpl = 1;
+		uniformData2.numofdl = 1;
 	}
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)

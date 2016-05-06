@@ -92,6 +92,7 @@
     <ClCompile Include="Source\EntityManager.cpp" />
     <ClCompile Include="Source\EventManager.cpp" />
     <ClCompile Include="Source\InputComponent.cpp" />
+    <ClCompile Include="Source\LightComponent.cpp" />
     <ClCompile Include="Source\ModelComponent.cpp" />
     <ClCompile Include="Source\ModelRenderingSystem.cpp" />
     <ClCompile Include="Source\PhysicsComponent.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Include\Game\ComponentFactory.h" />
     <ClInclude Include="Include\Game\Entity.h" />
     <ClInclude Include="Include\Game\EntityManager.h" />
+    <ClInclude Include="Include\Game\LightComponent.h" />
     <ClInclude Include="Include\Game\ModelComponent.h" />
     <ClInclude Include="Include\Game\ModelRenderingSystem.h" />
     <ClInclude Include="Include\Game\PhysicsComponent.h" />

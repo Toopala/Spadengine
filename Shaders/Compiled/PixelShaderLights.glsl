@@ -13,25 +13,27 @@ layout(location = 0) uniform struct GlobalsPS_Type {
 	float shininess;
 } GlobalsPS;
 struct dirLight_Type {
-	vec3 direction;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 direction;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
 };
 struct pointLights_Type {
-	vec3 position;
+	vec4 position;
 	float constant;
 	float mylinear;
 	float quadratic;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	float pad;
 };
 layout(location = 1) uniform struct UniformDataPS_Type {
-	int numberOfLights;
 	dirLight_Type dirLight;
 	pointLights_Type pointLights;
-	vec3 viewPos;
+	vec4 viewPos;
+	int numofpl;
+	int pad[3];
 } UniformDataPS;
 layout(location = 2) uniform sampler2D diffuseTex;
 layout(location = 3) uniform sampler2D normalTex;
@@ -63,16 +65,16 @@ void main()
     Temp[0].w = dot(Temp[0].xyz, Temp[0].xyz);
     Temp[0].w = inversesqrt(Temp[0].w);
     Temp[0].xyz = Temp[0].www * Temp[0].xyz;
-    Temp[1].xyz = (-Input1.xyz) + UniformDataPS.viewPos.xyzx.xyz;
+    Temp[1].xyz = (-Input1.xyz) + UniformDataPS.viewPos.xyz;
     Temp[0].w = dot(Temp[1].xyz, Temp[1].xyz);
     Temp[0].w = inversesqrt(Temp[0].w);
     Temp[1].xyz = Temp[0].www * Temp[1].xyz;
     Temp[2].xyz = Temp[1].yyy * Input5.xyz;
     Temp[1].xyw = Input4.xyz * Temp[1].xxx + Temp[2].xyz;
     Temp[1].xyz = Input6.xyz * Temp[1].zzz + Temp[1].xyw;
-    Temp[0].w = dot((-UniformDataPS.dirLight.direction.xyzx.xyz), (-UniformDataPS.dirLight.direction.xyzx.xyz));
+    Temp[0].w = dot((-UniformDataPS.dirLight.direction.xyz), (-UniformDataPS.dirLight.direction.xyz));
     Temp[0].w = inversesqrt(Temp[0].w);
-    Temp[2].xyz = Temp[0].www * (-UniformDataPS.dirLight.direction.xyzx.xyz);
+    Temp[2].xyz = Temp[0].www * (-UniformDataPS.dirLight.direction.xyz);
     Temp[3].xyz = Temp[2].yyy * Input5.xyz;
     Temp[2].xyw = Input4.xyz * Temp[2].xxx + Temp[3].xyz;
     Temp[2].xyz = Input6.xyz * Temp[2].zzz + Temp[2].xyw;
@@ -90,20 +92,20 @@ void main()
     Temp[1].w = Temp[1].w * GlobalsPS.shininess;
     Temp[1].w = exp2(Temp[1].w);
     Temp[2].xyz = texture(diffuseTex, Input3.xy).xyz;
-    Temp[3].xyz = Temp[0].www * UniformDataPS.dirLight.diffuse.xyzx.xyz;
+    Temp[3].xyz = Temp[0].www * UniformDataPS.dirLight.diffuse.xyz;
     Temp[3].xyz = Temp[2].xyz * Temp[3].xyz;
-    Temp[4].xyz = Temp[1].www * UniformDataPS.dirLight.specular.xyzx.xyz;
+    Temp[4].xyz = Temp[1].www * UniformDataPS.dirLight.specular.xyz;
     Temp[5].xyz = texture(specularTex, Input3.xy).xyz;
-    Temp[3].xyz = UniformDataPS.dirLight.ambient.xyzx.xyz * Temp[2].xyz + Temp[3].xyz;
+    Temp[3].xyz = UniformDataPS.dirLight.ambient.xyz * Temp[2].xyz + Temp[3].xyz;
     Temp[3].xyz = Temp[4].xyz * Temp[5].xyz + Temp[3].xyz;
     Temp[4].xyz = Temp[3].xyz;
     Temp[0].w = intBitsToFloat(0x0);
     while(true){
         // IGE+BREAKC opt
-        if ((floatBitsToInt(Temp[0]).w>= UniformDataPS.numberOfLights)) { break; }
-        Temp[1].w = uintBitsToFloat((floatBitsToInt(Temp[0]).w>=UniformDataPS.numberOfLights) ? 0xFFFFFFFFu : 0u);
-        Temp[1].w = intBitsToFloat(floatBitsToInt(Temp[0]).w * 0x5);
-        Temp[6].xyz = (-Input1.xyz) + UniformDataPS.pointLights.position[floatBitsToInt(Temp[1]).w].xyzx.xyz;
+        if ((floatBitsToInt(Temp[0]).w>= UniformDataPS.numofpl)) { break; }
+        Temp[1].w = uintBitsToFloat((floatBitsToInt(Temp[0]).w>=UniformDataPS.numofpl) ? 0xFFFFFFFFu : 0u);
+        Temp[1].w = intBitsToFloat(floatBitsToInt(Temp[0]).w * 0x6);
+        Temp[6].xyz = (-Input1.xyz) + UniformDataPS.pointLights.position[floatBitsToInt(Temp[1]).w].xyz;
         Temp[2].w = dot(Temp[6].xyz, Temp[6].xyz);
         Temp[3].w = inversesqrt(Temp[2].w);
         Temp[6].xyz = Temp[3].www * Temp[6].xyz;
@@ -127,10 +129,10 @@ void main()
         Temp[5].w = UniformDataPS.pointLights.mylinear[floatBitsToInt(Temp[1]).w] * Temp[5].w + UniformDataPS.pointLights.constant[floatBitsToInt(Temp[1]).w];
         Temp[2].w = UniformDataPS.pointLights.quadratic[floatBitsToInt(Temp[1]).w] * Temp[2].w + Temp[5].w;
         Temp[2].w = float(intBitsToFloat(0x3F800000)) / Temp[2].w;
-        Temp[6].xyz = Temp[2].xyz * UniformDataPS.pointLights.ambient[floatBitsToInt(Temp[1]).w].xyzx.xyz;
-        Temp[7].xyz = Temp[3].www * UniformDataPS.pointLights.diffuse[floatBitsToInt(Temp[1]).w].xyzx.xyz;
+        Temp[6].xyz = Temp[2].xyz * UniformDataPS.pointLights.ambient[floatBitsToInt(Temp[1]).w].xyz;
+        Temp[7].xyz = Temp[3].www * UniformDataPS.pointLights.diffuse[floatBitsToInt(Temp[1]).w].xyz;
         Temp[7].xyz = Temp[2].xyz * Temp[7].xyz;
-        Temp[8].xyz = Temp[4].www * UniformDataPS.pointLights.specular[floatBitsToInt(Temp[1]).w].xyzx.xyz;
+        Temp[8].xyz = Temp[4].www * UniformDataPS.pointLights.specular[floatBitsToInt(Temp[1]).w].xyz;
         Temp[8].xyz = Temp[5].xyz * Temp[8].xyz;
         Temp[7].xyz = Temp[2].www * Temp[7].xyz;
         Temp[6].xyz = Temp[6].xyz * Temp[2].www + Temp[7].xyz;
