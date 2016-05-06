@@ -66,6 +66,7 @@ namespace sge
 			PointLight pointLights[40];
 			sge::math::vec4 CamPos;
             int numofpl;
+			int numofdl;
 			int pad[3];
 		} uniformData2;
 	};

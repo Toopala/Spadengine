@@ -64,6 +64,9 @@
     <ClCompile Include="Source\TextRenderingSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LightComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game\Component.h">
@@ -137,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="Include\Game\TextRenderingSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\LightComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
