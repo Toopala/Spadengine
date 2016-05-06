@@ -536,6 +536,11 @@ namespace sge
 		return &dx11Texture->header;
 	}
 
+	Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
+	{
+		return nullptr;
+	}
+
 	void GraphicsDevice::deleteTexture(Texture* texture)
 	{
 		DX11Texture* dx11Texture = reinterpret_cast<DX11Texture*>(texture);
