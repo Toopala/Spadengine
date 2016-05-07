@@ -12,7 +12,6 @@
 #include "Renderer/Enumerations.h"
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/Pipeline.h"
-#include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/RenderData.h"
 #include "Renderer/RenderQueue.h"
@@ -28,10 +27,10 @@
 #include "Game/EntityManager.h"
 #include "Game/Entity.h"
 #include "Game/SystemManager.h"
-#include "Game/SpriteRenderingSystem.h"
 #include "Game/SpriteComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/ComponentFactory.h"
+#include "Game/RenderingSystem.h"
 
 // TODO global is no no. :(
 sge::SystemManager* systemManager;
@@ -69,7 +68,7 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-	sge::Renderer renderer(window);
+	sge::RenderingSystem renderer(window);
     renderer.init();
 
     sge::Handle<sge::TextureResource> textureResource = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
@@ -112,10 +111,6 @@ int main(int argc, char** argv)
 	// Shaders should be delivered so that you can sort the queue by them. This would optimize the drawing a bit
 	// because all the data using the same shaders would be drawn in a one pass (?). This applies only to opaque
 	// data, since transparent data should be sorted by their depth.
-
-    sge::SpriteRenderingSystem* spriteRenderer = new sge::SpriteRenderingSystem(&renderer);
-    systemManager->addSystem(spriteRenderer, typeid(sge::SpriteComponent).hash_code());
-    spriteRenderer->setVP(VP);
 
     auto sprite = createSprite(texture, { 512.0f, 256.0f, 1.0f }, { 192.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 0.6f });
     auto sprite2 = createSprite(texture2, { 256.0f, 256.0f, 0.0f }, { 256.0f, 256.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f });
@@ -161,7 +156,6 @@ int main(int argc, char** argv)
 
     renderer.getDevice()->deleteTexture(texture);
 
-    delete spriteRenderer;
     delete systemManager;
     delete entityManager;
     delete transformFactory;

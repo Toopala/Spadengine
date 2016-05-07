@@ -6,7 +6,7 @@
 
 namespace sge
 {
-	class Renderer;
+	class RenderingSystem;
 	class TextComponent;
 	struct Pipeline;
 	struct Buffer;
@@ -16,7 +16,7 @@ namespace sge
 	class TextRenderingSystem : public System
 	{
 	public:
-		TextRenderingSystem(Renderer* renderer);
+        TextRenderingSystem(RenderingSystem* renderer);
 		~TextRenderingSystem();
 
 		void renderText(TextComponent* text);
@@ -32,7 +32,7 @@ namespace sge
 
 		std::string previousText = "";
 
-		Renderer* renderer;
+		RenderingSystem* renderer;
 
 		Pipeline* pipeline;
 		Buffer* vertexBuffer;

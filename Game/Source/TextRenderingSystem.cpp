@@ -8,7 +8,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Pipeline.h"
 #include "Renderer/Buffer.h"
-#include "Renderer/Renderer.h"
+#include "Game/RenderingSystem.h"
 
 #include "Resources/ResourceManager.h"
 #include "Resources/ShaderResource.h"
@@ -16,7 +16,7 @@
 
 namespace sge
 {
-	TextRenderingSystem::TextRenderingSystem(Renderer* renderer) :
+	TextRenderingSystem::TextRenderingSystem(RenderingSystem* renderer) :
 		renderer(renderer)
 	{
 		Handle<ShaderResource> pixelShaderHandle;

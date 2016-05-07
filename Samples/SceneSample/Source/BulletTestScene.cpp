@@ -93,10 +93,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 
 	//Assimp test
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
-	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+    modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
-	modelHandleFloor.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	EManager = new sge::EntityManager();
 

@@ -39,7 +39,7 @@ namespace sge
 	{
         SGE_ASSERT(renderingSystem);
 
-        renderingSystem->renderSprite(this);
+        //renderingSystem->renderSprite(this);
 	}
 
 	void SpriteComponent::update()

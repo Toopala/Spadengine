@@ -2,9 +2,9 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
+#include "Game/RenderingSystem.h"
 
 #include "Renderer/GraphicsDevice.h"
-#include "Game/RenderingSystem.h"
 
 #include "Resources/ModelResource.h"
 
@@ -37,7 +37,7 @@ namespace sge
 
 	void ModelRenderingSystem::renderModel(ModelComponent* model)
 	{
-		uniformData.M = model->getParent()->getComponent<TransformComponent>()->getMatrix();
+		uniformData.M = model->getComponent<TransformComponent>()->getMatrix();
 
 		renderer->getDevice()->bindPipeline(model->getPipeline());
 

@@ -6,7 +6,7 @@
 
 namespace sge
 {
-	class Renderer;
+    class RenderingSystem;
 	class ModelComponent;
     class CameraComponent;
 	struct Buffer;

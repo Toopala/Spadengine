@@ -91,12 +91,11 @@ void GameScene::update(float step)
     // TODO update camera where? What if we have multiple cameras? Do we need a system for them?
     for (auto camera : cameras)
     {
-        // TODO this doesnt do anything.....
         camera->getComponent<sge::CameraComponent>()->update();
     }
 
     // TODO binding viewport? Getting device from renderer from spade is a long way.
-    // Also looks awful.
+    // Also looks awful. So awful.
     //engine->getRenderer()->getDevice()->bindViewport(camera->getComponent<sge::CameraComponent>()->getViewport());
 
     // TODO can we simplify this? Do we need to set VP every frame manually?
