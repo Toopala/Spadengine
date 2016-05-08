@@ -7,8 +7,8 @@
 namespace sge
 {
 	ModelComponent::ModelComponent(Entity* entity) :
-		RenderingComponent(entity),
-		renderingSystem(nullptr)
+		RenderComponent(entity),
+		RenderSystem(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -23,14 +23,14 @@ namespace sge
 
 	void ModelComponent::render(GraphicsDevice* device)
 	{
-		SGE_ASSERT(renderingSystem);
+		SGE_ASSERT(RenderSystem);
 
-		renderingSystem->renderModel(this);
+		RenderSystem->renderModel(this);
 	}
 
-	void ModelComponent::setRenderingSystem(ModelRenderingSystem* system)
+	void ModelComponent::setRenderSystem(ModelRenderingSystem* system)
 	{
-		renderingSystem = system;
+		RenderSystem = system;
 	}
 
 	void ModelComponent::setModelResource(sge::Handle <sge::ModelResource>* modelHandle)

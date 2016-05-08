@@ -19,6 +19,7 @@ Kamerakomponentti saamaan positio transformilta ja muutenkin refaktoroida
 
 GameScene::GameScene(sge::Spade* engine) :
     engine(engine),
+    renderer(engine->getRenderer()),
     textureResource(sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png")),
     texture(engine->getRenderer()->getDevice()->createTexture(
         textureResource.getResource<sge::TextureResource>()->getSize().x,
@@ -41,16 +42,16 @@ GameScene::GameScene(sge::Spade* engine) :
     entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
     entities.back()->setTag("FRONT");
 
-    targetTexture = engine->getRenderer()->getDevice()->createTexture(1280, 720);
-    renderTarget = engine->getRenderer()->getDevice()->createRenderTarget(targetTexture);
+    targetTexture = renderer->getDevice()->createTexture(1280, 720);
+    renderTarget = renderer->getDevice()->createRenderTarget(targetTexture);
 }
 
 GameScene::~GameScene()
 {
     // TODO this should probably be not deleted here, but in the texture resource.
-    engine->getRenderer()->getDevice()->deleteTexture(texture);
-    engine->getRenderer()->getDevice()->deleteTexture(targetTexture);
-    engine->getRenderer()->getDevice()->deleteRenderTarget(renderTarget);
+    renderer->getDevice()->deleteTexture(texture);
+    renderer->getDevice()->deleteTexture(targetTexture);
+    renderer->getDevice()->deleteRenderTarget(renderTarget);
 }
 
 void GameScene::update(float step)
@@ -99,7 +100,7 @@ void GameScene::update(float step)
     //engine->getRenderer()->getDevice()->bindViewport(camera->getComponent<sge::CameraComponent>()->getViewport());
 
     // TODO can we simplify this? Do we need to set VP every frame manually?
-    //spriteRenderingSystem.setVP(cameras.back()->getComponent<sge::CameraComponent>()->getViewProj());
+    //spriteRenderSystem.setVP(cameras.back()->getComponent<sge::CameraComponent>()->getViewProj());
 }
 
 void GameScene::interpolate(float alpha)
@@ -110,10 +111,15 @@ void GameScene::interpolate(float alpha)
 void GameScene::draw()
 {
     // TODO should we move begin and end to somewhere else?
-    engine->getRenderer()->getDevice()->bindRenderTarget(renderTarget);
-    engine->getRenderer()->begin();
-    engine->getRenderer()->end();
-    engine->getRenderer()->getDevice()->debindRenderTarget(renderTarget);
+    renderer->begin();
+    renderer->setRenderTargets(1, renderTarget);
+
+    renderer->setCameras(cameras.size(), *cameras.data());
+    renderer->renderSprites(entities.size(), *entities.data());
+
+    renderer->end();
+    renderer->present();
+    renderer->clear();
 }
 
 sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
@@ -131,13 +137,6 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
 
     sprite->setTexture(texture);
     sprite->setColor({ r, g, b, a });
-    
-    for (auto camera : cameras)
-    {
-        sprite->cameras.push_back(camera->getComponent<sge::CameraComponent>());
-    }
-
-    
 
     return player;
 }

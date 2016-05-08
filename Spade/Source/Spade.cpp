@@ -7,7 +7,6 @@ namespace sge
 	{
 #ifdef OPENGL4
 
-		// TODO load these from an external file?
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -35,10 +34,8 @@ namespace sge
 
 	void Spade::init()
 	{
-		std::cout << "Spade init says hello" << std::endl;
-
 		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-        renderer = new RenderingSystem(*window);
+        renderer = new RenderSystem(*window);
 		renderer->init();
 		step = 1.0f / 60.0f;
 
@@ -51,8 +48,6 @@ namespace sge
 
 	void Spade::quit()
 	{
-		std::cout << "Spade quit says hello" << std::endl;
-
 		delete eventManager;
 		delete sceneManager;
 		delete mouseInput;

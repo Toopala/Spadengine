@@ -2,7 +2,7 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
-#include "Game/RenderingSystem.h"
+#include "Game/RenderSystem.h"
 
 #include "Renderer/GraphicsDevice.h"
 
@@ -12,7 +12,7 @@
 
 namespace sge
 {
-    ModelRenderingSystem::ModelRenderingSystem(RenderingSystem* renderer) :
+    ModelRenderingSystem::ModelRenderingSystem(RenderSystem* renderer) :
 		renderer(renderer)
 	{
 		uniformBuffer = renderer->getDevice()->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(uniformData));
@@ -81,7 +81,7 @@ namespace sge
 
             model->key.fields.depth = distance;
 
-			renderer->pushCommand(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
+            renderer->renderModels(1, model->getParent());
 		}
 	}
 

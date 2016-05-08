@@ -3,12 +3,13 @@
 #include <iostream>
 #include <algorithm>
 #include "Renderer/Window.h"
+#include "Resources/ResourceManager.h"
+
+#include "Game/EventManager.h"
+#include "Game/RenderSystem.h"
 #include "Game/SceneManager.h"
 
 #include "SDL2/SDL.h"
-#include "Game/EventManager.h"
-#include "Game/RenderingSystem.h"
-#include "Resources/ResourceManager.h"
 
 namespace sge
 {
@@ -29,7 +30,7 @@ namespace sge
 			return sceneManager;
 		}
 
-        RenderingSystem* getRenderer()
+        RenderSystem* getRenderer()
 		{
 			return renderer;
 		}
@@ -51,7 +52,7 @@ namespace sge
 		sge::Window* window;
 		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
-        sge::RenderingSystem* renderer;
+        sge::RenderSystem* renderer;
 
 		bool running;
 		float step;

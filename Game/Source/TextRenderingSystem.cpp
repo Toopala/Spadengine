@@ -8,7 +8,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Pipeline.h"
 #include "Renderer/Buffer.h"
-#include "Game/RenderingSystem.h"
+#include "Game/RenderSystem.h"
 
 #include "Resources/ResourceManager.h"
 #include "Resources/ShaderResource.h"
@@ -16,7 +16,7 @@
 
 namespace sge
 {
-	TextRenderingSystem::TextRenderingSystem(RenderingSystem* renderer) :
+	TextRenderingSystem::TextRenderingSystem(RenderSystem* renderer) :
 		renderer(renderer)
 	{
 		Handle<ShaderResource> pixelShaderHandle;
@@ -180,7 +180,7 @@ namespace sge
 		for (auto text : components)
 		{
 			text->update();
-			renderer->pushCommand(text->key, std::bind(&sge::TextComponent::render, text, std::placeholders::_1));
+            renderer->renderTexts(1, text->getParent());
 		}
 	}
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/RenderingComponent.h"
+#include "Game/RenderComponent.h"
 #include "Core/Math.h"
 #include "Resources/FontResource.h"
 
@@ -10,7 +10,7 @@ namespace sge
 	class TransformComponent;
 	class TextRenderingSystem;
 
-	class TextComponent : public RenderingComponent
+	class TextComponent : public RenderComponent
 	{
 	public:
 		TextComponent(Entity* ent);
@@ -20,7 +20,7 @@ namespace sge
 		void render(GraphicsDevice* device);
 		void update();
 
-		void setRenderingSystem(TextRenderingSystem* system);
+		void setRenderSystem(TextRenderingSystem* system);
 		void setFont(sge::Font* font);
 		void setColor(const math::vec4& color);
 		void setText(const std::string& text);
@@ -35,6 +35,6 @@ namespace sge
 		std::string text;
 
 		TransformComponent* transform;
-		TextRenderingSystem* renderingSystem;
+		TextRenderingSystem* RenderSystem;
 	};
 }

@@ -7,10 +7,10 @@
 namespace sge
 {
 	TextComponent::TextComponent(Entity* ent) :
-		RenderingComponent(ent),
+		RenderComponent(ent),
 		color(1.0f),
 		font(nullptr),
-		renderingSystem(nullptr)
+		RenderSystem(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -19,10 +19,10 @@ namespace sge
 	}
 
 	TextComponent::TextComponent(Entity* ent, sge::TextRenderingSystem* system, sge::Font* font, const sge::math::vec4& col) :
-		RenderingComponent(ent),
+		RenderComponent(ent),
 		color(col),
 		font(font),
-		renderingSystem(system)
+		RenderSystem(system)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -36,10 +36,10 @@ namespace sge
 
 	void TextComponent::render(GraphicsDevice* device)
 	{
-		SGE_ASSERT(renderingSystem);
+		SGE_ASSERT(RenderSystem);
 
 		
-		renderingSystem->renderText(this);
+		RenderSystem->renderText(this);
 	}
 
 	void TextComponent::update()
@@ -48,9 +48,9 @@ namespace sge
 		key.fields.depth = static_cast<uint64>(transform->getPosition().z);
 	}
 
-	void TextComponent::setRenderingSystem(TextRenderingSystem* system)
+	void TextComponent::setRenderSystem(TextRenderingSystem* system)
 	{
-		renderingSystem = system;
+		RenderSystem = system;
 	}
 
 	void TextComponent::setColor(const math::vec4& color)

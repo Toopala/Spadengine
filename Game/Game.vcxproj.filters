@@ -31,9 +31,6 @@
     <ClCompile Include="Source\EventManager.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RenderingComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SpriteComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -61,8 +58,14 @@
     <ClCompile Include="Source\TextRenderingSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RenderingSystem.cpp">
+    <ClCompile Include="Source\RenderComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RenderSystem.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LightComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +105,6 @@
     <ClInclude Include="Include\Game\System.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\RenderingComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Game\SpriteComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -135,8 +135,14 @@
     <ClInclude Include="Include\Game\TextRenderingSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\RenderingSystem.h">
+    <ClInclude Include="Include\Game\RenderComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\RenderSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\LightComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

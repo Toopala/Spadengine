@@ -84,20 +84,20 @@ namespace sge
 			std::cout << "Error setting stream finished callback: " << Pa_GetErrorText(err) << std::endl;
 		}
 
-		err = Pa_StartStream(stream);
-		if (err != paNoError)
-		{
-			std::cout << "Error starting stream: \n" << Pa_GetErrorText(err);
-		}
+		//err = Pa_StartStream(stream);
+		//if (err != paNoError)
+		//{
+		//	std::cout << "Error starting stream: \n" << Pa_GetErrorText(err);
+		//}
 
-		std::cout << "Paying for " << NUM_SECONDS << " seconds" << std::endl;
-		Pa_Sleep(NUM_SECONDS * 1000);
+		//std::cout << "Paying for " << NUM_SECONDS << " seconds" << std::endl;
+		//Pa_Sleep(NUM_SECONDS * 1000);
 
-		err = Pa_StopStream(stream);
-		if (err != paNoError)
-		{
-			std::cout << Pa_GetErrorText(err);
-		}
+		//err = Pa_StopStream(stream);
+		//if (err != paNoError)
+		//{
+		//	std::cout << Pa_GetErrorText(err);
+		//}
 
 		err = Pa_CloseStream(stream);
 		{

@@ -7,7 +7,7 @@
 #include "SDL2/SDL.h"
 #include "Core/Math.h"
 #include "Renderer/Window.h"
-#include "Game/RenderingSystem.h"
+#include "Game/RenderSystem.h"
 #include "Renderer/GraphicsDevice.h"
 
 
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	SDL_Event event;
 
 	sge::Window window("The test to end all tests.", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600);
-    sge::RenderingSystem renderer(window);
+    sge::RenderSystem renderer(window);
 	renderer.init();
 
 	sge::ComponentFactory<sge::TransformComponent> transFactor;

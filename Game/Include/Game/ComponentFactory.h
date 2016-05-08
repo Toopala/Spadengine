@@ -45,6 +45,8 @@ namespace sge
 			components.erase(std::remove(components.begin(), components.end(), component), components.end());
 		}
 
+        const std::vector<T*>& getComponents() { return components; }
+
 	private:
 		std::vector<T*> components; /**< Vector of Component pointers */
 	};

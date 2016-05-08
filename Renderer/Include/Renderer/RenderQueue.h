@@ -29,10 +29,7 @@ namespace sge
 		
 		inline void push(const RenderCommand command, RenderFunction renderFunction)
 		{
-			if (!acceptingCommands)
-			{
-				return;
-			}
+            SGE_ASSERT(acceptingCommands);
 
 			queue.emplace_back(std::make_pair(command, renderFunction));
 		}

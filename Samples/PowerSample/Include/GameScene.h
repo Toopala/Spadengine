@@ -36,6 +36,7 @@ public:
 
 private:
     sge::Spade* engine;
+    sge::RenderSystem* renderer;
     std::vector<sge::Entity*> entities;
     std::vector<sge::Entity*> cameras;
     sge::Handle<sge::TextureResource> textureResource;

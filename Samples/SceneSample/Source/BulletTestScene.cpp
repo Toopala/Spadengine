@@ -109,7 +109,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
-	modcomponent->setRenderingSystem(modelSystem);
+	modcomponent->setRenderSystem(modelSystem);
 
 	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -123,7 +123,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle);
-	modcomponent2->setRenderingSystem(modelSystem);
+	modcomponent2->setRenderSystem(modelSystem);
 
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -137,7 +137,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
-	modcomponentFloor->setRenderingSystem(modelSystem);
+	modcomponentFloor->setRenderSystem(modelSystem);
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityFloor->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));

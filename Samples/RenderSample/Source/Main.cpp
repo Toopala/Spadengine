@@ -26,17 +26,16 @@
 
 #include "Game/EntityManager.h"
 #include "Game/Entity.h"
-#include "Game/SystemManager.h"
 #include "Game/SpriteComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/ComponentFactory.h"
-#include "Game/RenderingSystem.h"
+#include "Game/RenderSystem.h"
 
 // TODO global is no no. :(
-sge::SystemManager* systemManager;
 sge::EntityManager* entityManager;
 sge::ComponentFactory<sge::TransformComponent>* transformFactory;
 sge::ComponentFactory<sge::SpriteComponent>* spriteFactory;
+sge::GraphicsDevice* device;
 
 sge::math::mat4 VP = sge::math::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 sge::Viewport viewport = { 0, 0, 1280, 720 };
@@ -57,8 +56,6 @@ sge::Entity* createSprite(sge::Texture* texture, const sge::math::vec3& position
 	sprite->setTexture(texture);
 	sprite->setColor(color);
 
-    systemManager->addComponent(sprite);
-
     return entity;
 }
 
@@ -68,18 +65,20 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	sge::Window window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-	sge::RenderingSystem renderer(window);
+	sge::RenderSystem renderer(window);
     renderer.init();
+    
+    device = renderer.getDevice();
 
     sge::Handle<sge::TextureResource> textureResource = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png");
     sge::Handle<sge::TextureResource> textureResource2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade2.png");
 
-    sge::Texture* texture = renderer.getDevice()->createTexture(
+    sge::Texture* texture = device->createTexture(
         textureResource.getResource<sge::TextureResource>()->getSize().x, 
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData());
 
-    sge::Texture* texture2 = renderer.getDevice()->createTexture(
+    sge::Texture* texture2 = device->createTexture(
         textureResource2.getResource<sge::TextureResource>()->getSize().x,
         textureResource2.getResource<sge::TextureResource>()->getSize().y,
         textureResource2.getResource<sge::TextureResource>()->getData());
@@ -89,7 +88,6 @@ int main(int argc, char** argv)
 
     transformFactory = new sge::ComponentFactory<sge::TransformComponent>();
     spriteFactory = new sge::ComponentFactory<sge::SpriteComponent>();
-    systemManager = new sge::SystemManager();
     entityManager = new sge::EntityManager();
 
 	// TODO load layout description from external file (shader.reflect).
@@ -100,7 +98,7 @@ int main(int argc, char** argv)
 	// What if render material had pipeline? And using material would bind it.
 
 
-	renderer.getDevice()->bindViewport(&viewport);
+    device->bindViewport(&viewport);
 
 	// TODO plan a simple (and smart) way to generate these commands.
 	// Maybe we could generate it directly from renderdata?
@@ -147,16 +145,16 @@ int main(int argc, char** argv)
 		// Rendering
 		renderer.begin();
 
-        systemManager->updateSystems();
-
 		renderer.end();
+        renderer.present();
+        renderer.clear();
 	}
 
 	// Deinit
 
-    renderer.getDevice()->deleteTexture(texture);
+    device->deleteTexture(texture);
+    device->deleteTexture(texture2);
 
-    delete systemManager;
     delete entityManager;
     delete transformFactory;
     delete spriteFactory;
