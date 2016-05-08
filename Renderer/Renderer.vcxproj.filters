@@ -42,9 +42,6 @@
     <ClCompile Include="Source\RenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MouseLookCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -110,11 +107,17 @@
     <ClInclude Include="Include\Renderer\RenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Renderer\Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Renderer\MouseLookCamera.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\RenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\GL4\GL4RenderTarget.h">
+      <Filter>Header Files\GL4</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\DX11\DX11RenderTarget.h">
+      <Filter>Header Files\DX11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

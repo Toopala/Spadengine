@@ -131,7 +131,7 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/suzanne.dae");		
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 
-	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());		
+    modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 	
 	// DON'T RELEASE HANDLES BEFORE USE
 	//sge::ResourceManager::getMgr().release(modelHandle);

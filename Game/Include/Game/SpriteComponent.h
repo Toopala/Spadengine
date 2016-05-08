@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/RenderingComponent.h"
+#include "Game/RenderComponent.h"
 #include "Core/Math.h"
 
 #include <string>
@@ -7,20 +7,19 @@
 namespace sge
 {
 	class TransformComponent;
-    class SpriteRenderingSystem;
+    class RenderSystem;
 
-	class SpriteComponent : public RenderingComponent
+	class SpriteComponent : public RenderComponent
 	{
 	public:
 		SpriteComponent(Entity* ent);
-		SpriteComponent(Entity* ent, sge::SpriteRenderingSystem* system, sge::Texture* texture, const sge::math::vec4& col);
+		SpriteComponent(Entity* ent, sge::Texture* texture, const sge::math::vec4& col);
 		~SpriteComponent();
 		void render(GraphicsDevice* device);
 		void update();
 
 		void setTexture(Texture* texture);
 		void setColor(const math::vec4& color);
-        void setRenderingSystem(SpriteRenderingSystem* system);
 
         const math::vec4& getColor();
         Texture* getTexture();
@@ -29,7 +28,5 @@ namespace sge
 	private:
         Texture* texture;
 		math::vec4 color;
-		
-        SpriteRenderingSystem* renderingSystem;
 	};
 }

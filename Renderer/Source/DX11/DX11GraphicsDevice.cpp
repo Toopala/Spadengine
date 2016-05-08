@@ -12,6 +12,7 @@
 #include "Core/Assert.h"
 #include "Renderer/DX11/DX11Buffer.h"
 #include "Renderer/DX11/DX11Pipeline.h"
+#include "Renderer/DX11/DX11RenderTarget.h"
 #include "Renderer/DX11/DX11Shader.h"
 #include "Renderer/DX11/DX11Texture.h"
 #include "Renderer/DX11/DX11VertexLayout.h"
@@ -131,7 +132,7 @@ namespace sge
 			NULL,
 			D3D_DRIVER_TYPE_HARDWARE,
 			NULL,
-			D3D11_CREATE_DEVICE_DEBUG,
+            flags,
 			&featureLevels,
 			1,
 			D3D11_SDK_VERSION,
@@ -460,6 +461,22 @@ namespace sge
 		pipeline = nullptr;
 	}
 
+    RenderTarget* GraphicsDevice::createRenderTarget(Texture* texture)
+    {
+        DX11RenderTarget* dx11RenderTarget = new DX11RenderTarget();
+
+        return &dx11RenderTarget->header;
+    }
+
+    void GraphicsDevice::deleteRenderTarget(RenderTarget* renderTarget)
+    {
+        DX11RenderTarget* dx11RenderTarget = reinterpret_cast<DX11RenderTarget*>(renderTarget);
+
+        delete dx11RenderTarget;
+
+        renderTarget = nullptr;
+    }
+
 	Shader* GraphicsDevice::createShader(ShaderType type, const char* source, size_t size)
 	{
 		DX11Shader* dx11Shader = new DX11Shader();
@@ -497,6 +514,11 @@ namespace sge
 		shader = nullptr;
 	}
 
+    Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
+    {
+        return nullptr;
+    }
+
 	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
 	{
 		DX11Texture* dx11Texture = new DX11Texture();
@@ -518,12 +540,19 @@ namespace sge
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-		D3D11_SUBRESOURCE_DATA data;
-		data.pSysMem = source;
-		data.SysMemPitch = static_cast<UINT>(width * 4);
-		data.SysMemSlicePitch = 0;
+        if (source)
+        {
+            D3D11_SUBRESOURCE_DATA data;
+            data.pSysMem = source;
+            data.SysMemPitch = static_cast<UINT>(width * 4);
+            data.SysMemSlicePitch = 0;
 
-		result = impl->device->CreateTexture2D(&textureDesc, &data, &dx11Texture->texture);
+            result = impl->device->CreateTexture2D(&textureDesc, &data, &dx11Texture->texture);
+        }
+        else
+        {
+            result = impl->device->CreateTexture2D(&textureDesc, NULL, &dx11Texture->texture);
+        }
 
 		checkError(result);
 
@@ -534,11 +563,6 @@ namespace sge
 		impl->context->GenerateMips(dx11Texture->textureView);
 
 		return &dx11Texture->header;
-	}
-
-	Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
-	{
-		return nullptr;
 	}
 
 	void GraphicsDevice::deleteTexture(Texture* texture)
@@ -571,6 +595,16 @@ namespace sge
 	{
 
 	}
+
+    void GraphicsDevice::bindRenderTarget(RenderTarget* renderTarget)
+    {
+
+    }
+
+    void GraphicsDevice::debindRenderTarget(RenderTarget* renderTarget)
+    {
+
+    }
 
 	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
 	{
@@ -608,7 +642,7 @@ namespace sge
 		d11Viewport.MinDepth = 0.0f;
 		d11Viewport.MaxDepth = 1.0f;
 		d11Viewport.TopLeftX = static_cast<FLOAT>(viewport->x);
-		d11Viewport.TopLeftY = static_cast<FLOAT>(viewport->y);
+		d11Viewport.TopLeftY = static_cast<FLOAT>(impl->window.getHeight() - viewport->y - viewport->height);
 
 		impl->context->RSSetViewports(1, &d11Viewport);
 	}

@@ -21,7 +21,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer/Texture.h"
-#include "Renderer/Renderer.h"
 #include "Renderer/GraphicsDevice.h"
 
 struct Vertex {
@@ -86,8 +85,6 @@ namespace sge
 		ModelResource(const std::string& resourcePath);
 		~ModelResource();
 
-		void setRenderer(Renderer* renderer);
-
 		std::vector<Vertex>* getVerticeArray();
 		std::vector<unsigned int>* getIndexArray();
 		sge::Texture* getDiffuseTexture();
@@ -99,8 +96,10 @@ namespace sge
 		sge::Buffer* getVertexBuffer();
 		sge::Buffer* getIndexBuffer();
 
+        void setDevice(GraphicsDevice* device) { this->device = device; }
+
 	private:
-		Renderer* renderer;
+        GraphicsDevice* device;
 		/*  Model Data  */
 		std::vector<Mesh> meshes;
 		std::string directory;

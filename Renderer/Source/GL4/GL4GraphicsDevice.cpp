@@ -11,6 +11,7 @@
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/GL4/GL4Buffer.h"
 #include "Renderer/GL4/GL4Pipeline.h"
+#include "Renderer/GL4/GL4RenderTarget.h"
 #include "Renderer/GL4/GL4Shader.h"
 #include "Renderer/GL4/GL4Texture.h"
 #include "Renderer/Viewport.h"
@@ -235,6 +236,43 @@ namespace sge
 		pipeline = nullptr;
 	}
 
+    RenderTarget* GraphicsDevice::createRenderTarget(Texture* texture)
+    {
+        GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
+
+        glGenFramebuffers(1, &gl4RenderTarget->id);
+        glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
+
+        // TODO add depth buffer.
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id, 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            checkError();
+
+            SGE_ASSERT(false);
+        }
+
+        checkError();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        return &gl4RenderTarget->header;
+    }
+
+    void GraphicsDevice::deleteRenderTarget(RenderTarget* renderTarget)
+    {
+        GL4RenderTarget* gl4RenderTarget = reinterpret_cast<GL4RenderTarget*>(renderTarget);
+
+        glDeleteFramebuffers(1, &gl4RenderTarget->id);
+
+        checkError();
+
+        delete gl4RenderTarget;
+        renderTarget = nullptr;
+    }
+
 	Shader* GraphicsDevice::createShader(ShaderType type, const char* source, size_t size)
 	{
 		GL4Shader* shader = new GL4Shader();
@@ -378,6 +416,16 @@ namespace sge
 
 		impl->pipeline = nullptr;
 	}
+
+    void GraphicsDevice::bindRenderTarget(RenderTarget* renderTarget)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, reinterpret_cast<GL4RenderTarget*>(renderTarget)->id);
+    }
+
+    void GraphicsDevice::debindRenderTarget(RenderTarget* renderTarget)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
 	void bindBuffer(Buffer* buffer)
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/RenderingComponent.h"
+#include "Game/RenderComponent.h"
 #include "Core/Math.h"
 #include "Resources/ResourceManager.h"
 #include "Resources/ModelResource.h"
@@ -11,17 +11,14 @@
 namespace sge
 {
 	class TransformComponent;
-	class ModelRenderingSystem;
 
-	class ModelComponent : public RenderingComponent
+	class ModelComponent : public RenderComponent
 	{
 	public:
 		ModelComponent(Entity* entity);
 
 		void update();
 		void render(GraphicsDevice* device);
-
-		void setRenderingSystem(ModelRenderingSystem* system);
 
 		void setModelResource(sge::Handle <sge::ModelResource>* modelHandle);
 
@@ -30,9 +27,10 @@ namespace sge
 		Pipeline* getPipeline() { return pipeline; }
 
 		ModelResource* getModelResource() { return modelHandle->getResource<ModelResource>(); }
+
+        TransformComponent* transform;
 	private:
-		TransformComponent* transform;
-		ModelRenderingSystem* renderingSystem;
+		
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 	public:

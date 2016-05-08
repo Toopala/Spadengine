@@ -48,6 +48,7 @@
     <Import Project="..\..\Config\Properties\bulletphysics.props" />
     <Import Project="..\..\Config\Properties\portaudio.props" />
     <Import Project="..\..\Config\Properties\Audio.props" />
+    <Import Project="..\..\Config\Properties\freetype.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -66,6 +67,7 @@
     <Import Project="..\..\Config\Properties\bulletphysics.props" />
     <Import Project="..\..\Config\Properties\portaudio.props" />
     <Import Project="..\..\Config\Properties\Audio.props" />
+    <Import Project="..\..\Config\Properties\freetype.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />

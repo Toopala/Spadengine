@@ -28,6 +28,12 @@ namespace sge
 			return parent;
 		}
 
+        template <typename T>
+        T* getComponent()
+        {
+            return parent->getComponent<T>();
+        }
+
 	private:
 		bool alive;
 		Entity* parent; /**< Pointer to the parent Entity. */

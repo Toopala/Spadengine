@@ -59,9 +59,8 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0f)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f)
 {
-	modelSystem = new sge::ModelRenderingSystem(engine->getRenderer());
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
@@ -93,10 +92,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 
 	//Assimp test
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
-	modelHandle.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+    modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
-	modelHandleFloor.getResource<sge::ModelResource>()->setRenderer(engine->getRenderer());
+	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	EManager = new sge::EntityManager();
 
@@ -109,7 +108,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
-	modcomponent->setRenderingSystem(modelSystem);
+	modcomponent->setRenderer(engine->getRenderer());
 
 	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -123,7 +122,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle);
-	modcomponent2->setRenderingSystem(modelSystem);
+    modcomponent2->setRenderer(engine->getRenderer());
 
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -137,14 +136,12 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
-	modcomponentFloor->setRenderingSystem(modelSystem);
+    modcomponentFloor->setRenderer(engine->getRenderer());
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityFloor->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
-
-	viewport = { 0, 0, 1280, 720 };
 
 	modcomponent->setPipeline(pipeline);
 	modcomponent2->setPipeline(pipeline);
@@ -152,8 +149,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
-
-	engine->getRenderer()->getDevice()->bindViewport(&viewport);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -244,7 +239,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
 
-	camentity = EManager->createEntity();
+	sge::Entity* camentity = EManager->createEntity();
+    sge::Entity* camentity2 = EManager->createEntity();
 
 	camtransform = new sge::TransformComponent(camentity);
 	camentity->setComponent(camtransform);
@@ -255,11 +251,26 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	cameraPos = glm::vec3(5.0f, 10.0f, 50.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    camentity->getComponent<sge::CameraComponent>()->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-    camentity->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
-    camentity->getComponent<sge::TransformComponent>()->setFront(cameraFront);
-    camentity->getComponent<sge::TransformComponent>()->setUp(cameraUp);
-    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
+    camcomponent->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camcomponent->setViewport(0, 0, 1280, 720);
+    camtransform->setPosition(cameraPos);
+    camtransform->setFront(cameraFront);
+    camtransform->setUp(cameraUp);
+
+    camtransform2 = new sge::TransformComponent(camentity2);
+    camentity2->setComponent(camtransform2);
+
+    camcomponent2 = new sge::CameraComponent(camentity2);
+    camentity2->setComponent(camcomponent2);
+
+    camcomponent2->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camcomponent2->setViewport(1280-420, 720-280, 320, 180);
+    camtransform2->setPosition(cameraPos);
+    camtransform2->setFront(cameraFront);
+    camtransform2->setUp(cameraUp);
+
+    cameras.push_back(camentity);
+    cameras.push_back(camentity2);
 }
 
 BulletTestScene::~BulletTestScene()
@@ -329,9 +340,9 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
-		int randomx = sge::random(10, 500);
-		int randomy = sge::random(10, 500);
-		int randomz = sge::random(10, 500);
+        btScalar randomx = (btScalar)sge::random(10, 500);
+        btScalar randomy = (btScalar)sge::random(10, 500);
+        btScalar randomz = (btScalar)sge::random(10, 500);
 		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
 		fallRigidBody->applyTorque(btVector3(randomx, randomy, randomz));
 		
@@ -339,9 +350,9 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
 	{
-		int randomx = sge::random(-10, 10);
-		int randomy = sge::random(-10, 10);
-		int randomz = sge::random(-10, 10);
+        btScalar randomx = (btScalar)sge::random(-10, 10);
+        btScalar randomy = (btScalar)sge::random(-10, 10);
+        btScalar randomz = (btScalar)sge::random(-10, 10);
 		dynamicsWorld->setGravity(btVector3(randomx, randomy, randomz));
 		
 	}
@@ -408,18 +419,23 @@ void BulletTestScene::update(float step)
 
 	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
 
-	camentity->getComponent<sge::CameraComponent>()->update();
-    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
+    for (auto camera : cameras)
+    {
+        camera->getComponent<sge::CameraComponent>()->update();
+    }
 }
 void BulletTestScene::draw()
 {
-	engine->getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
+    renderer->setCameras(cameras.size(), *cameras.data());
+    renderer->begin();
+    
+    renderer->renderModels(1, modentity);
+    renderer->renderModels(1, modentity2);
+    renderer->renderModels(1, modentityFloor);
 
-	modentity->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
-	modentity2->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
-	modentityFloor->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
-
-	engine->getRenderer()->getDevice()->swap();
+    renderer->end();
+    renderer->present();
+    renderer->clear();
 }
 
 void BulletTestScene::interpolate(float alpha)

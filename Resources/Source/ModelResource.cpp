@@ -12,11 +12,6 @@ namespace sge
 		meshes.erase(meshes.begin(), meshes.end());
 	}
 
-	void ModelResource::setRenderer(Renderer* renderer)
-	{
-		this->renderer = renderer;
-	}
-
 	std::vector<Vertex>* ModelResource::getVerticeArray()
 	{ 
 		return &meshes[0].vertices;
@@ -31,7 +26,7 @@ namespace sge
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
 			{
-				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 			}
 		}
 
@@ -43,7 +38,7 @@ namespace sge
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_normal")
 			{
-				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 			}
 		}
 
@@ -56,7 +51,7 @@ namespace sge
 		{
 			if (meshes[0].textures[i].getTypeName() == "texture_specular")
 			{
-				return renderer->getDevice()->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
+                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
 			}
 		}
 
@@ -67,7 +62,7 @@ namespace sge
 	{
 		for (auto &mesh : meshes)
 		{
-			mesh.createBuffers(renderer->getDevice());
+			mesh.createBuffers(device);
 		}
 	}
 

@@ -31,14 +31,8 @@
     <ClCompile Include="Source\EventManager.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RenderingComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SpriteComponent.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SpriteRenderingSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\PhysicsComponent.cpp">
       <Filter>Source Files\Components</Filter>
@@ -55,13 +49,13 @@
     <ClCompile Include="Source\ModelComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ModelRenderingSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Source\TextComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TextRenderingSystem.cpp">
+    <ClCompile Include="Source\RenderComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RenderSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\LightComponent.cpp">
@@ -105,14 +99,8 @@
     <ClInclude Include="Include\Game\System.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\RenderingComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Game\SpriteComponent.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\SpriteRenderingSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\PhysicsComponent.h">
       <Filter>Header Files\Components</Filter>
@@ -129,16 +117,16 @@
     <ClInclude Include="Include\Game\ModelComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\ModelRenderingSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Game\ComponentFactory.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\TextComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\TextRenderingSystem.h">
+    <ClInclude Include="Include\Game\RenderComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Game\RenderSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\LightComponent.h">
