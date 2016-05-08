@@ -27,11 +27,10 @@ namespace sge
 		const math::vec4& getColor();
 		const std::string& getText();
 
+        TransformComponent* transform;
 	private:
 		sge::Font* font;
 		math::vec4 color;
 		std::string text;
-
-		TransformComponent* transform;
 	};
 }

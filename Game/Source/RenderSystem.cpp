@@ -140,6 +140,15 @@ namespace sge
 
                 for (auto camera : cameras)
                 {
+                    uint32 distance = static_cast<uint32>(math::dot(sprite->transform->getPosition(),
+                        camera->getComponent<TransformComponent>()->getPosition() +
+                        camera->getComponent<TransformComponent>()->getFront()));
+
+                    if (sprite->getColor().a < 1.0f)
+                        sprite->key.fields.depth = UINT32_MAX - distance;
+                    else
+                        sprite->key.fields.depth = distance;
+
                     queue.push(sprite->key, std::bind(&SpriteComponent::render, sprite, std::placeholders::_1));
                 }
             }
@@ -160,6 +169,15 @@ namespace sge
 
                 for (auto camera : cameras)
                 {
+                    uint32 distance = static_cast<uint32>(math::dot(text->transform->getPosition(),
+                        camera->getComponent<TransformComponent>()->getPosition() +
+                        camera->getComponent<TransformComponent>()->getFront()));
+
+                    if (text->getColor().a < 1.0f)
+                        text->key.fields.depth = UINT32_MAX - distance;
+                    else
+                        text->key.fields.depth = distance;
+
                     queue.push(text->key, std::bind(&TextComponent::render, text, std::placeholders::_1));
                 }
             }
@@ -180,6 +198,12 @@ namespace sge
 
                 for (auto camera : cameras)
                 {
+                    uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
+                        camera->getComponent<TransformComponent>()->getPosition() +
+                        camera->getComponent<TransformComponent>()->getFront()));
+
+                    model->key.fields.depth = distance;
+
                     queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
                 }
             }
@@ -417,6 +441,7 @@ namespace sge
 
         device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
         device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
+
         device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
         device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 

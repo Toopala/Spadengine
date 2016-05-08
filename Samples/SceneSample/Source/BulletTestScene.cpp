@@ -262,7 +262,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
     camcomponent2 = new sge::CameraComponent(camentity2);
     camentity2->setComponent(camcomponent2);
 
-    camcomponent2->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camcomponent2->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
     camcomponent2->setViewport(1280-420, 720-280, 320, 180);
     camtransform2->setPosition(cameraPos);
     camtransform2->setFront(cameraFront);

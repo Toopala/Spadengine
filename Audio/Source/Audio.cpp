@@ -125,7 +125,7 @@ namespace sge
 	{
 		paTestData *data = (paTestData*)userData;
 		float *out = (float*)outputBuffer;
-		unsigned int i;
+
 		(void)timeInfo;
 		(void)statusFlags;
 		(void)inputBuffer;

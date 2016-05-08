@@ -27,8 +27,10 @@ namespace sge
 		Pipeline* getPipeline() { return pipeline; }
 
 		ModelResource* getModelResource() { return modelHandle->getResource<ModelResource>(); }
+
+        TransformComponent* transform;
 	private:
-		TransformComponent* transform;
+		
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 	public:
