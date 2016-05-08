@@ -267,6 +267,8 @@ namespace sge
     {
         static size_t pass = 0;
 
+        SGE_ASSERT(cameras.size() > pass);
+
         device->bindPipeline(sprPipeline);
 
         sge::Texture* texture = sprite->getTexture();
@@ -341,6 +343,8 @@ namespace sge
         // TODO added support for multiple cameras.
         static size_t pass = 0;
 
+        SGE_ASSERT(cameras.size() > pass);
+
         // Render text
         sge::math::vec2 pen = { 0, 0 };
         sge::math::vec3 originalPosition = text->getParent()->getComponent<TransformComponent>()->getPosition();
@@ -397,6 +401,10 @@ namespace sge
     void RenderSystem::renderModel(ModelComponent* model)
     {
         static size_t pass = 0;
+
+        SGE_ASSERT(cameras.size() > pass);
+
+        device->bindViewport(cameras[pass]->getViewport());
 
         modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
         modelVertexUniformData.PV = cameras[pass]->getViewProj();

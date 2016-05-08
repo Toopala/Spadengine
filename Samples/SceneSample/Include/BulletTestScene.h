@@ -42,8 +42,8 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
-	sge::Viewport viewport;
 	sge::Spade* engine;
+    sge::RenderSystem* renderer;
 
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	btRigidBody* fallRigidBody;
@@ -95,9 +95,11 @@ private:
 	sge::Handle <sge::ModelResource> modelHandleFloor;
 
 	sge::EntityManager* EManager;
-	sge::Entity* camentity;
+    std::vector<sge::Entity*> cameras;
 	sge::TransformComponent* camtransform;
+    sge::TransformComponent* camtransform2;
 	sge::CameraComponent* camcomponent;
+    sge::CameraComponent* camcomponent2;
 
 	sge::Entity* modentity;
 	sge::Entity* modentity2;
