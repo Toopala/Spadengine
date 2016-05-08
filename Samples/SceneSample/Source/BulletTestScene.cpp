@@ -61,7 +61,6 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 
 BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0f)
 {
-	modelSystem = new sge::ModelRenderingSystem(engine->getRenderer());
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
@@ -109,7 +108,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
-	modcomponent->setRenderSystem(modelSystem);
+	modcomponent->setRenderer(engine->getRenderer());
 
 	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -123,7 +122,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle);
-	modcomponent2->setRenderSystem(modelSystem);
+    modcomponent2->setRenderer(engine->getRenderer());
 
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -137,7 +136,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
-	modcomponentFloor->setRenderSystem(modelSystem);
+    modcomponentFloor->setRenderer(engine->getRenderer());
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityFloor->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -258,7 +257,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), alpha(0.0
     camentity->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
     camentity->getComponent<sge::TransformComponent>()->setFront(cameraFront);
     camentity->getComponent<sge::TransformComponent>()->setUp(cameraUp);
-    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
+    engine->getRenderer()->setCameras(1, camentity);
 }
 
 BulletTestScene::~BulletTestScene()
@@ -328,9 +327,9 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
-		int randomx = sge::random(10, 500);
-		int randomy = sge::random(10, 500);
-		int randomz = sge::random(10, 500);
+        btScalar randomx = (btScalar)sge::random(10, 500);
+        btScalar randomy = (btScalar)sge::random(10, 500);
+        btScalar randomz = (btScalar)sge::random(10, 500);
 		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
 		fallRigidBody->applyTorque(btVector3(randomx, randomy, randomz));
 		
@@ -338,9 +337,9 @@ void BulletTestScene::update(float step)
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
 	{
-		int randomx = sge::random(-10, 10);
-		int randomy = sge::random(-10, 10);
-		int randomz = sge::random(-10, 10);
+        btScalar randomx = (btScalar)sge::random(-10, 10);
+        btScalar randomy = (btScalar)sge::random(-10, 10);
+        btScalar randomz = (btScalar)sge::random(-10, 10);
 		dynamicsWorld->setGravity(btVector3(randomx, randomy, randomz));
 		
 	}
@@ -408,17 +407,14 @@ void BulletTestScene::update(float step)
 	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
 
 	camentity->getComponent<sge::CameraComponent>()->update();
-    modelSystem->setCamera(camentity->getComponent<sge::CameraComponent>());
 }
 void BulletTestScene::draw()
 {
-	engine->getRenderer()->getDevice()->clear(0.5f, 0.0f, 0.5f, 1.0f);
-
 	modentity->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 	modentity2->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 	modentityFloor->getComponent<sge::ModelComponent>()->render(engine->getRenderer()->getDevice());
 
-	engine->getRenderer()->getDevice()->swap();
+    engine->getRenderer()->present();
 }
 
 void BulletTestScene::interpolate(float alpha)

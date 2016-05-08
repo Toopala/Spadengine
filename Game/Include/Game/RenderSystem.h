@@ -52,11 +52,16 @@ namespace sge
         void renderText(TextComponent* text);
         void renderModel(ModelComponent* model);
 
+        void setClearColor(float r, float g, float b, float a);
+        void setClearColor(const math::vec4& color);
+
 	private:
 		
 		RenderQueue queue;
         GraphicsDevice* device;
+        math::vec4 clearColor;
 
+        // Sprite rendering data.
         Pipeline* sprPipeline;
         Buffer* sprVertexBuffer;
         Buffer* sprVertexUniformBuffer;
@@ -74,9 +79,54 @@ namespace sge
             math::vec4 color;
         } sprPixelUniformData;
 
-        std::vector<sge::Texture*> charTextures;
+        // Model rendering data.
+        Buffer* modelVertexUniformBuffer;
+        Buffer* modelPixelUniformBuffer;
+
+        ///////////////////////////////
+        // TODO move these to LightComponent!
+        struct DirLight
+        {
+            sge::math::vec4 direction;
+            sge::math::vec4 ambient;
+            sge::math::vec4 diffuse;
+            sge::math::vec4 specular;
+        };
+
+        struct PointLight
+        {
+            sge::math::vec4 position;
+            sge::math::vec4 ambient;
+            sge::math::vec4 diffuse;
+            sge::math::vec4 specular;
+
+            float constant;
+            float mylinear;
+            float quadratic;
+            float pad;
+        };
+        //////////////////////////////
+
+        struct ModelVertexUniformData
+        {
+            sge::math::mat4 PV;
+            sge::math::mat4 M;
+        } modelVertexUniformData;
+
+        struct ModelPixelUniformData
+        {
+            DirLight dirLight;
+            PointLight pointLights[40];
+            sge::math::vec4 CamPos;
+            int numofpl;
+            int pad[3];
+        } modelPixelUniformData;
+
+        // Text rendering data.
+        std::vector<sge::Texture*> charTextures; // TODO who deletes these?
         std::string previousText = "";
 
+        // Global rendering data.
         std::vector<CameraComponent*> cameras;
         std::vector<LightComponent*> lights;
 

@@ -11,7 +11,6 @@
 namespace sge
 {
 	class TransformComponent;
-	class ModelRenderingSystem;
 
 	class ModelComponent : public RenderComponent
 	{
@@ -20,8 +19,6 @@ namespace sge
 
 		void update();
 		void render(GraphicsDevice* device);
-
-		void setRenderSystem(ModelRenderingSystem* system);
 
 		void setModelResource(sge::Handle <sge::ModelResource>* modelHandle);
 
@@ -32,7 +29,6 @@ namespace sge
 		ModelResource* getModelResource() { return modelHandle->getResource<ModelResource>(); }
 	private:
 		TransformComponent* transform;
-		ModelRenderingSystem* RenderSystem;
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 	public:

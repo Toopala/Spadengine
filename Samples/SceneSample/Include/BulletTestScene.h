@@ -12,7 +12,6 @@
 #include "Game/SystemManager.h"
 #include "Game/CameraComponent.h"
 #include "Game/ModelComponent.h"
-#include "Game/ModelRenderingSystem.h"
 #include "Game/TransformComponent.h"
 
 // FORWARD DECLARE
@@ -109,8 +108,6 @@ private:
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
-
-	sge::ModelRenderingSystem* modelSystem;
 
 	float alpha;
 };

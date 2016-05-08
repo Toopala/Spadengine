@@ -39,8 +39,6 @@ namespace sge
 
 	void TextComponent::update()
 	{
-		key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
-		key.fields.depth = static_cast<uint64>(transform->getPosition().z);
 	}
 
 	void TextComponent::setColor(const math::vec4& color)

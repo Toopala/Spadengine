@@ -1,14 +1,13 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
-#include "Game/ModelRenderingSystem.h"
+#include "Game/RenderSystem.h"
 #include "Core/Assert.h"
 
 namespace sge
 {
 	ModelComponent::ModelComponent(Entity* entity) :
-		RenderComponent(entity),
-		RenderSystem(nullptr)
+		RenderComponent(entity)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -17,20 +16,13 @@ namespace sge
 
 	void ModelComponent::update()
 	{
-		key.fields.translucent = 0;
-		key.fields.depth = static_cast<uint64>(transform->getPosition().z);
 	}
 
 	void ModelComponent::render(GraphicsDevice* device)
 	{
-		SGE_ASSERT(RenderSystem);
+        SGE_ASSERT(renderer);
 
-		RenderSystem->renderModel(this);
-	}
-
-	void ModelComponent::setRenderSystem(ModelRenderingSystem* system)
-	{
-		RenderSystem = system;
+		renderer->renderModel(this);
 	}
 
 	void ModelComponent::setModelResource(sge::Handle <sge::ModelResource>* modelHandle)

@@ -7,13 +7,10 @@
 /*
 TODO
 
-Input komponenteille tai kamerakomponentin fiksaus siten et inputtia ei saa spaden singletonin kautta
+
 Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
-VP:n anto renderöintisysteemeille typerää (pointteri matriisiin??) Ehkä vois passata kameran
-Kameran anto renderöintisysteemeille ja se laskee ne etäisyydet sitte sen kans
-Projektiomatriisin nearin ja farin määrittely niin et toimii samaten DX ja GL
-Korjaa DX 11:n depth-tarkistus
-Kamerakomponentti saamaan positio transformilta ja muutenkin refaktoroida
+Sorttaus takasin kuntoon jos tarviijaksaahaluaa
+Rendersystemille defaulttikamera!
 
 */
 
@@ -113,12 +110,13 @@ void GameScene::interpolate(float alpha)
 
 void GameScene::draw()
 {
-    // TODO should we move begin and end to somewhere else?
-    renderer->begin();
+    // Note that we need to set render targets and cameras before we begin.
     renderer->setRenderTargets(1, renderTarget);
-
     renderer->setCameras(cameras.size(), *cameras.data());
-    //renderer->renderSprites(entities.size(), *entities.data());
+
+    renderer->begin();
+
+    renderer->renderSprites(entities.size(), *entities.data());
     renderer->renderTexts(1, guiText);
 
     renderer->end();

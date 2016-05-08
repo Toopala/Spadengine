@@ -49,9 +49,6 @@
     <ClCompile Include="Source\ModelComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ModelRenderingSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Source\TextComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -119,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="Include\Game\ModelComponent.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\ModelRenderingSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\ComponentFactory.h">
       <Filter>Header Files\Components</Filter>

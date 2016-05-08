@@ -25,7 +25,8 @@ namespace sge
     RenderSystem::RenderSystem(Window& window) :
 		queue(1000),
         initialized(false),
-        acceptingCommands(false)
+        acceptingCommands(false),
+        clearColor(0.5f, 0.6f, 0.2f, 1.0f)
 	{
 		device = new GraphicsDevice(window);
 	}
@@ -39,6 +40,8 @@ namespace sge
 	{
 		device->init();
 
+        // TODO move different inits to separate methods.
+        // Init sprite/text rendering.
         Handle<ShaderResource> pixelShaderHandle;
         Handle<ShaderResource> vertexShaderHandle;
 
@@ -82,6 +85,28 @@ namespace sge
         device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
         device->debindPipeline(sprPipeline);
 
+        // Init model rendering.
+        modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
+        modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
+
+        modelPixelUniformData.pointLights[0].position = math::vec4(0.0, 4.0, 0.0, 1.0);
+        modelPixelUniformData.pointLights[0].constant = float(1.0);
+        modelPixelUniformData.pointLights[0].mylinear = float(0.09);
+        modelPixelUniformData.pointLights[0].quadratic = float(0.032);
+        modelPixelUniformData.pointLights[0].pad = 0.0f;
+        modelPixelUniformData.pointLights[0].ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
+        modelPixelUniformData.pointLights[0].diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
+        modelPixelUniformData.pointLights[0].specular = math::vec4(1.0, 1.0, 1.0, 1.0);
+
+        modelPixelUniformData.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
+        modelPixelUniformData.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
+        modelPixelUniformData.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
+        modelPixelUniformData.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
+
+        modelPixelUniformData.numofpl = 0;
+
+        device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+
         initialized = true;
 	}
 
@@ -93,6 +118,8 @@ namespace sge
         device->deleteBuffer(sprVertexUniformBuffer);
         device->deleteBuffer(sprPixelUniformBuffer);
         device->deletePipeline(sprPipeline);
+        device->deleteBuffer(modelVertexUniformBuffer);
+        device->deleteBuffer(modelPixelUniformBuffer);
 
 		device->deinit();
 
@@ -142,6 +169,21 @@ namespace sge
     void RenderSystem::renderModels(size_t count, Entity* models)
     {
         SGE_ASSERT(acceptingCommands);
+
+        for (size_t i = 0; i < count; i++)
+        {
+            ModelComponent* model = models[i].getComponent <ModelComponent>();
+
+            if (model)
+            {
+                model->setRenderer(this);
+
+                for (auto camera : cameras)
+                {
+                    queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
+                }
+            }
+        }
     }
 
     void RenderSystem::renderLights(size_t count, Entity* lights)
@@ -162,12 +204,12 @@ namespace sge
 
     void RenderSystem::setRenderTargets(size_t count, RenderTarget* renderTargets)
     {
-        SGE_ASSERT(acceptingCommands);
+        SGE_ASSERT(!acceptingCommands);
     }
 
     void RenderSystem::setCameras(size_t count, Entity* cameras)
     {
-        SGE_ASSERT(acceptingCommands);
+        SGE_ASSERT(!acceptingCommands);
         
         this->cameras.clear();
 
@@ -209,7 +251,7 @@ namespace sge
         SGE_ASSERT(initialized && !acceptingCommands);
 
         device->swap();
-        device->clear(0.5f, 0.6f, 0.2f, 1.0f);
+        device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     }
 
     void RenderSystem::clear()
@@ -354,7 +396,43 @@ namespace sge
 
     void RenderSystem::renderModel(ModelComponent* model)
     {
+        static size_t pass = 0;
 
+        modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
+        modelVertexUniformData.PV = cameras[pass]->getViewProj();
+        modelPixelUniformData.CamPos = math::vec4(cameras[pass]->getComponent<TransformComponent>()->getPosition(), 1.0f);
+
+        device->bindPipeline(model->getPipeline());
+
+        device->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
+        device->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
+
+        device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
+        device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
+        device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
+        device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
+
+        device->bindTexture(model->diffTexture, 0);
+        device->bindTexture(model->normTexture, 1);
+        device->bindTexture(model->specTexture, 2);
+
+        device->draw(model->getModelResource()->getVerticeArray()->size());
+        device->debindPipeline(model->getPipeline());
+
+        if (++pass >= cameras.size())
+            pass = 0;
     }
 
+    void RenderSystem::setClearColor(float r, float g, float b, float a)
+    {
+        clearColor.r = r;
+        clearColor.g = g;
+        clearColor.b = b;
+        clearColor.a = a;
+    }
+
+    void RenderSystem::setClearColor(const math::vec4& color)
+    {
+        clearColor = color;
+    }
 }

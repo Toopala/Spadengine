@@ -43,7 +43,6 @@ namespace sge
 
 	void SpriteComponent::update()
 	{
-        // TODO Does nothing... DO WE NEED UPDATE OR NOT??
 	}
 
 	void SpriteComponent::setColor(const math::vec4& color)
