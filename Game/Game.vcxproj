@@ -105,7 +105,6 @@
     <ClCompile Include="Source\TestComponent.cpp" />
     <ClCompile Include="Source\TestSystem.cpp" />
     <ClCompile Include="Source\TextComponent.cpp" />
-    <ClCompile Include="Source\TextRenderingSystem.cpp" />
     <ClCompile Include="Source\TransformComponent.cpp" />
     <ClCompile Include="Source\TransformSystem.cpp" />
   </ItemGroup>
@@ -132,7 +131,6 @@
     <ClInclude Include="Include\Game\TestComponent.h" />
     <ClInclude Include="Include\Game\TestSystem.h" />
     <ClInclude Include="Include\Game\TextComponent.h" />
-    <ClInclude Include="Include\Game\TextRenderingSystem.h" />
     <ClInclude Include="Include\Game\TransformComponent.h" />
     <ClInclude Include="Include\Game\TransformSystem.h" />
   </ItemGroup>

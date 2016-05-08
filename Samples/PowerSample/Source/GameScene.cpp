@@ -21,6 +21,7 @@ GameScene::GameScene(sge::Spade* engine) :
     engine(engine),
     renderer(engine->getRenderer()),
     textureResource(sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png")),
+    fontResource(sge::ResourceManager::getMgr().load<sge::FontResource>("../Assets/verdana.ttf")),
     texture(engine->getRenderer()->getDevice()->createTexture(
         textureResource.getResource<sge::TextureResource>()->getSize().x,
         textureResource.getResource<sge::TextureResource>()->getSize().y,
@@ -41,6 +42,8 @@ GameScene::GameScene(sge::Spade* engine) :
 
     entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
     entities.back()->setTag("FRONT");
+
+    guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
     targetTexture = renderer->getDevice()->createTexture(1280, 720);
     renderTarget = renderer->getDevice()->createRenderTarget(targetTexture);
@@ -115,7 +118,8 @@ void GameScene::draw()
     renderer->setRenderTargets(1, renderTarget);
 
     renderer->setCameras(cameras.size(), *cameras.data());
-    renderer->renderSprites(entities.size(), *entities.data());
+    //renderer->renderSprites(entities.size(), *entities.data());
+    renderer->renderTexts(1, guiText);
 
     renderer->end();
     renderer->present();
@@ -125,10 +129,10 @@ void GameScene::draw()
 sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
 {
     // TODO this should be easier.
-    sge::Entity* player = entityManager.createEntity();
+    sge::Entity* entity = entityManager.createEntity();
 
-    auto transform = transformFactory.create(player);
-    auto sprite = spriteFactory.create(player);
+    auto transform = transformFactory.create(entity);
+    auto sprite = spriteFactory.create(entity);
 
     transform->setPosition({ x, y, depth });
     transform->setScale({ width, height, 1.0f });
@@ -138,7 +142,7 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
     sprite->setTexture(texture);
     sprite->setColor({ r, g, b, a });
 
-    return player;
+    return entity;
 }
 
 sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
@@ -146,10 +150,10 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     // TODO cameracomponent doesn't use transform component and directly
     // requests input from (old design) spade singleton. These should be fixed.
     // Input system needs more planning to do.
-    sge::Entity* camera = entityManager.createEntity();
+    sge::Entity* entity = entityManager.createEntity();
 
-    auto transform = transformFactory.create(camera);
-    auto cameracomponent = cameraFactory.create(camera);
+    auto transform = transformFactory.create(entity);
+    auto cameracomponent = cameraFactory.create(entity);
 
     transform->setPosition({ 0.0f, 0.0f, 10.0f });
     transform->setFront({ 0.0f, 0.0f, -1.0f });
@@ -158,5 +162,21 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
     cameracomponent->setViewport(x, y, width, height);
 
-    return camera;
+    return entity;
+}
+
+sge::Entity* GameScene::createText(float x, float y, const std::string& text)
+{
+    sge::Entity* entity = entityManager.createEntity();
+
+    auto transform = transformFactory.create(entity);
+    auto textcomponent = textFactory.create(entity);
+    
+    transform->setPosition({ x, y, 0.0f });
+
+    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
+    textcomponent->setText(text);
+
+    return entity;
 }

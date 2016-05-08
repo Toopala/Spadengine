@@ -1,7 +1,7 @@
 #include "Game/TextComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/Entity.h"
-#include "Game/TextRenderingSystem.h"
+#include "Game/RenderSystem.h"
 #include "Core/Assert.h"
 
 namespace sge
@@ -9,8 +9,7 @@ namespace sge
 	TextComponent::TextComponent(Entity* ent) :
 		RenderComponent(ent),
 		color(1.0f),
-		font(nullptr),
-		RenderSystem(nullptr)
+		font(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -18,11 +17,10 @@ namespace sge
 		SGE_ASSERT(transform);
 	}
 
-	TextComponent::TextComponent(Entity* ent, sge::TextRenderingSystem* system, sge::Font* font, const sge::math::vec4& col) :
+	TextComponent::TextComponent(Entity* ent, sge::Font* font, const sge::math::vec4& col) :
 		RenderComponent(ent),
 		color(col),
-		font(font),
-		RenderSystem(system)
+		font(font)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -36,21 +34,13 @@ namespace sge
 
 	void TextComponent::render(GraphicsDevice* device)
 	{
-		SGE_ASSERT(RenderSystem);
-
-		
-		RenderSystem->renderText(this);
+        renderer->renderText(this);
 	}
 
 	void TextComponent::update()
 	{
 		key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 		key.fields.depth = static_cast<uint64>(transform->getPosition().z);
-	}
-
-	void TextComponent::setRenderSystem(TextRenderingSystem* system)
-	{
-		RenderSystem = system;
 	}
 
 	void TextComponent::setColor(const math::vec4& color)

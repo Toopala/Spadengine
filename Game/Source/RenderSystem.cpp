@@ -16,6 +16,7 @@
 #include "Game/ModelComponent.h"
 #include "Game/RenderComponent.h"
 #include "Game/SpriteComponent.h"
+#include "Game/TextComponent.h"
 #include "Game/TransformComponent.h"
 
 
@@ -121,6 +122,21 @@ namespace sge
     void RenderSystem::renderTexts(size_t count, Entity* texts)
     {
         SGE_ASSERT(acceptingCommands);
+
+        for (size_t i = 0; i < count; i++)
+        {
+            TextComponent* text = texts[i].getComponent <TextComponent>();
+
+            if (text)
+            {
+                text->setRenderer(this);
+
+                for (auto camera : cameras)
+                {
+                    queue.push(text->key, std::bind(&TextComponent::render, text, std::placeholders::_1));
+                }
+            }
+        }
     }
 
     void RenderSystem::renderModels(size_t count, Entity* models)
@@ -207,8 +223,7 @@ namespace sge
 
     void RenderSystem::renderSprite(SpriteComponent* sprite)
     {
-        // TODO EBIN HAX :D
-        static int pass = 0;
+        static size_t pass = 0;
 
         device->bindPipeline(sprPipeline);
 
@@ -239,14 +254,102 @@ namespace sge
 
         device->debindPipeline(sprPipeline);
 
-        // TODO EBIN HAX continued :D
         if (++pass >= cameras.size())
             pass = 0;
     }
 
     void RenderSystem::renderText(TextComponent* text)
     {
+        // TODO text rendering uses sprite pipeline. Change if necessary.
+        device->bindPipeline(sprPipeline);
 
+        sge::Font* font = text->getFont();
+        FT_GlyphSlot slot = font->face->glyph;
+
+        // Updates textures if text has changed since previous rendering
+        if (text->getText() != previousText)
+        {
+            while (charTextures.size() != 0)
+            {
+                charTextures.erase(charTextures.begin());
+            }
+
+            for (size_t i = 0; i < text->getText().size(); i++)
+            {
+                FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
+
+                unsigned char* expandedData = new unsigned char[2 * slot->bitmap.width * slot->bitmap.rows];
+                for (size_t j = 0; j < slot->bitmap.rows; j++)
+                {
+                    for (size_t k = 0; k < slot->bitmap.width; k++)
+                    {
+                        expandedData[2 * (k + j * slot->bitmap.width)] = 255;
+                        expandedData[2 * (k + j * slot->bitmap.width) + 1] = (k >= slot->bitmap.width || j >= slot->bitmap.rows) ? 0 : slot->bitmap.buffer[k + slot->bitmap.width * j];
+                    }
+                }
+
+                sge::Texture* texture = device->createTextTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
+
+                charTextures.push_back(texture);
+                delete[] expandedData;
+            }
+            previousText = text->getText();
+        }
+
+        // TODO added support for multiple cameras.
+        static size_t pass = 0;
+
+        // Render text
+        sge::math::vec2 pen = { 0, 0 };
+        sge::math::vec3 originalPosition = text->getParent()->getComponent<TransformComponent>()->getPosition();
+        sge::math::vec3 originalScale = text->getParent()->getComponent<TransformComponent>()->getScale();
+        for (size_t i = 0; i < text->getText().size(); i++)
+        {
+            FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
+
+            sge::Texture* texture = charTextures[i];
+
+            if (texture)
+            {
+                device->bindTexture(texture, 0);
+            }
+
+            pen.y = slot->metrics.vertBearingY / 32 - font->characterSize;
+
+            if (slot->metrics.height / 64 - slot->metrics.horiBearingY / 64 > 0)
+            {
+                pen.y = slot->metrics.height / 64 - (float)slot->metrics.horiBearingY / 64;
+            }
+
+            text->getParent()->getComponent<TransformComponent>()->addPosition(glm::vec3(pen.x * 2, pen.y, 0));
+            text->getParent()->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(slot->bitmap.width, slot->bitmap.rows, 1));
+
+            device->bindViewport(cameras[pass]->getViewport());
+
+            sprVertexUniformData.MVP = cameras[pass]->getViewProj() * text->getComponent<TransformComponent>()->getMatrix();
+            sprPixelUniformData.color = text->getColor();
+
+            device->bindVertexUniformBuffer(sprVertexUniformBuffer, 0);
+            device->copyData(sprVertexUniformBuffer, sizeof(sprVertexUniformData), &sprVertexUniformData);
+            device->bindPixelUniformBuffer(sprPixelUniformBuffer, 1);
+            device->copyData(sprPixelUniformBuffer, sizeof(sprPixelUniformData), &sprPixelUniformData);
+
+            device->draw(6);
+
+            if (texture)
+            {
+                device->debindTexture(texture, 0);
+            }
+
+            pen.x = (float)(slot->advance.x >> 6);
+        }
+
+        text->getComponent<TransformComponent>()->setPosition(originalPosition);
+        text->getComponent<TransformComponent>()->setScale(originalScale);
+        device->debindPipeline(sprPipeline);
+
+        if (++pass >= cameras.size())
+            pass = 0;
     }
 
     void RenderSystem::renderModel(ModelComponent* model)

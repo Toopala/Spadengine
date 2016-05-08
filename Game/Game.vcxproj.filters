@@ -55,9 +55,6 @@
     <ClCompile Include="Source\TextComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\TextRenderingSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Source\RenderComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
     </ClInclude>
     <ClInclude Include="Include\Game\TextComponent.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\TextRenderingSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\RenderComponent.h">
       <Filter>Header Files\Components</Filter>

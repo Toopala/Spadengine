@@ -8,19 +8,17 @@
 namespace sge
 {
 	class TransformComponent;
-	class TextRenderingSystem;
 
 	class TextComponent : public RenderComponent
 	{
 	public:
 		TextComponent(Entity* ent);
-		TextComponent(Entity* ent, sge::TextRenderingSystem* system, sge::Font* font, const sge::math::vec4& col);
+		TextComponent(Entity* ent, sge::Font* font, const sge::math::vec4& col);
 		~TextComponent();
 
 		void render(GraphicsDevice* device);
 		void update();
 
-		void setRenderSystem(TextRenderingSystem* system);
 		void setFont(sge::Font* font);
 		void setColor(const math::vec4& color);
 		void setText(const std::string& text);
@@ -35,6 +33,5 @@ namespace sge
 		std::string text;
 
 		TransformComponent* transform;
-		TextRenderingSystem* RenderSystem;
 	};
 }

@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <string>
 
 #include "Core/Math.h"
 #include "Renderer/GraphicsDevice.h"
@@ -46,6 +47,7 @@ namespace sge
         void present();
         void clear();
 
+        // TODO one should not directly use these methods!
         void renderSprite(SpriteComponent* sprite);
         void renderText(TextComponent* text);
         void renderModel(ModelComponent* model);
@@ -62,9 +64,6 @@ namespace sge
         Shader* sprVertexShader;
         Shader* sprPixelShader;
 
-        std::vector<CameraComponent*> cameras;
-        std::vector<LightComponent*> lights;
-
         struct SprVertexUniformData
         {
             math::mat4 MVP;
@@ -74,6 +73,12 @@ namespace sge
         {
             math::vec4 color;
         } sprPixelUniformData;
+
+        std::vector<sge::Texture*> charTextures;
+        std::string previousText = "";
+
+        std::vector<CameraComponent*> cameras;
+        std::vector<LightComponent*> lights;
 
         bool initialized;
         bool acceptingCommands;
