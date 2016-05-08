@@ -41,6 +41,11 @@ namespace sge
 
                 file.close();
             }
+            else
+            {
+                std::cout << "ERROR: Could not open shader: " << resourcePath << std::endl;
+                SGE_ASSERT(false);
+            }
         }
 
         else if (resourcePath.find(".cso") != std::string::npos)
@@ -55,6 +60,11 @@ namespace sge
                 file.seekg(0, std::ios::beg);
                 file.read(data.data(), data.size());
                 file.close();
+            }
+            else
+            {
+                std::cout << "ERROR: Could not open shader: " << resourcePath << std::endl;
+                SGE_ASSERT(false);
             }
         }
 

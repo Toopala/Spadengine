@@ -22,6 +22,14 @@ namespace sge
     struct Buffer;
     struct Shader;
 
+    struct Character
+    {
+        sge::math::vec2 size;
+        sge::math::vec2 horiBearing;
+        sge::math::vec2 vertBearing;
+        sge::math::vec2 metrics;
+    };
+
 	class RenderSystem
 	{
 	public:
@@ -119,11 +127,13 @@ namespace sge
             PointLight pointLights[40];
             sge::math::vec4 CamPos;
             int numofpl;
-            int pad[3];
+            int numofdl;
+            int pad[2];
         } modelPixelUniformData;
 
         // Text rendering data.
         std::vector<sge::Texture*> charTextures; // TODO who deletes these?
+        std::vector<Character> characters;
         std::string previousText = "";
 
         // Global rendering data.

@@ -43,6 +43,8 @@ layout (std140, binding = 1) uniform pixelUniform
 	PointLight pointLights[NUM_POINT_LIGHTS];
 	vec4 viewPos;
 	int numofpl;
+	int numofdl;
+	int pad[3];
 };
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -55,8 +57,11 @@ void main()
 	normal = normalize(normal * 2.0 - 1.0);
 	
 	vec3 viewDir = TBNVout * normalize(viewPos.xyz - fragPosition);
-    
-	vec3 result = CalculateDirectionLight(dirLight, normal, viewDir);
+    vec3 result = vec3(0.0);
+	if(numofdl == 1)
+	{
+	result += CalculateDirectionLight(dirLight, normal, viewDir);
+	}
 	
 	for(int i = 0; i < numofpl; i++)
 		result += CalculatePointLight(pointLights[i], normal, viewDir);

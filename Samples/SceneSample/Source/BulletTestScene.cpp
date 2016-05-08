@@ -227,6 +227,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
 	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
+	
 
 	// falling object 2
 	btDefaultMotionState* fallMotionState2 =
