@@ -215,8 +215,6 @@ namespace sge
     {
         SGE_ASSERT(acceptingCommands);
 
-        this->lights.clear();
-
         for (size_t i = 0; i < count; i++)
         {
             LightComponent* light = lights[i].getComponent<LightComponent>();
@@ -227,17 +225,15 @@ namespace sge
         }
     }
 
-    void RenderSystem::setRenderTargets(size_t count, RenderTarget* renderTargets)
+    void RenderSystem::addRenderTargets(size_t count, RenderTarget* renderTargets)
     {
         SGE_ASSERT(!acceptingCommands);
     }
 
-    void RenderSystem::setCameras(size_t count, Entity* cameras)
+    void RenderSystem::addCameras(size_t count, Entity* cameras)
     {
         SGE_ASSERT(!acceptingCommands);
         
-        this->cameras.clear();
-
         for (size_t i = 0; i < count; i++)
         {
             CameraComponent* camera = cameras[i].getComponent<CameraComponent>();
@@ -264,28 +260,52 @@ namespace sge
 		queue.end();
 
         acceptingCommands = false;
+	}
+
+    void RenderSystem::render()
+    {
+        SGE_ASSERT(initialized && !acceptingCommands);
 
         for (auto& command : queue.getQueue())
         {
             command.second(device);
         }
-	}
+    }
 
     void RenderSystem::present()
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
         device->swap();
-        device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     }
 
-    void RenderSystem::clear()
+    void RenderSystem::clear(int flags)
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
-        queue.clear();
-        cameras.clear();
-        lights.clear();   
+        if (flags & QUEUE)
+        {
+            queue.clear();
+        }
+
+        if (flags & COLOR || flags & DEPTH || flags & STENCIL)
+        {
+            device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+        }
+
+        if (flags & LIGHTS)
+        {
+            lights.clear();
+        }
+
+        if (flags & CAMERAS)
+        {
+            cameras.clear();
+        }
+
+        if (flags & RENDERTARGETS)
+        {
+        }
     }
 
     void RenderSystem::renderSprite(SpriteComponent* sprite)

@@ -111,17 +111,19 @@ void GameScene::interpolate(float alpha)
 void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
-    renderer->setRenderTargets(1, renderTarget);
-    renderer->setCameras(cameras.size(), *cameras.data());
+    //renderer->addRenderTargets(1, renderTarget);
+    renderer->clear();
+    renderer->addCameras(cameras.size(), *cameras.data());
 
     renderer->begin();
 
     renderer->renderSprites(entities.size(), *entities.data());
-    renderer->renderTexts(1, guiText);
+    //renderer->renderTexts(1, guiText);
 
     renderer->end();
+    renderer->render();
     renderer->present();
-    renderer->clear();
+    
 }
 
 sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)

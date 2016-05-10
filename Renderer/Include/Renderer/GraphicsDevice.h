@@ -24,6 +24,8 @@ namespace sge
 		void init();
 		void deinit();
 
+        // TODO this clears color, depth and stencil buffers.
+        // Should we separate them?
 		void clear(float r, float g, float b, float a);
 
 		void swap();
