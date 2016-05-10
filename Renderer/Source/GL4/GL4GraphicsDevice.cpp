@@ -247,12 +247,16 @@ namespace sge
 
         GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
 
+        gl4RenderTarget->count = count;
+        gl4RenderTarget->buffers = new GLenum[count];
+
         glGenFramebuffers(1, &gl4RenderTarget->id);
         glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
 
         for (size_t i = 0; i < count; i++)
         {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(textures[i])->id, 0);
+            gl4RenderTarget->buffers[i] = GL_COLOR_ATTACHMENT0 + i;
         }
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -277,6 +281,7 @@ namespace sge
 
         checkError();
 
+        delete[] gl4RenderTarget->buffers;
         delete gl4RenderTarget;
         renderTarget = nullptr;
     }
@@ -427,7 +432,10 @@ namespace sge
 
     void GraphicsDevice::bindRenderTarget(RenderTarget* renderTarget)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, reinterpret_cast<GL4RenderTarget*>(renderTarget)->id);
+        GL4RenderTarget* gl4RenderTarget = reinterpret_cast<GL4RenderTarget*>(renderTarget);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
+        glDrawBuffers(gl4RenderTarget->count, gl4RenderTarget->buffers);
     }
 
     void GraphicsDevice::debindRenderTarget()

@@ -13,6 +13,8 @@ namespace sge
         RenderTarget header;
 
         GLuint id;
+        GLenum* buffers;
+        size_t count;
     };
 }
 

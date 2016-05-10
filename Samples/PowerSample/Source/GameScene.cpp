@@ -23,8 +23,9 @@ GameScene::GameScene(sge::Spade* engine) :
         textureResource.getResource<sge::TextureResource>()->getSize().x,
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData())),
-    targetTexture(nullptr),
-    renderTarget(nullptr)
+    targetTextures(nullptr),
+    renderTarget(nullptr),
+    targetCount(4)
 {
     // TODO initialization should be easier.
     // TODO downloading resources and creating textures is messy.
@@ -50,17 +51,28 @@ GameScene::GameScene(sge::Spade* engine) :
 
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
-    targetTexture = renderer->getDevice()->createTexture(1280, 720);
-    renderTarget = renderer->getDevice()->createRenderTarget(1, &targetTexture);
+    targetTextures = new sge::Texture*[targetCount];
 
-    targetEntity = createEntity(targetTexture, 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+    for (size_t i = 0; i < targetCount; i++)
+    {
+        targetTextures[i] = renderer->getDevice()->createTexture(1280, 720);
+    }
+    
+    renderTarget = renderer->getDevice()->createRenderTarget(targetCount, targetTextures);
+
+    targetEntity = createEntity(targetTextures[3], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 GameScene::~GameScene()
 {
     // TODO this should probably be not deleted here, but in the texture resource.
     renderer->getDevice()->deleteTexture(texture);
-    renderer->getDevice()->deleteTexture(targetTexture);
+
+    for (size_t i = 0; i < targetCount; i++)
+    {
+        renderer->getDevice()->deleteTexture(targetTextures[i]);
+    }
+    
     renderer->getDevice()->deleteRenderTarget(renderTarget);
 }
 

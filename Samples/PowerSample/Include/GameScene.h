@@ -50,9 +50,11 @@ private:
     sge::Handle<sge::TextureResource> textureResource;
     sge::Handle<sge::FontResource> fontResource;
     sge::Texture* texture;
-    sge::Texture* targetTexture;
+    sge::Texture** targetTextures;
     sge::RenderTarget* renderTarget;
     sge::math::mat4 VP;
+
+    size_t targetCount;
 
     sge::EntityManager entityManager;
     
