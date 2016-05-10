@@ -238,6 +238,13 @@ namespace sge
 
     RenderTarget* GraphicsDevice::createRenderTarget(size_t count, Texture** textures)
     {
+        GLint maxColorAttachments = 0;
+        GLint maxDrawBuf = 0;
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuf);
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+        
+        SGE_ASSERT((GLint)count <= maxColorAttachments && (GLint)count <= maxDrawBuf);
+
         GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
 
         glGenFramebuffers(1, &gl4RenderTarget->id);

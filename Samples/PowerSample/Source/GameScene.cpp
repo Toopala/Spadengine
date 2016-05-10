@@ -42,10 +42,10 @@ GameScene::GameScene(sge::Spade* engine) :
 
     fullscreenCamera = createCamera(border, border, screenAreaWidth, screenAreaHeight);
 
-    entities.push_back(createEntity(texture, 256.0f, 256.0f, 96.0f, 64.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 25.0f ));
+    entities.push_back(createEntity(texture, 256.0f, 256.0f, 96.0f, 64.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 25.0f));
     entities.back()->setTag("BEHNID");
 
-    entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f, 50.0f));
+    entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
     entities.back()->setTag("FRONT");
 
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");

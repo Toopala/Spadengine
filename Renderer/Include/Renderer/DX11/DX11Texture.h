@@ -13,7 +13,7 @@ namespace sge
 		Texture header;
 
 		ID3D11Texture2D* texture;
-		ID3D11ShaderResourceView* textureView;
+		ID3D11ShaderResourceView* view;
 	};
 }
 

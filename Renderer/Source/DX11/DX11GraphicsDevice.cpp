@@ -45,7 +45,6 @@ namespace sge
 			device(NULL),
 			context(NULL),
 			swapChain(NULL),
-			renderTargetView(NULL),
 			debug(NULL),
 			pipeline(nullptr),
 			backBufferTexture(NULL),
@@ -81,12 +80,13 @@ namespace sge
 		ID3D11Device* device;
 		ID3D11DeviceContext* context;
 		IDXGISwapChain* swapChain;
-		ID3D11RenderTargetView* renderTargetView;
 		ID3D11Debug* debug;
 		DX11Pipeline* pipeline;
 		ID3D11Texture2D* backBufferTexture;
 		ID3D11Texture2D* depthStencilBuffer;
 		ID3D11DepthStencilView* depthStencilView;
+        DX11RenderTarget* currentRenderTarget;
+        DX11RenderTarget* defaultRenderTarget;
 	};
 
 	GraphicsDevice::GraphicsDevice(Window& window) :
@@ -101,7 +101,6 @@ namespace sge
 
 	void GraphicsDevice::init()
 	{
-
 		// Create device and swap chain.
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		D3D_FEATURE_LEVEL featureLevels = D3D_FEATURE_LEVEL_11_0;
@@ -119,7 +118,7 @@ namespace sge
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.OutputWindow = impl->hwnd;
-		swapChainDesc.SampleDesc.Count = 4;
+		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.Windowed = TRUE;
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -159,8 +158,8 @@ namespace sge
 		depthStencilDesc.Height = swapChainDesc.BufferDesc.Height;
 		depthStencilDesc.MipLevels = 1;
 		depthStencilDesc.ArraySize = 1;
-		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilDesc.SampleDesc.Count = 4;
+        depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.SampleDesc.Count = 1;
 		depthStencilDesc.SampleDesc.Quality = 0;
 		depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -176,18 +175,20 @@ namespace sge
 
 		checkError(result);
 
-		// Create backbuffer.
-		// TODO implement render targerts!
+		// Create default render target.
 		result = impl->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&impl->backBufferTexture);
 
 		checkError(result);
 
 		// Create render target view.
-		result = impl->device->CreateRenderTargetView(impl->backBufferTexture, NULL, &impl->renderTargetView);
+        impl->defaultRenderTarget = new DX11RenderTarget();
+        impl->defaultRenderTarget->count = 1;
+        impl->defaultRenderTarget->views = new ID3D11RenderTargetView*[1];
+        result = impl->device->CreateRenderTargetView(impl->backBufferTexture, NULL, &impl->defaultRenderTarget->views[0]);
 
 		checkError(result);
 
-		impl->context->OMSetRenderTargets(1, &impl->renderTargetView, impl->depthStencilView);
+        bindRenderTarget(&impl->defaultRenderTarget->header);
 	}
 
 	void GraphicsDevice::deinit()
@@ -195,7 +196,7 @@ namespace sge
 		// Set fullscreen to false before releasing the swap chain.
 		impl->swapChain->SetFullscreenState(FALSE, NULL);
 
-		impl->renderTargetView->Release();
+        impl->defaultRenderTarget->views[0]->Release();
 		impl->backBufferTexture->Release();
 		impl->depthStencilBuffer->Release();
 		impl->depthStencilView->Release();
@@ -203,6 +204,8 @@ namespace sge
 		impl->swapChain->Release();
 		impl->context->Release();
 		impl->device->Release();
+
+        delete impl->defaultRenderTarget;
 
 #ifdef _DEBUG
 		impl->debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
@@ -218,7 +221,12 @@ namespace sge
 	void GraphicsDevice::clear(float r, float g, float b, float a)
 	{
 		float clear[] = { r, g, b, a };
-		impl->context->ClearRenderTargetView(impl->renderTargetView, clear);
+
+        for (size_t i = 0; i < impl->currentRenderTarget->count; i++)
+        {
+            impl->context->ClearRenderTargetView(impl->currentRenderTarget->views[i], clear);
+        }
+
         impl->context->ClearDepthStencilView(impl->depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
@@ -461,9 +469,23 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(Texture* texture)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, Texture** textures)
     {
+        SGE_ASSERT(count <= D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
+
         DX11RenderTarget* dx11RenderTarget = new DX11RenderTarget();
+
+        HRESULT result = S_OK;
+
+        dx11RenderTarget->views = new ID3D11RenderTargetView*[count];
+        dx11RenderTarget->count = count;
+
+        for (size_t i = 0; i < count; i++)
+        {
+            result = impl->device->CreateRenderTargetView(reinterpret_cast<DX11Texture*>(textures[i])->texture, NULL, &dx11RenderTarget->views[i]);
+
+            checkError(result);
+        }
 
         return &dx11RenderTarget->header;
     }
@@ -471,6 +493,11 @@ namespace sge
     void GraphicsDevice::deleteRenderTarget(RenderTarget* renderTarget)
     {
         DX11RenderTarget* dx11RenderTarget = reinterpret_cast<DX11RenderTarget*>(renderTarget);
+
+        for (size_t i = 0; i < dx11RenderTarget->count; i++)
+        {
+            dx11RenderTarget->views[i]->Release();
+        }
 
         delete dx11RenderTarget;
 
@@ -540,6 +567,7 @@ namespace sge
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
+
         if (source)
         {
             D3D11_SUBRESOURCE_DATA data;
@@ -556,11 +584,11 @@ namespace sge
 
 		checkError(result);
 
-		result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->textureView);
+        result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->view);
 
 		checkError(result);
 
-		impl->context->GenerateMips(dx11Texture->textureView);
+		impl->context->GenerateMips(dx11Texture->view);
 
 		return &dx11Texture->header;
 	}
@@ -570,7 +598,7 @@ namespace sge
 		DX11Texture* dx11Texture = reinterpret_cast<DX11Texture*>(texture);
 
 		dx11Texture->texture->Release();
-		dx11Texture->textureView->Release();
+        dx11Texture->view->Release();
 
 		delete dx11Texture;
 		texture = nullptr;
@@ -598,12 +626,15 @@ namespace sge
 
     void GraphicsDevice::bindRenderTarget(RenderTarget* renderTarget)
     {
+        DX11RenderTarget* dx11RenderTarget = reinterpret_cast<DX11RenderTarget*>(renderTarget);
 
+        impl->currentRenderTarget = dx11RenderTarget;
+        impl->context->OMSetRenderTargets(dx11RenderTarget->count, dx11RenderTarget->views, NULL);
     }
 
-    void GraphicsDevice::debindRenderTarget(RenderTarget* renderTarget)
+    void GraphicsDevice::debindRenderTarget()
     {
-
+        bindRenderTarget(&impl->defaultRenderTarget->header);
     }
 
 	void GraphicsDevice::bindVertexBuffer(Buffer* buffer)
@@ -649,12 +680,13 @@ namespace sge
 
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
-		impl->context->PSSetShaderResources(slot, 1, &reinterpret_cast<DX11Texture*>(texture)->textureView);
+        impl->context->PSSetShaderResources(slot, 1, &reinterpret_cast<DX11Texture*>(texture)->view);
 	}
 
 	void GraphicsDevice::debindTexture(Texture* texture, size_t slot)
 	{
-
+        ID3D11ShaderResourceView* tab[] = { NULL };
+        impl->context->PSSetShaderResources(slot, 1, tab);
 	}
 
 	void GraphicsDevice::copyData(Buffer* buffer, size_t size, const void* data)

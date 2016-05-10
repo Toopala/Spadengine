@@ -8,7 +8,6 @@
 
 namespace sge
 {
-
     struct GL4RenderTarget
     {
         RenderTarget header;
