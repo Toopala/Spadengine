@@ -426,14 +426,17 @@ void BulletTestScene::update(float step)
 }
 void BulletTestScene::draw()
 {
-    renderer->setCameras(cameras.size(), *cameras.data());
+    renderer->addCameras(1, &cameras.front());
+    renderer->addCameras(1, &cameras.back());
     renderer->begin();
     
-    renderer->renderModels(1, modentity);
-    renderer->renderModels(1, modentity2);
-    renderer->renderModels(1, modentityFloor);
+    renderer->renderModels(1, &modentity);
+    renderer->renderModels(1, &modentity2);
+    renderer->renderModels(1, &modentityFloor);
 
     renderer->end();
+    renderer->render();
+
     renderer->present();
     renderer->clear();
 }

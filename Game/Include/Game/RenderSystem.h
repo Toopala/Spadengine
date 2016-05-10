@@ -30,6 +30,18 @@ namespace sge
         sge::math::vec2 metrics;
     };
 
+    enum Clear
+    {
+        QUEUE           = 0x01,
+        COLOR           = 0x02,
+        DEPTH           = 0x04,
+        STENCIL         = 0x08,
+        LIGHTS          = 0x10,
+        CAMERAS         = 0x20,
+        RENDERTARGET    = 0x40,
+        ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
+    };
+
 	class RenderSystem
 	{
 	public:
@@ -42,18 +54,19 @@ namespace sge
 		GraphicsDevice* getDevice() const { return device; }
 
         // TODO should we take in entities or components? 
-        void renderSprites(size_t count, Entity* sprites);
-        void renderTexts(size_t count, Entity* texts);
-        void renderModels(size_t count, Entity* models);
-        void renderLights(size_t count, Entity* lights);
+        void renderSprites(size_t count, Entity** sprites);
+        void renderTexts(size_t count, Entity** texts);
+        void renderModels(size_t count, Entity** models);
+        void renderLights(size_t count, Entity** lights);
 
-        void setRenderTargets(size_t count, RenderTarget* renderTargets);
-        void setCameras(size_t count, Entity* cameras);
+        void addCameras(size_t count, Entity** cameras);
+        void setRenderTarget(RenderTarget* renderTarget);
 
 		void begin();
 		void end();
+        void render();
         void present();
-        void clear();
+        void clear(int flags = ALL);
 
         // TODO one should not directly use these methods!
         void renderSprite(SpriteComponent* sprite);
