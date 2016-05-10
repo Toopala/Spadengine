@@ -29,21 +29,31 @@ GameScene::GameScene(sge::Spade* engine) :
     // TODO initialization should be easier.
     // TODO downloading resources and creating textures is messy.
 
-    cameras.push_back(createCamera(0,   0,      640, 360));
-    cameras.push_back(createCamera(640, 0,      640, 360));
-    cameras.push_back(createCamera(640, 360,    640, 360));
-    cameras.push_back(createCamera(0,   360,    640, 360));
+    const int border = 16;
+    const int screenAreaWidth = 1280 - border * 2;
+    const int screenAreaHeight = 720 - border * 2;
+    const int camWidth = screenAreaWidth / 2;
+    const int camHeight = screenAreaHeight / 2;
 
-    entities.push_back(createEntity(256.0f, 256.0f, 256.0f, 256.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f ));
+    cameras.push_back(createCamera(0, 0,                camWidth, camHeight));
+    cameras.push_back(createCamera(camWidth, 0,         camWidth, camHeight));
+    cameras.push_back(createCamera(camWidth, camHeight, camWidth, camHeight));
+    cameras.push_back(createCamera(0, camHeight,        camWidth, camHeight));
+
+    fullscreenCamera = createCamera(border, border, screenAreaWidth, screenAreaHeight);
+
+    entities.push_back(createEntity(texture, 256.0f, 256.0f, 96.0f, 64.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 25.0f ));
     entities.back()->setTag("BEHNID");
 
-    entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
+    entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f, 50.0f));
     entities.back()->setTag("FRONT");
 
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
     targetTexture = renderer->getDevice()->createTexture(1280, 720);
-    renderTarget = renderer->getDevice()->createRenderTarget(targetTexture);
+    renderTarget = renderer->getDevice()->createRenderTarget(1, &targetTexture);
+
+    targetEntity = createEntity(targetTexture, 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 GameScene::~GameScene()
@@ -95,6 +105,8 @@ void GameScene::update(float step)
         camera->getComponent<sge::CameraComponent>()->update();
     }
 
+    fullscreenCamera->getComponent<sge::CameraComponent>()->update();
+
     // TODO binding viewport? Getting device from renderer from spade is a long way.
     // Also looks awful. So awful.
     //engine->getRenderer()->getDevice()->bindViewport(camera->getComponent<sge::CameraComponent>()->getViewport());
@@ -111,22 +123,36 @@ void GameScene::interpolate(float alpha)
 void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
-    //renderer->addRenderTargets(1, renderTarget);
-    renderer->clear();
-    renderer->addCameras(cameras.size(), *cameras.data());
+    // First pass
+    renderer->setRenderTarget(renderTarget);
+    renderer->addCameras(cameras.size(), cameras.data());
+    renderer->setClearColor(0.5f, 0.0f, 0.5, 1.0f);
+    renderer->clear(sge::COLOR);
 
     renderer->begin();
-
-    renderer->renderSprites(entities.size(), *entities.data());
-    //renderer->renderTexts(1, guiText);
-
+    renderer->renderSprites(entities.size(), entities.data());
     renderer->end();
+
     renderer->render();
+
+    // Second pass
+    renderer->setClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    renderer->clear();
+
+    renderer->addCameras(1, &fullscreenCamera);
+
+    renderer->begin();
+    renderer->renderSprites(1, &targetEntity);
+    renderer->end();
+
+    renderer->render();
+
+    // Present to screen
     renderer->present();
-    
+    renderer->clear();
 }
 
-sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
+sge::Entity* GameScene::createEntity(sge::Texture* texture, float x, float y, float width, float height, float depth, float r, float g, float b, float a, float angle)
 {
     // TODO this should be easier.
     sge::Entity* entity = entityManager.createEntity();
@@ -137,7 +163,7 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
     transform->setPosition({ x, y, depth });
     transform->setScale({ width, height, 1.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
-    transform->setAngle(45.0f);
+    transform->setAngle(angle);
 
     sprite->setTexture(texture);
     sprite->setColor({ r, g, b, a });

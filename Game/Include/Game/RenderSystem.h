@@ -38,8 +38,8 @@ namespace sge
         STENCIL         = 0x08,
         LIGHTS          = 0x10,
         CAMERAS         = 0x20,
-        RENDERTARGETS   = 0x40,
-        ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGETS
+        RENDERTARGET    = 0x40,
+        ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
     };
 
 	class RenderSystem
@@ -54,13 +54,13 @@ namespace sge
 		GraphicsDevice* getDevice() const { return device; }
 
         // TODO should we take in entities or components? 
-        void renderSprites(size_t count, Entity* sprites);
-        void renderTexts(size_t count, Entity* texts);
-        void renderModels(size_t count, Entity* models);
-        void renderLights(size_t count, Entity* lights);
+        void renderSprites(size_t count, Entity** sprites);
+        void renderTexts(size_t count, Entity** texts);
+        void renderModels(size_t count, Entity** models);
+        void renderLights(size_t count, Entity** lights);
 
-        void addRenderTargets(size_t count, RenderTarget* renderTargets);
-        void addCameras(size_t count, Entity* cameras);
+        void addCameras(size_t count, Entity** cameras);
+        void setRenderTarget(RenderTarget* renderTarget);
 
 		void begin();
 		void end();

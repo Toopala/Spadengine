@@ -236,16 +236,17 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(Texture* texture)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, Texture** textures)
     {
         GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
 
         glGenFramebuffers(1, &gl4RenderTarget->id);
         glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
 
-        // TODO add depth buffer.
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id, 0);
+        for (size_t i = 0; i < count; i++)
+        {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(textures[i])->id, 0);
+        }
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -422,7 +423,7 @@ namespace sge
         glBindFramebuffer(GL_FRAMEBUFFER, reinterpret_cast<GL4RenderTarget*>(renderTarget)->id);
     }
 
-    void GraphicsDevice::debindRenderTarget(RenderTarget* renderTarget)
+    void GraphicsDevice::debindRenderTarget()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

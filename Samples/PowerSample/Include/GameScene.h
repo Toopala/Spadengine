@@ -35,7 +35,7 @@ public:
 
     // TODO just a temporary way to create entities.
     // OR a proper way?
-    sge::Entity* createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a);
+    sge::Entity* createEntity(sge::Texture* texture, float x, float y, float width, float height, float depth, float r, float g, float b, float a, float angle);
     sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
     sge::Entity* createText(float x, float y, const std::string& text);
 
@@ -44,7 +44,9 @@ private:
     sge::RenderSystem* renderer;
     std::vector<sge::Entity*> entities;
     std::vector<sge::Entity*> cameras;
+    sge::Entity* fullscreenCamera;
     sge::Entity* guiText;
+    sge::Entity* targetEntity;
     sge::Handle<sge::TextureResource> textureResource;
     sge::Handle<sge::FontResource> fontResource;
     sge::Texture* texture;

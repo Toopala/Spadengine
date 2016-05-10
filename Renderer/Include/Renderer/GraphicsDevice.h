@@ -36,7 +36,7 @@ namespace sge
 		Pipeline* createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader);
 		void deletePipeline(Pipeline* pipeline);
 
-        RenderTarget* createRenderTarget(Texture* texture);
+        RenderTarget* createRenderTarget(size_t count, Texture** textures);
         void deleteRenderTarget(RenderTarget* renderTarget);
 
 		Shader* createShader(ShaderType type, const char* source, size_t size);
@@ -50,7 +50,7 @@ namespace sge
 		void debindPipeline(Pipeline* pipeline);
 
         void bindRenderTarget(RenderTarget* renderTarget);
-        void debindRenderTarget(RenderTarget* renderTarget);
+        void debindRenderTarget();
 
 		void bindVertexBuffer(Buffer* buffer);
 		void bindIndexBuffer(Buffer* buffer);
