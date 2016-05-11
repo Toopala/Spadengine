@@ -308,8 +308,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShapeSuzanne, fallInertia);
+	simplifiedConvexShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, simplifiedConvexShape, fallInertia);
 	fallRigidBodyCI.m_restitution = 1.0f;
 	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
@@ -320,7 +320,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	// falling object 2
 	btDefaultMotionState* fallMotionState2 =
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, 23, 0)));
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape, fallInertia);
+	btScalar mass2 = 1;
+	btVector3 fallInertia2(0, 0, 0);
+	fallShape->calculateLocalInertia(mass2, fallInertia2);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass2, fallMotionState2, fallShape, fallInertia2);
 	fallRigidBodyCI2.m_restitution = 0.4f;
 	fallRigidBodyCI2.m_friction = 0.8f;
 	fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
