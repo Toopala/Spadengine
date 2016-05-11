@@ -88,10 +88,13 @@ private:
 	sge::math::mat4 P;
 
 	sge::Pipeline* pipeline;
+	sge::Pipeline* pipelineNormals;
 	sge::Buffer* vertexBuffer;
 	sge::Buffer* uniformBuffer;
 	sge::Shader* vertexShader;
 	sge::Shader* pixelShader;
+	sge::Shader* vertexShader2;
+	sge::Shader* pixelShader2;
 	sge::Texture* texture;
 	sge::Texture* texture2;
 
@@ -103,6 +106,7 @@ private:
 	UniformData2 uniformData2;
 
 	sge::Handle <sge::ModelResource> modelHandle;
+	sge::Handle <sge::ModelResource> modelHandle2;
 	sge::Handle <sge::ModelResource> modelHandleFloor;
 
 	sge::EntityManager* EManager;

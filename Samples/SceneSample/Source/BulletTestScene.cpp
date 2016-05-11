@@ -108,8 +108,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
 	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderData);
+	loadTextShader("../Assets/Shaders/VertexShaderLightsNoNormalTexture.glsl", vShaderData);
+	loadTextShader("../Assets/Shaders/PixelShaderLightsNoNormalTexture.glsl", pShaderData);
 #endif
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
@@ -127,9 +127,32 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
+	//--------------
+	// New pipeline
+	std::vector<char> pShaderDataNormals;
+	std::vector<char> vShaderDataNormals;
+
+#ifdef DIRECTX11
+	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderDataNormals);
+	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderDataNormals);
+#elif OPENGL4
+	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderDataNormals);
+	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderDataNormals);
+#endif
+
+	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderData.size());
+	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderData.size());
+
+	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
+	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
+	//--------------
+
 	//Assimp test
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle2.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
 	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
@@ -160,7 +183,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent2->setShininess(1.0f);
 	modentity2->setComponent(modcomponent2);
 
-	modcomponent2->setModelResource(&modelHandle);
+	modcomponent2->setModelResource(&modelHandle2);
     modcomponent2->setRenderer(engine->getRenderer());
 
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
@@ -183,8 +206,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
 	modcomponent->setPipeline(pipeline);
-	modcomponent2->setPipeline(pipeline);
-	modcomponentFloor->setPipeline(pipeline);
+	modcomponent2->setPipeline(pipelineNormals);
+	modcomponentFloor->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();

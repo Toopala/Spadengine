@@ -473,9 +473,21 @@ namespace sge
         device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
         device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 
-        device->bindTexture(model->diffTexture, 0);
-        device->bindTexture(model->normTexture, 1);
-        device->bindTexture(model->specTexture, 2);
+		if (model->diffTexture != nullptr)
+		{
+			device->bindTexture(model->diffTexture, 0);
+		}
+     
+		if (model->normTexture != nullptr)
+		{
+			device->bindTexture(model->normTexture, 1);
+		}
+        
+		if (model->specTexture != nullptr)
+		{
+			device->bindTexture(model->specTexture, 2);
+		}
+        
 
         device->draw(model->getModelResource()->getVerticeArray()->size());
         device->debindPipeline(model->getPipeline());
