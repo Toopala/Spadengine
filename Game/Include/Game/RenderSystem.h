@@ -8,6 +8,9 @@
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/RenderQueue.h"
 
+#include "Game/LightComponent.h"
+
+
 namespace sge
 {
 	class Window;
@@ -15,7 +18,6 @@ namespace sge
     class SpriteComponent;
     class ModelComponent;
     class TextComponent;
-    class LightComponent;
     class CameraComponent;
     class Entity;
     struct Pipeline;
@@ -104,34 +106,13 @@ namespace sge
         Buffer* modelVertexUniformBuffer;
         Buffer* modelPixelUniformBuffer;
 
-        ///////////////////////////////
-        // TODO move these to LightComponent!
-        struct DirLight
-        {
-            sge::math::vec4 direction;
-            sge::math::vec4 ambient;
-            sge::math::vec4 diffuse;
-            sge::math::vec4 specular;
-        };
-
-        struct PointLight
-        {
-            sge::math::vec4 position;
-            sge::math::vec4 ambient;
-            sge::math::vec4 diffuse;
-            sge::math::vec4 specular;
-
-            float constant;
-            float mylinear;
-            float quadratic;
-            float pad;
-        };
-        //////////////////////////////
+      
 
         struct ModelVertexUniformData
         {
             sge::math::mat4 PV;
             sge::math::mat4 M;
+			float shininess;
         } modelVertexUniformData;
 
         struct ModelPixelUniformData

@@ -9,9 +9,33 @@ namespace sge
 
 	enum LightType
 	{
-		pointLight = 0,
-		dirLight = 1
+		pointLightEnum = 0,
+		dirLightEnum = 1
 	};
+
+	///////////////////////////////
+	// TODO move these to LightComponent!
+	struct DirLight
+	{
+		sge::math::vec4 direction;
+		sge::math::vec4 ambient;
+		sge::math::vec4 diffuse;
+		sge::math::vec4 specular;
+	};
+
+	struct PointLight
+	{
+		sge::math::vec4 position;
+		sge::math::vec4 ambient;
+		sge::math::vec4 diffuse;
+		sge::math::vec4 specular;
+
+		float constant;
+		float mylinear;
+		float quadratic;
+		float pad;
+	};
+	//////////////////////////////
 
 	class LightComponent : public Component
 	{
@@ -19,24 +43,17 @@ namespace sge
 		LightComponent(Entity* entity);
 		~LightComponent();
 
-		void setAsPointLight();
-		void setAsDirLight(sge::math::vec3 direction, sge::math::vec3 ambient, sge::math::vec3 diffuse, sge::math::vec3 specular);
+		void setAsPointLight(PointLight* pointLight);
+		void setAsDirLight(DirLight* dirLight);
 
 		void update();
-
-		sge::math::vec4 getDirection();
-		sge::math::vec4 getAmbient();
-		sge::math::vec4 getDiffuse();
-		sge::math::vec4 getSpecular();
 
 	private:
 		TransformComponent* transform;
 
-		sge::math::vec4 direction;
-		sge::math::vec4 ambient;
-		sge::math::vec4 diffuse;
-		sge::math::vec4 specular;
-
 		LightType lightType;
+
+		DirLight* dirLight;
+		PointLight* pointLight;
 	};
 }

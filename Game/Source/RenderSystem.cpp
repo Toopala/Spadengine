@@ -12,7 +12,7 @@
 #include "Game/Entity.h"
 
 #include "Game/CameraComponent.h"
-#include "Game/LightComponent.h"
+
 #include "Game/ModelComponent.h"
 #include "Game/RenderComponent.h"
 #include "Game/SpriteComponent.h"
@@ -459,6 +459,7 @@ namespace sge
 
         modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
         modelVertexUniformData.PV = cameras[pass]->getViewProj();
+		modelVertexUniformData.shininess = model->getComponent<ModelComponent>()->getShininess();
         modelPixelUniformData.CamPos = math::vec4(cameras[pass]->getComponent<TransformComponent>()->getPosition(), 1.0f);
 
         device->bindPipeline(model->getPipeline());

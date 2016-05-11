@@ -105,6 +105,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity->setComponent(modtransform);
 
 	modcomponent = new sge::ModelComponent(modentity);
+	modcomponent->setShininess(500.0f);
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
@@ -119,6 +120,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity2->setComponent(modtransform2);
 
 	modcomponent2 = new sge::ModelComponent(modentity2);
+	modcomponent2->setShininess(1.0f);
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle);

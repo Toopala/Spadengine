@@ -20,31 +20,17 @@ namespace sge
 	{
 	}
 
-	void LightComponent::setAsDirLight(sge::math::vec3 direction, sge::math::vec3 ambient, sge::math::vec3 diffuse, sge::math::vec3 specular)
+	void LightComponent::setAsDirLight(DirLight* dirLight)
 	{
-		this->direction = sge::math::vec4(direction, 1.0f);
-		this->direction = sge::math::vec4(ambient, 1.0f);
-		this->direction = sge::math::vec4(diffuse, 1.0f);
-		this->direction = sge::math::vec4(specular, 1.0f);
+		this->dirLight = dirLight;
 
-		lightType = dirLight;
+		lightType = dirLightEnum;
 	}
 
-	sge::math::vec4 LightComponent::getDirection()
+	void LightComponent::setAsPointLight(PointLight* pointLight)
 	{
-		return direction;
-	}
-	sge::math::vec4 LightComponent::getDiffuse()
-	{
-		return diffuse;
-	}
-	sge::math::vec4 LightComponent::getAmbient()
-	{
-		return ambient;
-	}
-	sge::math::vec4 LightComponent::getSpecular()
-	{
-		return specular;
-	}
+		this->pointLight = pointLight;
 
+		lightType = pointLightEnum;
+	}
 }
