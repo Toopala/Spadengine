@@ -19,6 +19,43 @@
 
 #include"Audio/Audio.h"
 
+// Mouse look sample
+void BulletTestScene::mouseLook(int mouseX, int mouseY)
+{
+	if (firstMouse)
+	{
+		lastX += mouseX;
+		lastY += mouseY;
+		firstMouse = false;
+	}
+
+	mousseX += mouseX;
+	mousseY += mouseY;
+
+	float xoffset = mousseX - lastX;
+	float yoffset = lastY - mousseY;
+	lastX = static_cast<float>(mousseX);
+	lastY = static_cast<float>(mousseY);
+
+	float sensitivity = 0.15f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	sge::math::vec3 front;
+	front.x = sge::math::cos(sge::math::radians(pitch)) * sge::math::cos(sge::math::radians(yaw));
+	front.y = sge::math::sin(sge::math::radians(pitch));
+	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
+	cameraFront = sge::math::normalize(front);
+}
+
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
 	std::ifstream file;
@@ -59,7 +96,7 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f)
 {
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
@@ -265,11 +302,15 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
     camcomponent2 = new sge::CameraComponent(camentity2);
     camentity2->setComponent(camcomponent2);
 
+	sge::math::vec3 cameraPos2 = glm::vec3(5.0f, 10.0f, 50.0f);
+	sge::math::vec3 cameraFront2 = glm::vec3(0.0f, 0.0f, -1.0f);
+	sge::math::vec3 cameraUp2 = glm::vec3(0.0f, 1.0f, 0.0f);
+
     camcomponent2->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
     camcomponent2->setViewport(1280-420, 720-280, 320, 180);
-    camtransform2->setPosition(cameraPos);
-    camtransform2->setFront(cameraFront);
-    camtransform2->setUp(cameraUp);
+    camtransform2->setPosition(cameraPos2);
+    camtransform2->setFront(cameraFront2);
+    camtransform2->setUp(cameraUp2);
 
     cameras.push_back(camentity);
     cameras.push_back(camentity2);
@@ -332,13 +373,72 @@ BulletTestScene::~BulletTestScene()
 	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
 
 	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
-
-	
 }
 
 void BulletTestScene::update(float step)
 {
 	dynamicsWorld->stepSimulation(step, 10);
+
+	//------------------------------------------------
+	// CameraControls
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
+	{
+		useMouse = true;
+		if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
+	{
+		useMouse = false;
+		if (useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + cameraFront*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - cameraFront*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+
+
+	if (useMouse)
+	{
+#ifdef _WIN32
+		engine->mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
+
+		mouseLook(mouseXpos, mouseYpos);
+#endif
+		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+	}
+	//------------------------------------------------
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{

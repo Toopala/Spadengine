@@ -14,7 +14,6 @@ namespace sge
 	};
 
 	///////////////////////////////
-	// TODO move these to LightComponent!
 	struct DirLight
 	{
 		sge::math::vec4 direction;

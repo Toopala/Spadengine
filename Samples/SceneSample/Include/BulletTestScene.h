@@ -42,6 +42,17 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
+	///MouseLook
+	bool useMouse;
+	void mouseLook(int x, int y);
+	float lastX, lastY;
+	float yaw, pitch;
+	int mouseXpos, mouseYpos;
+	int mousseX, mousseY;
+	bool firstMouse = true;
+	float camSpeed;
+	///
+
 	sge::Spade* engine;
     sge::RenderSystem* renderer;
 
