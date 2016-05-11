@@ -19,6 +19,8 @@
 
 #include"Audio/Audio.h"
 
+#include "Bullet/BulletCollision/CollisionShapes/btShapeHull.h"
+
 // Mouse look sample
 void BulletTestScene::mouseLook(int mouseX, int mouseY)
 {
@@ -144,11 +146,11 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderData.size());
 
 	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
-	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
+	
 	//--------------
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -210,6 +212,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponentFloor->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
+	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
@@ -234,6 +237,29 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
 	
 	fallShape = new btBoxShape(btVector3(1, 1, 1));
+
+	// !!!!! Warning
+	btConvexHullShape* fallShapeSuzanne = new btConvexHullShape();
+
+	for (int j = 0; j < modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->size(); j++)
+	{
+		sge::math::vec3 vertexPos = sge::math::vec3(modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.x, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.y, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.z);
+		btVector3 position(btScalar(vertexPos.x), btScalar(vertexPos.y), btScalar(vertexPos.z));
+		fallShapeSuzanne->addPoint(position);
+	}
+	
+	//create a hull approximation
+	btShapeHull* hull = new btShapeHull(fallShapeSuzanne);
+	btScalar margin = fallShapeSuzanne->getMargin();
+	hull->buildHull(margin);
+	btConvexHullShape* simplifiedConvexShape = new btConvexHullShape();
+	
+	for (int i = 0; i < hull->numVertices(); i++)
+	{
+		simplifiedConvexShape->addPoint(hull->getVertexPointer()[i]);
+	}
+
+	// !!!!! Warning
 
 	// Floor
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
@@ -283,7 +309,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShapeSuzanne, fallInertia);
 	fallRigidBodyCI.m_restitution = 1.0f;
 	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);

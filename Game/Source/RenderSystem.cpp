@@ -197,11 +197,11 @@ namespace sge
 
             for (auto camera : cameras)
             {
-                uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
-                    camera->getComponent<TransformComponent>()->getPosition() +
-                    camera->getComponent<TransformComponent>()->getFront()));
+                //uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
+                //    camera->getComponent<TransformComponent>()->getPosition() +
+                //    camera->getComponent<TransformComponent>()->getFront()));
 
-                model->key.fields.depth = distance;
+                //model->key.fields.depth = distance;
 
                 queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
             }
