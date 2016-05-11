@@ -142,11 +142,11 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderDataNormals);
 #endif
 
-	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderData.size());
-	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderData.size());
+	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderDataNormals.size());
+	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderDataNormals.size());
 
 	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
-	
+	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
 	//--------------
 
 	//Assimp test
@@ -416,6 +416,7 @@ BulletTestScene::~BulletTestScene()
 	sge::ResourceManager::getMgr().release(modelHandleFloor);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
 
 
 	engine->getRenderer()->getDevice()->deleteShader(vertexShader);

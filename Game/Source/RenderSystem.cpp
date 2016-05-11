@@ -490,6 +490,22 @@ namespace sge
         
 
         device->draw(model->getModelResource()->getVerticeArray()->size());
+
+		if (model->diffTexture != nullptr)
+		{
+			device->debindTexture(model->diffTexture, 0);
+		}
+
+		if (model->normTexture != nullptr)
+		{
+			device->debindTexture(model->normTexture, 1);
+		}
+
+		if (model->specTexture != nullptr)
+		{
+			device->debindTexture(model->specTexture, 2);
+		}
+
         device->debindPipeline(model->getPipeline());
 
         if (++pass >= cameras.size())
