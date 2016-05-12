@@ -125,18 +125,27 @@ private:
 	sge::Entity* modentityTree;
 	sge::Entity* modentityTreeLeaves;
 	sge::Entity* modentityRoom;
+
+    sge::Entity* modentityLight;
+
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
 	sge::TransformComponent* modtransformFloor;
 	sge::TransformComponent* modtransformTree;
 	sge::TransformComponent* modtransformTreeLeaves;
 	sge::TransformComponent* modtransformRoom;
+
+    sge::TransformComponent* modtransformLight;
+
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
 	sge::ModelComponent* modcomponentTree;
 	sge::ModelComponent* modcomponentTreeLeaves;
 	sge::ModelComponent* modcomponentRoom;
+
+    sge::PointLightComponent* plcompo;
+    sge::DirLightComponent* dlcompo;
 
 	float alpha;
 };

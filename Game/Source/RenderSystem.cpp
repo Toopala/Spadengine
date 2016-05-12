@@ -89,16 +89,7 @@ namespace sge
         modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
         modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
 
-        modelPixelUniformData.pointLights[0].position = math::vec4(0.0, 4.0, 0.0, 1.0);
-        modelPixelUniformData.pointLights[0].constant = float(1.0);
-        modelPixelUniformData.pointLights[0].mylinear = float(0.022);
-        modelPixelUniformData.pointLights[0].quadratic = float(0.0019);
-        modelPixelUniformData.pointLights[0].pad = 0.0f;
-        modelPixelUniformData.pointLights[0].ambient = math::vec4(0.05, 0.0125, 0.0125, 1.0);
-        modelPixelUniformData.pointLights[0].diffuse = math::vec4(0.8, 0.2, 0.2, 1.0);
-        modelPixelUniformData.pointLights[0].specular = math::vec4(1.0, 0.25, 0.25, 1.0);
-
-		modelPixelUniformData.pointLights[1].position = math::vec4(15.0, 4.0, 15.0, 1.0);
+		/*modelPixelUniformData.pointLights[1].position = math::vec4(15.0, 4.0, 15.0, 1.0);
 		modelPixelUniformData.pointLights[1].constant = float(1.0);
 		modelPixelUniformData.pointLights[1].mylinear = float(0.022);
 		modelPixelUniformData.pointLights[1].quadratic = float(0.0019);
@@ -107,13 +98,9 @@ namespace sge
 		modelPixelUniformData.pointLights[1].diffuse = math::vec4(0.2, 0.8, 0.2, 1.0);
 		modelPixelUniformData.pointLights[1].specular = math::vec4(0.25, 1.0, 0.25, 1.0);
 
-        modelPixelUniformData.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
-        modelPixelUniformData.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
-        modelPixelUniformData.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
-        modelPixelUniformData.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
-
         modelPixelUniformData.numofpl = 2;
         modelPixelUniformData.numofdl = 1;
+        */
 
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
@@ -223,11 +210,26 @@ namespace sge
 
         for (size_t i = 0; i < count; i++)
         {
-            LightComponent* light = lights[i]->getComponent<LightComponent>();
+            DirLightComponent* dirLight = lights[i]->getComponent<DirLightComponent>();
 
-            SGE_ASSERT(light);
+            if (dirLight)
+            { 
+                this->dirLights.push_back(dirLight);
+            }
+             
+            SpotLightComponent* spotLight = lights[i]->getComponent<SpotLightComponent>();
 
-            this->lights.push_back(light);
+            if (spotLight)
+            {
+                this->spotLights.push_back(spotLight);
+            }
+
+            PointLightComponent* pointLight = lights[i]->getComponent<PointLightComponent>();
+
+            if (pointLight)
+            {
+                this->pointLights.push_back(pointLight);
+            }
         }
     }
 
@@ -264,6 +266,8 @@ namespace sge
     void RenderSystem::end()
 	{
         SGE_ASSERT(acceptingCommands);
+
+        calculateLightData();
 
 		queue.end();
 
@@ -308,7 +312,9 @@ namespace sge
 
         if (flags & LIGHTS)
         {
-            lights.clear();
+            pointLights.clear();
+            spotLights.clear();
+            dirLights.clear();
         }
 
         if (flags & CAMERAS)
@@ -532,5 +538,29 @@ namespace sge
     void RenderSystem::setClearColor(const math::vec4& color)
     {
         clearColor = color;
+    }
+
+    void RenderSystem::calculateLightData()
+    {
+
+        //DirLight dirLight[MAX_DIR_LIGHTS];
+        //PointLight pointLights[MAX_POINT_LIGHTS];
+        //sge::math::vec4 CamPos;
+        //int numofpl;
+        //int numofdl;
+        //int pad[2];
+        
+        modelPixelUniformData.numofpl = pointLights.size();
+        modelPixelUniformData.numofdl = dirLights.size();
+
+        for (size_t i = 0; i < dirLights.size(); i++)
+        {
+            modelPixelUniformData.dirLights[i] = dirLights[i]->getLightData();
+        }
+
+        for (size_t i = 0; i < pointLights.size(); i++)
+        {
+            modelPixelUniformData.pointLights[i] = pointLights[i]->getLightData();
+        }
     }
 }

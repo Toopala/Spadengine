@@ -21,6 +21,9 @@
 
 #include "Bullet/BulletCollision/CollisionShapes/btShapeHull.h"
 
+#include "Game/PointLightComponent.h"
+#include "Game/DirLightComponent.h"
+
 // Mouse look sample
 void BulletTestScene::mouseLook(int mouseX, int mouseY)
 {
@@ -150,7 +153,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	//--------------
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/suzanne.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -276,6 +279,31 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
 
 	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+    // Tree leaves
+    modentityLight = EManager->createEntity();
+
+    modtransformLight = new sge::TransformComponent(modentityLight);
+    modentityLight->setComponent(modtransformLight);
+
+    modentityLight->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+    plcompo = new sge::PointLightComponent(modentityLight);
+    modentityLight->setComponent(plcompo);
+
+    sge::PointLight pointLight;
+    pointLight.position = sge::math::vec4(0.0f);
+    pointLight.constant = float(1.0);
+    pointLight.mylinear = float(0.022);
+    pointLight.quadratic = float(0.0019);
+    pointLight.pad = 0.0f;
+    pointLight.ambient = sge::math::vec4(0.0125, 0.05, 0.0125, 1.0);
+    pointLight.diffuse = sge::math::vec4(0.2, 0.8, 0.2, 1.0);
+    pointLight.specular = sge::math::vec4(0.25, 1.0, 0.25, 1.0);
+
+    modentityLight->getComponent<sge::PointLightComponent>()->setLightData(pointLight);
+
+    dlcompo = new sge::DirLightComponent(modentityLight);
+    modentityLight->setComponent(dlcompo);
 
 	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
@@ -657,8 +685,11 @@ void BulletTestScene::update(float step)
 	//	camentity->getComponent<sge::CameraComponent>()->disableMouse();
 	//}
 	alpha += 0.01f;
-	float x = 20.0f*cos(alpha);
-	float z = 20.0f*sin(alpha);
+	float x = 15.0f*cos(alpha);
+	float z = 15.0f*sin(alpha);
+
+    modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x, 5.0f, z));
+    modentityLight->getComponent<sge::PointLightComponent>()->update();
 
 	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
 
@@ -679,6 +710,7 @@ void BulletTestScene::draw()
 	renderer->renderModels(1, &modentityTree);
 	renderer->renderModels(1, &modentityTreeLeaves);
 	renderer->renderModels(1, &modentityRoom);
+    renderer->renderLights(1, &modentityLight);
 
     renderer->end();
     renderer->render();

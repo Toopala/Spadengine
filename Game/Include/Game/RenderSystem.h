@@ -9,10 +9,14 @@
 #include "Renderer/RenderQueue.h"
 
 #include "Game/LightComponent.h"
-
+#include "Game/PointLightComponent.h"
+#include "Game/DirLightComponent.h"
+#include "Game/SpotLightComponent.h"
 
 namespace sge
 {
+    const int MAX_DIR_LIGHTS = 10;
+    const int MAX_POINT_LIGHTS = 40;
 	class Window;
     class RenderComponent;
     class SpriteComponent;
@@ -79,6 +83,8 @@ namespace sge
         void setClearColor(const math::vec4& color);
 
 	private:
+
+        void calculateLightData();
 		
 		RenderQueue queue;
         GraphicsDevice* device;
@@ -106,8 +112,6 @@ namespace sge
         Buffer* modelVertexUniformBuffer;
         Buffer* modelPixelUniformBuffer;
 
-      
-
         struct ModelVertexUniformData
         {
             sge::math::mat4 PV;
@@ -117,8 +121,8 @@ namespace sge
 
         struct ModelPixelUniformData
         {
-            DirLight dirLight;
-            PointLight pointLights[40];
+            DirLight dirLights[MAX_DIR_LIGHTS];
+            PointLight pointLights[MAX_POINT_LIGHTS];
             sge::math::vec4 CamPos;
             int numofpl;
             int numofdl;
@@ -132,7 +136,9 @@ namespace sge
 
         // Global rendering data.
         std::vector<CameraComponent*> cameras;
-        std::vector<LightComponent*> lights;
+        std::vector<SpotLightComponent*> spotLights;
+        std::vector<DirLightComponent*> dirLights;
+        std::vector<PointLightComponent*> pointLights;
 
         bool initialized;
         bool acceptingCommands;
