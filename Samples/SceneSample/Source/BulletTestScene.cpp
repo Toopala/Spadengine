@@ -150,7 +150,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	//--------------
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecular.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/suzanne.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -158,6 +158,12 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
 	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeDiffuseSpecular.dae");
+	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleTreeLeaves = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeLeavesDiffuseSpecular.dae");
+	modelHandleTreeLeaves.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	EManager = new sge::EntityManager();
 
@@ -197,7 +203,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modtransformFloor);
 
 	modcomponentFloor = new sge::ModelComponent(modentityFloor);
-	modcomponent->setShininess(100.0f);
+	modcomponentFloor->setShininess(100.0f);
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
@@ -208,13 +214,53 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
+	// Tree
+	modentityTree = EManager->createEntity();
+
+	modtransformTree = new sge::TransformComponent(modentityTree);
+	modentityTree->setComponent(modtransformTree);
+
+	modcomponentTree = new sge::ModelComponent(modentityTree);
+	modcomponentTree->setShininess(2.0f);
+	modentityTree->setComponent(modcomponentTree);
+
+	modcomponentTree->setModelResource(&modelHandleTree);
+	modcomponentTree->setRenderer(engine->getRenderer());
+
+	modentityTree->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityTree->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityTree->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+	// Tree leaves
+	modentityTreeLeaves = EManager->createEntity();
+
+	modtransformTreeLeaves = new sge::TransformComponent(modentityTreeLeaves);
+	modentityTreeLeaves->setComponent(modtransformTreeLeaves);
+
+	modcomponentTreeLeaves = new sge::ModelComponent(modentityTreeLeaves);
+	modcomponentTreeLeaves->setShininess(256.0f);
+	modentityTreeLeaves->setComponent(modcomponentTreeLeaves);
+
+	modcomponentTreeLeaves->setModelResource(&modelHandleTreeLeaves);
+	modcomponentTreeLeaves->setRenderer(engine->getRenderer());
+
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
 	modcomponent->setPipeline(pipeline);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
+	modcomponentTree->setPipeline(pipeline);
+	modcomponentTreeLeaves->setPipeline(pipeline);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -417,7 +463,10 @@ BulletTestScene::~BulletTestScene()
 	delete broadphase;
 
 	sge::ResourceManager::getMgr().release(modelHandle);
+	sge::ResourceManager::getMgr().release(modelHandle2);
 	sge::ResourceManager::getMgr().release(modelHandleFloor);
+	sge::ResourceManager::getMgr().release(modelHandleTree);
+	sge::ResourceManager::getMgr().release(modelHandleTreeLeaves);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
@@ -589,6 +638,8 @@ void BulletTestScene::draw()
     renderer->renderModels(1, &modentity);
     renderer->renderModels(1, &modentity2);
     renderer->renderModels(1, &modentityFloor);
+	renderer->renderModels(1, &modentityTree);
+	renderer->renderModels(1, &modentityTreeLeaves);
 
     renderer->end();
     renderer->render();
