@@ -49,8 +49,6 @@ GameScene::GameScene(sge::Spade* engine) :
     entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
     entities.back()->setTag("FRONT");
 
-	textEntities.push_back(createText(100, 100, "Spadengine"));
-
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
     targetTextures = new sge::Texture*[targetCount];
@@ -145,7 +143,6 @@ void GameScene::draw()
 
     renderer->begin();
     renderer->renderSprites(entities.size(), entities.data());
-	renderer->renderTexts(textEntities.size(), textEntities.data());
     renderer->end();
 
     renderer->render();
@@ -214,9 +211,8 @@ sge::Entity* GameScene::createText(float x, float y, const std::string& text)
     auto textcomponent = textFactory.create(entity);
     
     transform->setPosition({ x, y, 0.0f });
-	transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
-    textcomponent->setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
     textcomponent->setText(text);
 

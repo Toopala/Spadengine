@@ -147,5 +147,7 @@ private:
     sge::PointLightComponent* plcompo;
     sge::DirLightComponent* dlcompo;
 
+	std::vector<sge::Entity*> GameObjects;
+
 	float alpha;
 };

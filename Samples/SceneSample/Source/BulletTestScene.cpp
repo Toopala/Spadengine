@@ -153,7 +153,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	//--------------
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -262,7 +262,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponentTree->setPipeline(pipeline);
 	modcomponentTreeLeaves->setPipeline(pipeline);
 
-	// Tree leaves
+	// Room
 	modentityRoom = EManager->createEntity();
 
 	modtransformRoom = new sge::TransformComponent(modentityRoom);
@@ -318,6 +318,14 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
+
+	// GameObject vector
+	GameObjects.push_back(modentity);
+	GameObjects.push_back(modentity2);
+	GameObjects.push_back(modentityRoom);
+	GameObjects.push_back(modentityFloor);
+	GameObjects.push_back(modentityTree);
+	GameObjects.push_back(modentityTreeLeaves);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -375,35 +383,35 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	dynamicsWorld->addRigidBody(groundRigidBody);
 
 	// Top
-	btDefaultMotionState* topMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, 0)));
+	btDefaultMotionState* topMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 51, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		topRigidBodyCI(0, topMotionState, topShape, btVector4(0, 0, 1, 1));
 	topRigidBody = new btRigidBody(topRigidBodyCI);
 	dynamicsWorld->addRigidBody(topRigidBody);
 
 	// Wall 1
-	btDefaultMotionState* wall1MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(25, 25, 0)));
+	btDefaultMotionState* wall1MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(51, 51, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		wall1RigidBodyCI(0, wall1MotionState, wall1Shape, btVector4(0, 0, 1, 1));
 	wall1RigidBody = new btRigidBody(wall1RigidBodyCI);
 	dynamicsWorld->addRigidBody(wall1RigidBody);
 
 	// Wall 2
-	btDefaultMotionState* wall2MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, -25)));
+	btDefaultMotionState* wall2MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 51, -51)));
 	btRigidBody::btRigidBodyConstructionInfo
 		wall2RigidBodyCI(0, wall2MotionState, wall2Shape, btVector4(0, 0, 1, 1));
 	wall2RigidBody = new btRigidBody(wall2RigidBodyCI);
 	dynamicsWorld->addRigidBody(wall2RigidBody);
 
 	// Wall 3
-	btDefaultMotionState* wall3MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-25, 25, 0)));
+	btDefaultMotionState* wall3MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-51, 51, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		wall3RigidBodyCI(0, wall3MotionState, wall3Shape, btVector4(0, 0, 1, 1));
 	wall3RigidBody = new btRigidBody(wall3RigidBodyCI);
 	dynamicsWorld->addRigidBody(wall3RigidBody);
 
 	// Wall 4
-	btDefaultMotionState* wall4MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 25, 25)));
+	btDefaultMotionState* wall4MotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 51, 51)));
 	btRigidBody::btRigidBodyConstructionInfo
 		wall4RigidBodyCI(0, wall4MotionState, wall4Shape, btVector4(0, 0, 1, 1));
 	wall4RigidBody = new btRigidBody(wall4RigidBodyCI);
@@ -558,7 +566,7 @@ void BulletTestScene::update(float step)
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
 	{
 		useMouse = false;
-		if (useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
+		if (!useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
 	{
@@ -704,12 +712,11 @@ void BulletTestScene::draw()
     renderer->addCameras(1, &cameras.back());
     renderer->begin();
     
-    renderer->renderModels(1, &modentity);
-    renderer->renderModels(1, &modentity2);
-    renderer->renderModels(1, &modentityFloor);
-	renderer->renderModels(1, &modentityTree);
-	renderer->renderModels(1, &modentityTreeLeaves);
-	renderer->renderModels(1, &modentityRoom);
+	for (int i = 0; i < GameObjects.size(); i++)
+	{
+		renderer->renderModels(1, &GameObjects[i]);
+	}
+
     renderer->renderLights(1, &modentityLight);
 
     renderer->end();
