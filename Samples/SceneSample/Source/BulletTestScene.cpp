@@ -101,6 +101,48 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
+void BulletTestScene::spawnObject(sge::math::vec3 pos)
+{
+	EManager = new sge::EntityManager();
+
+	sge::Entity* modentity = EManager->createEntity();
+
+	sge::TransformComponent* modtransform = new sge::TransformComponent(modentity);
+	modentity->setComponent(modtransform);
+
+	sge::ModelComponent* modcomponent = new sge::ModelComponent(modentity);
+	modcomponent->setShininess(15.0f);
+	modentity->setComponent(modcomponent);
+
+	modcomponent->setModelResource(&modelHandle2);
+	modcomponent->setRenderer(engine->getRenderer());
+
+	modentity->getComponent<sge::TransformComponent>()->setPosition(pos);
+	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
+
+	modcomponent->setPipeline(pipelineNormals);
+
+	// falling object
+	btDefaultMotionState* fallMotionState =
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
+	btScalar mass = 1;
+	btVector3 fallInertia(0, 0, 0);
+	fallShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	fallRigidBodyCI.m_restitution = 1.0f;
+	fallRigidBodyCI.m_friction = 0.5f;
+	fallRigidBody = new btRigidBody(fallRigidBodyCI);
+	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(fallRigidBody);
+
+	sge::MyPhysicsComponent* physcomponent = new sge::MyPhysicsComponent(modentity);
+	physcomponent->setRigidBody(fallRigidBody);
+	modentity->setComponent(physcomponent);
+
+	// GameObject vector
+	GameObjects.push_back(modentity);
+}
+
 BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f)
 {
 	std::vector<char> pShaderData;
@@ -280,7 +322,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
-    // Tree leaves
+    // Lights
     modentityLight = EManager->createEntity();
 
     modtransformLight = new sge::TransformComponent(modentityLight);
@@ -302,10 +344,54 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
     modentityLight->getComponent<sge::PointLightComponent>()->setLightData(pointLight);
 
-    dlcompo = new sge::DirLightComponent(modentityLight);
-    modentityLight->setComponent(dlcompo);
+	//
+	modentityLight2 = EManager->createEntity();
 
-	modcomponent->setPipeline(pipelineNormals);
+	modtransformLight2 = new sge::TransformComponent(modentityLight2);
+	modentityLight2->setComponent(modtransformLight2);
+
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	plcompo2 = new sge::PointLightComponent(modentityLight2);
+	modentityLight2->setComponent(plcompo2);
+
+	sge::PointLight pointLight2;
+	pointLight2.position = sge::math::vec4(0.0f);
+	pointLight2.constant = float(1.0);
+	pointLight2.mylinear = float(0.022);
+	pointLight2.quadratic = float(0.0019);
+	pointLight2.pad = 0.0f;
+	pointLight2.ambient = sge::math::vec4(0.05, 0.0125, 0.0125, 1.0);
+	pointLight2.diffuse = sge::math::vec4(0.8, 0.2, 0.2, 1.0);
+	pointLight2.specular = sge::math::vec4(1.0, 0.25, 0.25, 1.0);
+
+	modentityLight2->getComponent<sge::PointLightComponent>()->setLightData(pointLight2);
+
+	//
+	modentityLight3 = EManager->createEntity();
+
+	modtransformLight3 = new sge::TransformComponent(modentityLight3);
+	modentityLight3->setComponent(modtransformLight3);
+
+	modentityLight3->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	plcompo3 = new sge::PointLightComponent(modentityLight3);
+	modentityLight3->setComponent(plcompo3);
+
+	sge::PointLight pointLight3;
+	pointLight3.position = sge::math::vec4(0.0f);
+	pointLight3.constant = float(1.0);
+	pointLight3.mylinear = float(0.022);
+	pointLight3.quadratic = float(0.0019);
+	pointLight3.pad = 0.0f;
+	pointLight3.ambient = sge::math::vec4(0.0125, 0.0125, 0.05, 1.0);
+	pointLight3.diffuse = sge::math::vec4(0.2, 0.2, 0.8, 1.0);
+	pointLight3.specular = sge::math::vec4(0.25, 0.25, 1.0, 1.0);
+
+	modentityLight3->getComponent<sge::PointLightComponent>()->setLightData(pointLight3);
+
+   // dlcompo = new sge::DirLightComponent(modentityLight);
+   // modentityLight->setComponent(dlcompo);
+
+	modcomponent->setPipeline(pipeline); // Kiva vaihtaa tata aina
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipeline);
@@ -318,14 +404,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
-
-	// GameObject vector
-	GameObjects.push_back(modentity);
-	GameObjects.push_back(modentity2);
-	GameObjects.push_back(modentityRoom);
-	GameObjects.push_back(modentityFloor);
-	GameObjects.push_back(modentityTree);
-	GameObjects.push_back(modentityTreeLeaves);
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -366,7 +444,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	btShapeHull* hull = new btShapeHull(fallShapeSuzanne);
 	btScalar margin = fallShapeSuzanne->getMargin();
 	hull->buildHull(margin);
-	btConvexHullShape* simplifiedConvexShape = new btConvexHullShape();
+	simplifiedConvexShape = new btConvexHullShape();
 	
 	for (int i = 0; i < hull->numVertices(); i++)
 	{
@@ -436,7 +514,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
 	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
-	
+
+	sge::MyPhysicsComponent* physcomponent = new sge::MyPhysicsComponent(modentity);
+	physcomponent->setRigidBody(fallRigidBody);
+	modentity->setComponent(physcomponent);
 
 	// falling object 2
 	btDefaultMotionState* fallMotionState2 =
@@ -450,6 +531,18 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
 	fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody2);
+
+	sge::MyPhysicsComponent* physcomponent1 = new sge::MyPhysicsComponent(modentity2);
+	physcomponent1->setRigidBody(fallRigidBody2);
+	modentity2->setComponent(physcomponent1);
+
+	// GameObject vector
+	GameObjects.push_back(modentity);
+	GameObjects.push_back(modentity2);
+	GameObjects.push_back(modentityRoom);
+	GameObjects.push_back(modentityFloor);
+	GameObjects.push_back(modentityTree);
+	GameObjects.push_back(modentityTreeLeaves);
 
 	sge::Entity* camentity = EManager->createEntity();
     sge::Entity* camentity2 = EManager->createEntity();
@@ -627,6 +720,16 @@ void BulletTestScene::update(float step)
 		
 	}
 
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_1))
+	{
+		btScalar randomx = (btScalar)sge::random(0, 99) - 49;
+		btScalar randomy = (btScalar)sge::random(0, 99) - 49;
+		btScalar randomz = (btScalar)sge::random(0, 99) - 49;
+		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
+		spawnObject(sge::math::vec3(randomx, randomy, randomz));
+
+	}
+
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
 	{
         btScalar randomx = (btScalar)sge::random(-10, 10);
@@ -664,42 +767,31 @@ void BulletTestScene::update(float step)
 		
 	}
 
-	btTransform trans;
-	fallRigidBody->getMotionState()->getWorldTransform(trans);
-
-	std::cout << "Box height: " << trans.getOrigin().getY() << std::endl;
-
-	modentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-	modentity->getComponent<sge::TransformComponent>()->setAngle(trans.getRotation().getAngle());
-	modentity->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
-
-	btTransform trans2;
-	fallRigidBody2->getMotionState()->getWorldTransform(trans2);
-	modentity2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans2.getOrigin().getX(), trans2.getOrigin().getY(), trans2.getOrigin().getZ()));
-	modentity2->getComponent<sge::TransformComponent>()->setAngle(trans2.getRotation().getAngle());
-	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans2.getRotation().getAxis().getX(), trans2.getRotation().getAxis().getY(), trans2.getRotation().getAxis().getZ()));
+	for (int i = 0; i < GameObjects.size(); i++)
+	{
+		if (GameObjects[i]->getComponent<sge::MyPhysicsComponent>() != NULL)
+		{
+			GameObjects[i]->getComponent<sge::MyPhysicsComponent>()->update();
+		}		
+	}
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
 		engine->stop();
 	}
 
-	//if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
-	//{
-	//	camentity->getComponent<sge::CameraComponent>()->enableMouse();
-	//}
-	//if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
-	//{
-	//	camentity->getComponent<sge::CameraComponent>()->disableMouse();
-	//}
 	alpha += 0.01f;
 	float x = 15.0f*cos(alpha);
 	float z = 15.0f*sin(alpha);
 
-    modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x, 5.0f, z));
+    modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x, 4.0f, z));
     modentityLight->getComponent<sge::PointLightComponent>()->update();
 
-	//camentity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x,0.0f, z));
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(z, 5.0f, x));
+	modentityLight2->getComponent<sge::PointLightComponent>()->update();
+
+	modentityLight3->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(-z, 6.0f, -x));
+	modentityLight3->getComponent<sge::PointLightComponent>()->update();
 
     for (auto camera : cameras)
     {
@@ -718,6 +810,8 @@ void BulletTestScene::draw()
 	}
 
     renderer->renderLights(1, &modentityLight);
+	renderer->renderLights(1, &modentityLight2);
+	renderer->renderLights(1, &modentityLight3);
 
     renderer->end();
     renderer->render();

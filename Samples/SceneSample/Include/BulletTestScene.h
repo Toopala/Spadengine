@@ -14,6 +14,8 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 
+#include "Game/Component.h"
+
 // FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
@@ -127,6 +129,8 @@ private:
 	sge::Entity* modentityRoom;
 
     sge::Entity* modentityLight;
+	sge::Entity* modentityLight2;
+	sge::Entity* modentityLight3;
 
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
@@ -136,6 +140,8 @@ private:
 	sge::TransformComponent* modtransformRoom;
 
     sge::TransformComponent* modtransformLight;
+	sge::TransformComponent* modtransformLight2;
+	sge::TransformComponent* modtransformLight3;
 
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
@@ -145,9 +151,52 @@ private:
 	sge::ModelComponent* modcomponentRoom;
 
     sge::PointLightComponent* plcompo;
+	sge::PointLightComponent* plcompo2;
+	sge::PointLightComponent* plcompo3;
     sge::DirLightComponent* dlcompo;
 
 	std::vector<sge::Entity*> GameObjects;
 
 	float alpha;
+
+	btConvexHullShape* simplifiedConvexShape;
+	void spawnObject(sge::math::vec3 pos);
 };
+
+namespace sge
+{
+	class TransformComponent;
+
+	class MyPhysicsComponent : public Component
+	{
+	public:
+		MyPhysicsComponent(Entity* ent) : Component(ent), transform(nullptr), body(nullptr)
+		{
+			transform = getParent()->getComponent<TransformComponent>();
+
+			SGE_ASSERT(transform);
+		}
+
+		void update()
+		{
+			btTransform trans;
+			if (body != nullptr)
+			{
+				body->getMotionState()->getWorldTransform(trans);
+
+				getParent()->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+				getParent()->getComponent<sge::TransformComponent>()->setAngle(trans.getRotation().getAngle());
+				getParent()->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
+			}			
+		};
+
+		void setRigidBody(btRigidBody* body)
+		{
+			this->body = body;
+		}
+	private:
+		btRigidBody* body;
+		TransformComponent* transform;
+	};
+}
+
