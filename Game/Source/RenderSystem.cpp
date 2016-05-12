@@ -98,12 +98,21 @@ namespace sge
         modelPixelUniformData.pointLights[0].diffuse = math::vec4(0.8, 0.2, 0.2, 1.0);
         modelPixelUniformData.pointLights[0].specular = math::vec4(1.0, 0.25, 0.25, 1.0);
 
+		modelPixelUniformData.pointLights[1].position = math::vec4(15.0, 4.0, 15.0, 1.0);
+		modelPixelUniformData.pointLights[1].constant = float(1.0);
+		modelPixelUniformData.pointLights[1].mylinear = float(0.022);
+		modelPixelUniformData.pointLights[1].quadratic = float(0.0019);
+		modelPixelUniformData.pointLights[1].pad = 0.0f;
+		modelPixelUniformData.pointLights[1].ambient = math::vec4(0.0125, 0.05, 0.0125, 1.0);
+		modelPixelUniformData.pointLights[1].diffuse = math::vec4(0.2, 0.8, 0.2, 1.0);
+		modelPixelUniformData.pointLights[1].specular = math::vec4(0.25, 1.0, 0.25, 1.0);
+
         modelPixelUniformData.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
         modelPixelUniformData.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
         modelPixelUniformData.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
         modelPixelUniformData.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
 
-        modelPixelUniformData.numofpl = 1;
+        modelPixelUniformData.numofpl = 2;
         modelPixelUniformData.numofdl = 1;
 
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);

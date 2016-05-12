@@ -3,6 +3,7 @@
 in vec2 texcoords;
 in vec3 normals;
 in vec3 fragPosition;
+in mat3 TBNVout;
 in float shininessVout;
 
 out vec4 outColor;
