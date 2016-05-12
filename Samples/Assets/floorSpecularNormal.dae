@@ -15,7 +15,7 @@
       <init_from>diff.png</init_from>
     </image>
     <image id="NormalMapTile_png" name="NormalMapTile_png">
-      <init_from>NormalMapTile.png</init_from>
+      <init_from>sci_fi_normal.jpg</init_from>
     </image>
     <image id="Untitled_png" name="Untitled_png">
       <init_from>Untitled.png</init_from>

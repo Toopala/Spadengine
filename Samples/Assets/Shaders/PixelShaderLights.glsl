@@ -76,7 +76,7 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-	vec3 reflectDir = TBNVout * reflect(-lightDir, normal);
+	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
 	// Combine results
 	vec3 ambient = light.ambient.xyz * texture(diffuseTex, texcoords).rgb;
@@ -91,7 +91,7 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-	vec3 reflectDir = TBNVout * reflect(-lightDir, normal);
+	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
 	// Attenuation
 	float distance = length(light.position.xyz - fragPosition);

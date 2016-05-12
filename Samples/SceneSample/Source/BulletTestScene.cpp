@@ -150,7 +150,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	//--------------
 
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecular.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -167,7 +167,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity->setComponent(modtransform);
 
 	modcomponent = new sge::ModelComponent(modentity);
-	modcomponent->setShininess(500.0f);
+	modcomponent->setShininess(15.0f);
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
@@ -182,7 +182,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity2->setComponent(modtransform2);
 
 	modcomponent2 = new sge::ModelComponent(modentity2);
-	modcomponent2->setShininess(1.0f);
+	modcomponent2->setShininess(2.0f);
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle2);
@@ -197,6 +197,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modtransformFloor);
 
 	modcomponentFloor = new sge::ModelComponent(modentityFloor);
+	modcomponent->setShininess(100.0f);
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
