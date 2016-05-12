@@ -149,7 +149,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	std::vector<char> vShaderData;
 
 	// Audio test
-	sge::Audio mixer;
+	//sge::Audio mixer;
 
 #ifdef DIRECTX11
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
