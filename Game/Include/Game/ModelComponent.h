@@ -5,13 +5,11 @@
 #include "Resources/ResourceManager.h"
 #include "Resources/ModelResource.h"
 #include "Renderer/Pipeline.h"
-
 #include "Renderer/Texture.h"
 
 namespace sge
 {
 	class TransformComponent;
-
 	class ModelComponent : public RenderComponent
 	{
 	public:

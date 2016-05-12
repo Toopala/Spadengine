@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Game/Component.h"
 #include <vector>
 #include <string>
 #include <algorithm>
 
 namespace sge
 {
+	class Component;
 	class Entity
 	{
 	public:
