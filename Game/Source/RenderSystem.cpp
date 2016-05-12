@@ -433,6 +433,7 @@ namespace sge
             device->bindViewport(cameras[pass]->getViewport());
 
             sprVertexUniformData.MVP = cameras[pass]->getViewProj() * text->getComponent<TransformComponent>()->getMatrix();
+			sge::math::mat4 testi = text->getComponent<TransformComponent>()->getMatrix();
             sprPixelUniformData.color = text->getColor();
 
             pen.x += originalScale.x * characters[i].size.x * 2;

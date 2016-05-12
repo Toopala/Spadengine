@@ -49,7 +49,7 @@ GameScene::GameScene(sge::Spade* engine) :
     entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
     entities.back()->setTag("FRONT");
 
-	textEntities.push_back(createText(100, 100, "Testi"));
+	textEntities.push_back(createText(100, 100, "Spadengine"));
 
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
@@ -111,11 +111,6 @@ void GameScene::update(float step)
         engine->stop();
     }
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
-	{
-		textEntities[0]->getComponent<sge::TransformComponent>()->addPosition(speed);
-	}
-
     cameras[2]->getComponent<sge::TransformComponent>()->addPosition({ 32.0f * step, 0.0f, 0.0f });
 
     // TODO update camera where? What if we have multiple cameras? Do we need a system for them?
@@ -149,7 +144,7 @@ void GameScene::draw()
     renderer->clear(sge::COLOR);
 
     renderer->begin();
-    //renderer->renderSprites(entities.size(), entities.data());
+    renderer->renderSprites(entities.size(), entities.data());
 	renderer->renderTexts(textEntities.size(), textEntities.data());
     renderer->end();
 
@@ -219,8 +214,9 @@ sge::Entity* GameScene::createText(float x, float y, const std::string& text)
     auto textcomponent = textFactory.create(entity);
     
     transform->setPosition({ x, y, 0.0f });
+	transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
-    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    textcomponent->setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
     textcomponent->setText(text);
 
