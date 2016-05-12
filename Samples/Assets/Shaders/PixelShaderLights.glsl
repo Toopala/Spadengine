@@ -4,6 +4,7 @@ in vec2 texcoords;
 in vec3 normals;
 in vec3 fragPosition;
 in mat3 TBNVout;
+in float shininessVout;
 
 out vec4 outColor;
 
@@ -13,7 +14,7 @@ layout(binding = 2) uniform sampler2D specularTex;
 
 #define NUM_POINT_LIGHTS 40
 
-float shininess = 0.9;
+//float shininess = 100.0;
 
 struct DirLight
 {
@@ -75,8 +76,8 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-	vec3 reflectDir = TBNVout * reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
 	// Combine results
 	vec3 ambient = light.ambient.xyz * texture(diffuseTex, texcoords).rgb;
 	vec3 diffuse = light.diffuse.xyz * diff * texture(diffuseTex, texcoords).rgb;
@@ -90,8 +91,8 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
-	vec3 reflectDir = TBNVout * reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
 	// Attenuation
 	float distance = length(light.position.xyz - fragPosition);
 	float attenuation = 1.0f / (light.constant + light.mylinear * distance + light.quadratic * (distance * distance));

@@ -42,6 +42,17 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
+	///MouseLook
+	bool useMouse;
+	void mouseLook(int x, int y);
+	float lastX, lastY;
+	float yaw, pitch;
+	int mouseXpos, mouseYpos;
+	int mousseX, mousseY;
+	bool firstMouse = true;
+	float camSpeed;
+	///
+
 	sge::Spade* engine;
     sge::RenderSystem* renderer;
 
@@ -77,10 +88,13 @@ private:
 	sge::math::mat4 P;
 
 	sge::Pipeline* pipeline;
+	sge::Pipeline* pipelineNormals;
 	sge::Buffer* vertexBuffer;
 	sge::Buffer* uniformBuffer;
 	sge::Shader* vertexShader;
 	sge::Shader* pixelShader;
+	sge::Shader* vertexShader2;
+	sge::Shader* pixelShader2;
 	sge::Texture* texture;
 	sge::Texture* texture2;
 
@@ -92,7 +106,11 @@ private:
 	UniformData2 uniformData2;
 
 	sge::Handle <sge::ModelResource> modelHandle;
+	sge::Handle <sge::ModelResource> modelHandle2;
 	sge::Handle <sge::ModelResource> modelHandleFloor;
+	sge::Handle <sge::ModelResource> modelHandleTree;
+	sge::Handle <sge::ModelResource> modelHandleTreeLeaves;
+	sge::Handle <sge::ModelResource> modelHandleRoom;
 
 	sge::EntityManager* EManager;
     std::vector<sge::Entity*> cameras;
@@ -104,12 +122,21 @@ private:
 	sge::Entity* modentity;
 	sge::Entity* modentity2;
 	sge::Entity* modentityFloor;
+	sge::Entity* modentityTree;
+	sge::Entity* modentityTreeLeaves;
+	sge::Entity* modentityRoom;
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
 	sge::TransformComponent* modtransformFloor;
+	sge::TransformComponent* modtransformTree;
+	sge::TransformComponent* modtransformTreeLeaves;
+	sge::TransformComponent* modtransformRoom;
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
+	sge::ModelComponent* modcomponentTree;
+	sge::ModelComponent* modcomponentTreeLeaves;
+	sge::ModelComponent* modcomponentRoom;
 
 	float alpha;
 };

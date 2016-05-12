@@ -23,34 +23,58 @@ GameScene::GameScene(sge::Spade* engine) :
         textureResource.getResource<sge::TextureResource>()->getSize().x,
         textureResource.getResource<sge::TextureResource>()->getSize().y,
         textureResource.getResource<sge::TextureResource>()->getData())),
-    targetTexture(nullptr),
-    renderTarget(nullptr)
+    targetTextures(nullptr),
+    renderTarget(nullptr),
+    targetCount(4)
 {
     // TODO initialization should be easier.
     // TODO downloading resources and creating textures is messy.
 
-    cameras.push_back(createCamera(0,   0,      640, 360));
-    cameras.push_back(createCamera(640, 0,      640, 360));
-    cameras.push_back(createCamera(640, 360,    640, 360));
-    cameras.push_back(createCamera(0,   360,    640, 360));
+    const int border = 16;
+    const int screenAreaWidth = 1280 - border * 2;
+    const int screenAreaHeight = 720 - border * 2;
+    const int camWidth = screenAreaWidth / 2;
+    const int camHeight = screenAreaHeight / 2;
 
-    entities.push_back(createEntity(256.0f, 256.0f, 256.0f, 256.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f ));
+    cameras.push_back(createCamera(0, 0,                camWidth, camHeight));
+    cameras.push_back(createCamera(camWidth, 0,         camWidth, camHeight));
+    cameras.push_back(createCamera(camWidth, camHeight, camWidth, camHeight));
+    cameras.push_back(createCamera(0, camHeight,        camWidth, camHeight));
+
+    fullscreenCamera = createCamera(border, border, screenAreaWidth, screenAreaHeight);
+
+    entities.push_back(createEntity(texture, 256.0f, 256.0f, 96.0f, 64.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 25.0f));
     entities.back()->setTag("BEHNID");
 
-    entities.push_back(createEntity(192.0f, 256.0f, 256.0f, 256.0f, 2.1f, 0.5f, 0.5f, 0.5f, 0.5f ));
+    entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
     entities.back()->setTag("FRONT");
+
+	textEntities.push_back(createText(100, 100, "Testi"));
 
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
-    targetTexture = renderer->getDevice()->createTexture(1280, 720);
-    renderTarget = renderer->getDevice()->createRenderTarget(targetTexture);
+    targetTextures = new sge::Texture*[targetCount];
+
+    for (size_t i = 0; i < targetCount; i++)
+    {
+        targetTextures[i] = renderer->getDevice()->createTexture(1280, 720);
+    }
+    
+    renderTarget = renderer->getDevice()->createRenderTarget(targetCount, targetTextures);
+
+    targetEntity = createEntity(targetTextures[3], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 GameScene::~GameScene()
 {
     // TODO this should probably be not deleted here, but in the texture resource.
     renderer->getDevice()->deleteTexture(texture);
-    renderer->getDevice()->deleteTexture(targetTexture);
+
+    for (size_t i = 0; i < targetCount; i++)
+    {
+        renderer->getDevice()->deleteTexture(targetTextures[i]);
+    }
+    
     renderer->getDevice()->deleteRenderTarget(renderTarget);
 }
 
@@ -87,6 +111,11 @@ void GameScene::update(float step)
         engine->stop();
     }
 
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	{
+		textEntities[0]->getComponent<sge::TransformComponent>()->addPosition(speed);
+	}
+
     cameras[2]->getComponent<sge::TransformComponent>()->addPosition({ 32.0f * step, 0.0f, 0.0f });
 
     // TODO update camera where? What if we have multiple cameras? Do we need a system for them?
@@ -94,6 +123,8 @@ void GameScene::update(float step)
     {
         camera->getComponent<sge::CameraComponent>()->update();
     }
+
+    fullscreenCamera->getComponent<sge::CameraComponent>()->update();
 
     // TODO binding viewport? Getting device from renderer from spade is a long way.
     // Also looks awful. So awful.
@@ -111,20 +142,37 @@ void GameScene::interpolate(float alpha)
 void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
-    renderer->setRenderTargets(1, renderTarget);
-    renderer->setCameras(cameras.size(), *cameras.data());
+    // First pass
+    renderer->setRenderTarget(renderTarget);
+    renderer->addCameras(cameras.size(), cameras.data());
+    renderer->setClearColor(0.5f, 0.0f, 0.5, 1.0f);
+    renderer->clear(sge::COLOR);
 
     renderer->begin();
-
-    renderer->renderSprites(entities.size(), *entities.data());
-    renderer->renderTexts(1, guiText);
-
+    //renderer->renderSprites(entities.size(), entities.data());
+	renderer->renderTexts(textEntities.size(), textEntities.data());
     renderer->end();
+
+    renderer->render();
+
+    // Second pass
+    renderer->setClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    renderer->clear();
+
+    renderer->addCameras(1, &fullscreenCamera);
+
+    renderer->begin();
+    renderer->renderSprites(1, &targetEntity);
+    renderer->end();
+
+    renderer->render();
+
+    // Present to screen
     renderer->present();
     renderer->clear();
 }
 
-sge::Entity* GameScene::createEntity(float x, float y, float width, float height, float depth, float r, float g, float b, float a)
+sge::Entity* GameScene::createEntity(sge::Texture* texture, float x, float y, float width, float height, float depth, float r, float g, float b, float a, float angle)
 {
     // TODO this should be easier.
     sge::Entity* entity = entityManager.createEntity();
@@ -135,7 +183,7 @@ sge::Entity* GameScene::createEntity(float x, float y, float width, float height
     transform->setPosition({ x, y, depth });
     transform->setScale({ width, height, 1.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
-    transform->setAngle(45.0f);
+    transform->setAngle(angle);
 
     sprite->setTexture(texture);
     sprite->setColor({ r, g, b, a });

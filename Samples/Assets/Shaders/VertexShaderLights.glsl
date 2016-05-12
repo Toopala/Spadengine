@@ -10,11 +10,13 @@ out vec2 texcoords;
 out vec3 normals;
 out vec3 fragPosition;
 out mat3 TBNVout;
+out float shininessVout;
 
 layout (std140, binding = 0) uniform MVPUniform
 {
 	mat4 PV;
 	mat4 M;
+	float shininess;
 };
 
 void main()
@@ -32,4 +34,5 @@ void main()
 	
 	TBNVout = TBN;
 	normals = N;
+	shininessVout = shininess;
 }

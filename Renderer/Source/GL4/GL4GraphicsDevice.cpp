@@ -236,16 +236,28 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(Texture* texture)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, Texture** textures)
     {
+        GLint maxColorAttachments = 0;
+        GLint maxDrawBuf = 0;
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuf);
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+        
+        SGE_ASSERT((GLint)count <= maxColorAttachments && (GLint)count <= maxDrawBuf);
+
         GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
+
+        gl4RenderTarget->count = count;
+        gl4RenderTarget->buffers = new GLenum[count];
 
         glGenFramebuffers(1, &gl4RenderTarget->id);
         glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
 
-        // TODO add depth buffer.
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id, 0);
+        for (size_t i = 0; i < count; i++)
+        {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(textures[i])->id, 0);
+            gl4RenderTarget->buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+        }
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -269,6 +281,7 @@ namespace sge
 
         checkError();
 
+        delete[] gl4RenderTarget->buffers;
         delete gl4RenderTarget;
         renderTarget = nullptr;
     }
@@ -419,10 +432,13 @@ namespace sge
 
     void GraphicsDevice::bindRenderTarget(RenderTarget* renderTarget)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, reinterpret_cast<GL4RenderTarget*>(renderTarget)->id);
+        GL4RenderTarget* gl4RenderTarget = reinterpret_cast<GL4RenderTarget*>(renderTarget);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
+        glDrawBuffers(gl4RenderTarget->count, gl4RenderTarget->buffers);
     }
 
-    void GraphicsDevice::debindRenderTarget(RenderTarget* renderTarget)
+    void GraphicsDevice::debindRenderTarget()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

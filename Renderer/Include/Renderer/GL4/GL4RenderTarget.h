@@ -8,12 +8,13 @@
 
 namespace sge
 {
-
     struct GL4RenderTarget
     {
         RenderTarget header;
 
         GLuint id;
+        GLenum* buffers;
+        size_t count;
     };
 }
 

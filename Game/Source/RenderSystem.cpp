@@ -12,7 +12,7 @@
 #include "Game/Entity.h"
 
 #include "Game/CameraComponent.h"
-#include "Game/LightComponent.h"
+
 #include "Game/ModelComponent.h"
 #include "Game/RenderComponent.h"
 #include "Game/SpriteComponent.h"
@@ -98,12 +98,21 @@ namespace sge
         modelPixelUniformData.pointLights[0].diffuse = math::vec4(0.8, 0.2, 0.2, 1.0);
         modelPixelUniformData.pointLights[0].specular = math::vec4(1.0, 0.25, 0.25, 1.0);
 
+		modelPixelUniformData.pointLights[1].position = math::vec4(15.0, 4.0, 15.0, 1.0);
+		modelPixelUniformData.pointLights[1].constant = float(1.0);
+		modelPixelUniformData.pointLights[1].mylinear = float(0.022);
+		modelPixelUniformData.pointLights[1].quadratic = float(0.0019);
+		modelPixelUniformData.pointLights[1].pad = 0.0f;
+		modelPixelUniformData.pointLights[1].ambient = math::vec4(0.0125, 0.05, 0.0125, 1.0);
+		modelPixelUniformData.pointLights[1].diffuse = math::vec4(0.2, 0.8, 0.2, 1.0);
+		modelPixelUniformData.pointLights[1].specular = math::vec4(0.25, 1.0, 0.25, 1.0);
+
         modelPixelUniformData.dirLight.direction = math::vec4(-1.0, -1.0, -1.0, 1.0);
         modelPixelUniformData.dirLight.ambient = math::vec4(0.05, 0.05, 0.05, 1.0);
         modelPixelUniformData.dirLight.diffuse = math::vec4(0.8, 0.8, 0.8, 1.0);
         modelPixelUniformData.dirLight.specular = math::vec4(0.5, 0.5, 0.5, 1.0);
 
-        modelPixelUniformData.numofpl = 1;
+        modelPixelUniformData.numofpl = 2;
         modelPixelUniformData.numofdl = 1;
 
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -127,99 +136,94 @@ namespace sge
         initialized = false;
 	}
 
-    void RenderSystem::renderSprites(size_t count, Entity* sprites)
+    void RenderSystem::renderSprites(size_t count, Entity** sprites)
     {
         SGE_ASSERT(acceptingCommands);
 
         for (size_t i = 0; i < count; i++)
         {
-            SpriteComponent* sprite = sprites[i].getComponent <SpriteComponent>();
+            SpriteComponent* sprite = sprites[i]->getComponent <SpriteComponent>();
 
-            if (sprite)
+            SGE_ASSERT(sprite);
+
+            sprite->setRenderer(this);
+
+            for (auto camera : cameras)
             {
-                sprite->setRenderer(this);
+                uint32 distance = static_cast<uint32>(math::dot(sprite->transform->getPosition(),
+                    camera->getComponent<TransformComponent>()->getPosition() +
+                    camera->getComponent<TransformComponent>()->getFront()));
 
-                for (auto camera : cameras)
-                {
-                    uint32 distance = static_cast<uint32>(math::dot(sprite->transform->getPosition(),
-                        camera->getComponent<TransformComponent>()->getPosition() +
-                        camera->getComponent<TransformComponent>()->getFront()));
+                if (sprite->getColor().a < 1.0f)
+                    sprite->key.fields.depth = UINT32_MAX - distance;
+                else
+                    sprite->key.fields.depth = distance;
 
-                    if (sprite->getColor().a < 1.0f)
-                        sprite->key.fields.depth = UINT32_MAX - distance;
-                    else
-                        sprite->key.fields.depth = distance;
-
-                    queue.push(sprite->key, std::bind(&SpriteComponent::render, sprite, std::placeholders::_1));
-                }
+                queue.push(sprite->key, std::bind(&SpriteComponent::render, sprite, std::placeholders::_1));
             }
         }
     }
 
-    void RenderSystem::renderTexts(size_t count, Entity* texts)
+    void RenderSystem::renderTexts(size_t count, Entity** texts)
     {
         SGE_ASSERT(acceptingCommands);
 
         for (size_t i = 0; i < count; i++)
         {
-            TextComponent* text = texts[i].getComponent <TextComponent>();
+            TextComponent* text = texts[i]->getComponent <TextComponent>();
 
-            if (text)
+            SGE_ASSERT(text);
+
+            text->setRenderer(this);
+
+            for (auto camera : cameras)
             {
-                text->setRenderer(this);
+                uint32 distance = static_cast<uint32>(math::dot(text->transform->getPosition(),
+                    camera->getComponent<TransformComponent>()->getPosition() +
+                    camera->getComponent<TransformComponent>()->getFront()));
 
-                for (auto camera : cameras)
-                {
-                    uint32 distance = static_cast<uint32>(math::dot(text->transform->getPosition(),
-                        camera->getComponent<TransformComponent>()->getPosition() +
-                        camera->getComponent<TransformComponent>()->getFront()));
+                if (text->getColor().a < 1.0f)
+                    text->key.fields.depth = UINT32_MAX - distance;
+                else
+                    text->key.fields.depth = distance;
 
-                    if (text->getColor().a < 1.0f)
-                        text->key.fields.depth = UINT32_MAX - distance;
-                    else
-                        text->key.fields.depth = distance;
-
-                    queue.push(text->key, std::bind(&TextComponent::render, text, std::placeholders::_1));
-                }
+                queue.push(text->key, std::bind(&TextComponent::render, text, std::placeholders::_1));
             }
         }
     }
 
-    void RenderSystem::renderModels(size_t count, Entity* models)
+    void RenderSystem::renderModels(size_t count, Entity** models)
     {
         SGE_ASSERT(acceptingCommands);
 
         for (size_t i = 0; i < count; i++)
         {
-            ModelComponent* model = models[i].getComponent <ModelComponent>();
+            ModelComponent* model = models[i]->getComponent <ModelComponent>();
 
-            if (model)
+            SGE_ASSERT(model);
+
+            model->setRenderer(this);
+
+            for (auto camera : cameras)
             {
-                model->setRenderer(this);
+                //uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
+                //    camera->getComponent<TransformComponent>()->getPosition() +
+                //    camera->getComponent<TransformComponent>()->getFront()));
 
-                for (auto camera : cameras)
-                {
-                    uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
-                        camera->getComponent<TransformComponent>()->getPosition() +
-                        camera->getComponent<TransformComponent>()->getFront()));
+                //model->key.fields.depth = distance;
 
-                    model->key.fields.depth = distance;
-
-                    queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
-                }
+                queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
             }
         }
     }
 
-    void RenderSystem::renderLights(size_t count, Entity* lights)
+    void RenderSystem::renderLights(size_t count, Entity** lights)
     {
         SGE_ASSERT(acceptingCommands);
 
-        this->lights.clear();
-
         for (size_t i = 0; i < count; i++)
         {
-            LightComponent* light = lights[i].getComponent<LightComponent>();
+            LightComponent* light = lights[i]->getComponent<LightComponent>();
 
             SGE_ASSERT(light);
 
@@ -227,20 +231,20 @@ namespace sge
         }
     }
 
-    void RenderSystem::setRenderTargets(size_t count, RenderTarget* renderTargets)
+    void RenderSystem::setRenderTarget(RenderTarget* renderTarget)
     {
         SGE_ASSERT(!acceptingCommands);
+
+        device->bindRenderTarget(renderTarget);
     }
 
-    void RenderSystem::setCameras(size_t count, Entity* cameras)
+    void RenderSystem::addCameras(size_t count, Entity** cameras)
     {
         SGE_ASSERT(!acceptingCommands);
         
-        this->cameras.clear();
-
         for (size_t i = 0; i < count; i++)
         {
-            CameraComponent* camera = cameras[i].getComponent<CameraComponent>();
+            CameraComponent* camera = cameras[i]->getComponent<CameraComponent>();
 
             SGE_ASSERT(camera);
 
@@ -264,28 +268,53 @@ namespace sge
 		queue.end();
 
         acceptingCommands = false;
+	}
+
+    void RenderSystem::render()
+    {
+        SGE_ASSERT(initialized && !acceptingCommands);
 
         for (auto& command : queue.getQueue())
         {
             command.second(device);
         }
-	}
+    }
 
     void RenderSystem::present()
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
         device->swap();
-        device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     }
 
-    void RenderSystem::clear()
+    void RenderSystem::clear(int flags)
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
-        queue.clear();
-        cameras.clear();
-        lights.clear();   
+        if (flags & RENDERTARGET)
+        {
+            device->debindRenderTarget();
+        }
+
+        if (flags & QUEUE)
+        {
+            queue.clear();
+        }
+
+        if (flags & COLOR || flags & DEPTH || flags & STENCIL)
+        {
+            device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+        }
+
+        if (flags & LIGHTS)
+        {
+            lights.clear();
+        }
+
+        if (flags & CAMERAS)
+        {
+            cameras.clear();
+        }
     }
 
     void RenderSystem::renderSprite(SpriteComponent* sprite)
@@ -439,6 +468,7 @@ namespace sge
 
         modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
         modelVertexUniformData.PV = cameras[pass]->getViewProj();
+		modelVertexUniformData.shininess = model->getComponent<ModelComponent>()->getShininess();
         modelPixelUniformData.CamPos = math::vec4(cameras[pass]->getComponent<TransformComponent>()->getPosition(), 1.0f);
 
         device->bindPipeline(model->getPipeline());
@@ -452,11 +482,39 @@ namespace sge
         device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
         device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 
-        device->bindTexture(model->diffTexture, 0);
-        device->bindTexture(model->normTexture, 1);
-        device->bindTexture(model->specTexture, 2);
+		if (model->diffTexture != nullptr)
+		{
+			device->bindTexture(model->diffTexture, 0);
+		}
+     
+		if (model->normTexture != nullptr)
+		{
+			device->bindTexture(model->normTexture, 1);
+		}
+        
+		if (model->specTexture != nullptr)
+		{
+			device->bindTexture(model->specTexture, 2);
+		}
+        
 
         device->draw(model->getModelResource()->getVerticeArray()->size());
+
+		if (model->diffTexture != nullptr)
+		{
+			device->debindTexture(model->diffTexture, 0);
+		}
+
+		if (model->normTexture != nullptr)
+		{
+			device->debindTexture(model->normTexture, 1);
+		}
+
+		if (model->specTexture != nullptr)
+		{
+			device->debindTexture(model->specTexture, 2);
+		}
+
         device->debindPipeline(model->getPipeline());
 
         if (++pass >= cameras.size())

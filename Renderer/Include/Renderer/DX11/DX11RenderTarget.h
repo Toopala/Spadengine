@@ -11,6 +11,9 @@ namespace sge
     struct DX11RenderTarget
     {
         RenderTarget header;
+
+        size_t count;
+        ID3D11RenderTargetView** views;
     };
 }
 

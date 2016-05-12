@@ -19,6 +19,45 @@
 
 #include"Audio/Audio.h"
 
+#include "Bullet/BulletCollision/CollisionShapes/btShapeHull.h"
+
+// Mouse look sample
+void BulletTestScene::mouseLook(int mouseX, int mouseY)
+{
+	if (firstMouse)
+	{
+		lastX += mouseX;
+		lastY += mouseY;
+		firstMouse = false;
+	}
+
+	mousseX += mouseX;
+	mousseY += mouseY;
+
+	float xoffset = mousseX - lastX;
+	float yoffset = lastY - mousseY;
+	lastX = static_cast<float>(mousseX);
+	lastY = static_cast<float>(mousseY);
+
+	float sensitivity = 0.15f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	sge::math::vec3 front;
+	front.x = sge::math::cos(sge::math::radians(pitch)) * sge::math::cos(sge::math::radians(yaw));
+	front.y = sge::math::sin(sge::math::radians(pitch));
+	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
+	cameraFront = sge::math::normalize(front);
+}
+
 void BulletTestScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
 	std::ifstream file;
@@ -59,7 +98,7 @@ void BulletTestScene::loadBinaryShader(const std::string& path, std::vector<char
 	}
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f)
 {
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
@@ -71,8 +110,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
 	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
 #elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderData);
+	loadTextShader("../Assets/Shaders/VertexShaderLightsNoNormalTexture.glsl", vShaderData);
+	loadTextShader("../Assets/Shaders/PixelShaderLightsNoNormalTexture.glsl", pShaderData);
 #endif
 
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
@@ -90,12 +129,44 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
+	//--------------
+	// New pipeline
+	std::vector<char> pShaderDataNormals;
+	std::vector<char> vShaderDataNormals;
+
+#ifdef DIRECTX11
+	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderDataNormals);
+	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderDataNormals);
+#elif OPENGL4
+	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderDataNormals);
+	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderDataNormals);
+#endif
+
+	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderDataNormals.size());
+	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderDataNormals.size());
+
+	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
+	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
+	//--------------
+
 	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/suzanne.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle2.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
 	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeDiffuseSpecular.dae");
+	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleTreeLeaves = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeLeavesDiffuseSpecular.dae");
+	modelHandleTreeLeaves.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	EManager = new sge::EntityManager();
 
@@ -105,6 +176,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity->setComponent(modtransform);
 
 	modcomponent = new sge::ModelComponent(modentity);
+	modcomponent->setShininess(15.0f);
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
@@ -119,9 +191,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity2->setComponent(modtransform2);
 
 	modcomponent2 = new sge::ModelComponent(modentity2);
+	modcomponent2->setShininess(256.0f);
 	modentity2->setComponent(modcomponent2);
 
-	modcomponent2->setModelResource(&modelHandle);
+	modcomponent2->setModelResource(&modelHandle2);
     modcomponent2->setRenderer(engine->getRenderer());
 
 	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
@@ -133,6 +206,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modtransformFloor);
 
 	modcomponentFloor = new sge::ModelComponent(modentityFloor);
+	modcomponentFloor->setShininess(100.0f);
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
@@ -143,12 +217,79 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityFloor->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
-	modcomponent->setPipeline(pipeline);
-	modcomponent2->setPipeline(pipeline);
-	modcomponentFloor->setPipeline(pipeline);
+	// Tree
+	modentityTree = EManager->createEntity();
+
+	modtransformTree = new sge::TransformComponent(modentityTree);
+	modentityTree->setComponent(modtransformTree);
+
+	modcomponentTree = new sge::ModelComponent(modentityTree);
+	modcomponentTree->setShininess(2.0f);
+	modentityTree->setComponent(modcomponentTree);
+
+	modcomponentTree->setModelResource(&modelHandleTree);
+	modcomponentTree->setRenderer(engine->getRenderer());
+
+	modentityTree->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityTree->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityTree->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+	// Tree leaves
+	modentityTreeLeaves = EManager->createEntity();
+
+	modtransformTreeLeaves = new sge::TransformComponent(modentityTreeLeaves);
+	modentityTreeLeaves->setComponent(modtransformTreeLeaves);
+
+	modcomponentTreeLeaves = new sge::ModelComponent(modentityTreeLeaves);
+	modcomponentTreeLeaves->setShininess(256.0f);
+	modentityTreeLeaves->setComponent(modcomponentTreeLeaves);
+
+	modcomponentTreeLeaves->setModelResource(&modelHandleTreeLeaves);
+	modcomponentTreeLeaves->setRenderer(engine->getRenderer());
+
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+	modcomponent->setPipeline(pipelineNormals);
+	modcomponent2->setPipeline(pipelineNormals);
+	modcomponentFloor->setPipeline(pipelineNormals);
+	modcomponentTree->setPipeline(pipeline);
+	modcomponentTreeLeaves->setPipeline(pipeline);
+
+	// Tree leaves
+	modentityRoom = EManager->createEntity();
+
+	modtransformRoom = new sge::TransformComponent(modentityRoom);
+	modentityRoom->setComponent(modtransformRoom);
+
+	modcomponentRoom = new sge::ModelComponent(modentityRoom);
+	modcomponentRoom->setShininess(256.0f);
+	modentityRoom->setComponent(modcomponentRoom);
+
+	modcomponentRoom->setModelResource(&modelHandleRoom);
+	modcomponentRoom->setRenderer(engine->getRenderer());
+
+	modentityRoom->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+	modcomponent->setPipeline(pipelineNormals);
+	modcomponent2->setPipeline(pipelineNormals);
+	modcomponentFloor->setPipeline(pipelineNormals);
+	modcomponentTree->setPipeline(pipeline);
+	modcomponentTreeLeaves->setPipeline(pipeline);
+	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
+	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -170,8 +311,33 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	wall2Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
 	wall3Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
 	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
+
+	btCylinderShape* treeShape = new btCylinderShape(btVector3(btScalar(0.4), btScalar(15.0), btScalar(0.4)));
 	
 	fallShape = new btBoxShape(btVector3(1, 1, 1));
+
+	// !!!!! Warning
+	btConvexHullShape* fallShapeSuzanne = new btConvexHullShape();
+
+	for (int j = 0; j < modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->size(); j++)
+	{
+		sge::math::vec3 vertexPos = sge::math::vec3(modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.x, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.y, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.z);
+		btVector3 position(btScalar(vertexPos.x), btScalar(vertexPos.y), btScalar(vertexPos.z));
+		fallShapeSuzanne->addPoint(position);
+	}
+	
+	//create a hull approximation
+	btShapeHull* hull = new btShapeHull(fallShapeSuzanne);
+	btScalar margin = fallShapeSuzanne->getMargin();
+	hull->buildHull(margin);
+	btConvexHullShape* simplifiedConvexShape = new btConvexHullShape();
+	
+	for (int i = 0; i < hull->numVertices(); i++)
+	{
+		simplifiedConvexShape->addPoint(hull->getVertexPointer()[i]);
+	}
+
+	// !!!!! Warning
 
 	// Floor
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
@@ -215,13 +381,20 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	wall4RigidBody = new btRigidBody(wall4RigidBodyCI);
 	dynamicsWorld->addRigidBody(wall4RigidBody);
 
+	// Tree
+	btDefaultMotionState* TreeMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		treeRigidBodyCI(0, TreeMotionState, treeShape, btVector4(0, 0, 1, 1));
+	btRigidBody* treeRigidBody = new btRigidBody(treeRigidBodyCI);
+	dynamicsWorld->addRigidBody(treeRigidBody);
+
 	// falling object
 	btDefaultMotionState* fallMotionState =
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	simplifiedConvexShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, simplifiedConvexShape, fallInertia);
 	fallRigidBodyCI.m_restitution = 1.0f;
 	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
@@ -232,7 +405,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	// falling object 2
 	btDefaultMotionState* fallMotionState2 =
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, 23, 0)));
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape, fallInertia);
+	btScalar mass2 = 1;
+	btVector3 fallInertia2(0, 0, 0);
+	fallShape->calculateLocalInertia(mass2, fallInertia2);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass2, fallMotionState2, fallShape, fallInertia2);
 	fallRigidBodyCI2.m_restitution = 0.4f;
 	fallRigidBodyCI2.m_friction = 0.8f;
 	fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
@@ -248,7 +424,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	camcomponent = new sge::CameraComponent(camentity);
 	camentity->setComponent(camcomponent);
 
-	cameraPos = glm::vec3(5.0f, 10.0f, 50.0f);
+	cameraPos = glm::vec3(5.0f, 10.0f, 48.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     camcomponent->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
@@ -263,11 +439,15 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
     camcomponent2 = new sge::CameraComponent(camentity2);
     camentity2->setComponent(camcomponent2);
 
+	sge::math::vec3 cameraPos2 = glm::vec3(5.0f, 10.0f, 48.0f);
+	sge::math::vec3 cameraFront2 = glm::vec3(0.0f, 0.0f, -1.0f);
+	sge::math::vec3 cameraUp2 = glm::vec3(0.0f, 1.0f, 0.0f);
+
     camcomponent2->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
     camcomponent2->setViewport(1280-420, 720-280, 320, 180);
-    camtransform2->setPosition(cameraPos);
-    camtransform2->setFront(cameraFront);
-    camtransform2->setUp(cameraUp);
+    camtransform2->setPosition(cameraPos2);
+    camtransform2->setFront(cameraFront2);
+    camtransform2->setUp(cameraUp2);
 
     cameras.push_back(camentity);
     cameras.push_back(camentity2);
@@ -321,22 +501,85 @@ BulletTestScene::~BulletTestScene()
 	delete broadphase;
 
 	sge::ResourceManager::getMgr().release(modelHandle);
+	sge::ResourceManager::getMgr().release(modelHandle2);
 	sge::ResourceManager::getMgr().release(modelHandleFloor);
+	sge::ResourceManager::getMgr().release(modelHandleTree);
+	sge::ResourceManager::getMgr().release(modelHandleTreeLeaves);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
+	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
 
 
 	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
 	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
 
 	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
-
-	
 }
 
 void BulletTestScene::update(float step)
 {
 	dynamicsWorld->stepSimulation(step, 10);
+
+	//------------------------------------------------
+	// CameraControls
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
+	{
+		useMouse = true;
+		if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
+	{
+		useMouse = false;
+		if (useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + cameraFront*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - cameraFront*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+
+
+	if (useMouse)
+	{
+#ifdef _WIN32
+		engine->mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
+
+		mouseLook(mouseXpos, mouseYpos);
+#endif
+		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+	}
+	//------------------------------------------------
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
@@ -426,14 +669,20 @@ void BulletTestScene::update(float step)
 }
 void BulletTestScene::draw()
 {
-    renderer->setCameras(cameras.size(), *cameras.data());
+    renderer->addCameras(1, &cameras.front());
+    renderer->addCameras(1, &cameras.back());
     renderer->begin();
     
-    renderer->renderModels(1, modentity);
-    renderer->renderModels(1, modentity2);
-    renderer->renderModels(1, modentityFloor);
+    renderer->renderModels(1, &modentity);
+    renderer->renderModels(1, &modentity2);
+    renderer->renderModels(1, &modentityFloor);
+	renderer->renderModels(1, &modentityTree);
+	renderer->renderModels(1, &modentityTreeLeaves);
+	renderer->renderModels(1, &modentityRoom);
 
     renderer->end();
+    renderer->render();
+
     renderer->present();
     renderer->clear();
 }

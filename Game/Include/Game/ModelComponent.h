@@ -27,10 +27,17 @@ namespace sge
 		ModelResource* getModelResource() { return modelHandle->getResource<ModelResource>(); }
 
         TransformComponent* transform;
+
+		void setShininess(float shine);
+
+		float getShininess();
+
 	private:
 		
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
+		float shininess;
+
 	public:
 		Texture* diffTexture;
 		Texture* normTexture;
