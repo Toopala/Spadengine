@@ -138,5 +138,7 @@ private:
 	sge::ModelComponent* modcomponentTreeLeaves;
 	sge::ModelComponent* modcomponentRoom;
 
+	std::vector<sge::Entity*> GameObjects;
+
 	float alpha;
 };
