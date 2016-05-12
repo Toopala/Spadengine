@@ -250,7 +250,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
-	modcomponent->setPipeline(pipeline);
+	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipeline);
