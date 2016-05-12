@@ -124,7 +124,7 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 
 	// falling object
 	btDefaultMotionState* fallMotionState =
-		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(pos.x, pos.y, pos.z)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
@@ -723,11 +723,9 @@ void BulletTestScene::update(float step)
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_1))
 	{
 		btScalar randomx = (btScalar)sge::random(0, 99) - 49;
-		btScalar randomy = (btScalar)sge::random(0, 99) - 49;
+		btScalar randomy = (btScalar)sge::random(5, 49);
 		btScalar randomz = (btScalar)sge::random(0, 99) - 49;
-		//fallRigidBody->applyCentralImpulse(btVector3(0, 10, 0));
 		spawnObject(sge::math::vec3(randomx, randomy, randomz));
-
 	}
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_P))
