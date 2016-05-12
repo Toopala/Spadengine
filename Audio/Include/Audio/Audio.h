@@ -1,5 +1,8 @@
+#pragma once
+
 #include "portaudio.h"
 #include "pa_asio.h"
+#include "sndfile.h"
 #include <stdio.h>
 #define TABLE_SIZE 200
 
