@@ -110,6 +110,7 @@ private:
 	sge::Handle <sge::ModelResource> modelHandleFloor;
 	sge::Handle <sge::ModelResource> modelHandleTree;
 	sge::Handle <sge::ModelResource> modelHandleTreeLeaves;
+	sge::Handle <sge::ModelResource> modelHandleRoom;
 
 	sge::EntityManager* EManager;
     std::vector<sge::Entity*> cameras;
@@ -123,16 +124,19 @@ private:
 	sge::Entity* modentityFloor;
 	sge::Entity* modentityTree;
 	sge::Entity* modentityTreeLeaves;
+	sge::Entity* modentityRoom;
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
 	sge::TransformComponent* modtransformFloor;
 	sge::TransformComponent* modtransformTree;
 	sge::TransformComponent* modtransformTreeLeaves;
+	sge::TransformComponent* modtransformRoom;
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
 	sge::ModelComponent* modcomponentTree;
 	sge::ModelComponent* modcomponentTreeLeaves;
+	sge::ModelComponent* modcomponentRoom;
 
 	float alpha;
 };

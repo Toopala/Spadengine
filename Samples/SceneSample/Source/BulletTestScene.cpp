@@ -165,6 +165,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTreeLeaves = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeLeavesDiffuseSpecular.dae");
 	modelHandleTreeLeaves.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
+	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
 	EManager = new sge::EntityManager();
 
 	modentity = EManager->createEntity();
@@ -188,7 +191,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity2->setComponent(modtransform2);
 
 	modcomponent2 = new sge::ModelComponent(modentity2);
-	modcomponent2->setShininess(2.0f);
+	modcomponent2->setShininess(256.0f);
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle2);
@@ -256,11 +259,37 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponentTree->setPipeline(pipeline);
 	modcomponentTreeLeaves->setPipeline(pipeline);
 
+	// Tree leaves
+	modentityRoom = EManager->createEntity();
+
+	modtransformRoom = new sge::TransformComponent(modentityRoom);
+	modentityRoom->setComponent(modtransformRoom);
+
+	modcomponentRoom = new sge::ModelComponent(modentityRoom);
+	modcomponentRoom->setShininess(256.0f);
+	modentityRoom->setComponent(modcomponentRoom);
+
+	modcomponentRoom->setModelResource(&modelHandleRoom);
+	modcomponentRoom->setRenderer(engine->getRenderer());
+
+	modentityRoom->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+
+	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+
+	modcomponent->setPipeline(pipelineNormals);
+	modcomponent2->setPipeline(pipelineNormals);
+	modcomponentFloor->setPipeline(pipelineNormals);
+	modcomponentTree->setPipeline(pipeline);
+	modcomponentTreeLeaves->setPipeline(pipeline);
+	modcomponentRoom->setPipeline(pipelineNormals);
+
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
 	broadphase = new btDbvtBroadphase();
@@ -282,6 +311,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	wall2Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
 	wall3Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
 	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
+
+	btCylinderShape* treeShape = new btCylinderShape(btVector3(btScalar(0.4), btScalar(15.0), btScalar(0.4)));
 	
 	fallShape = new btBoxShape(btVector3(1, 1, 1));
 
@@ -350,6 +381,13 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	wall4RigidBody = new btRigidBody(wall4RigidBodyCI);
 	dynamicsWorld->addRigidBody(wall4RigidBody);
 
+	// Tree
+	btDefaultMotionState* TreeMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	btRigidBody::btRigidBodyConstructionInfo
+		treeRigidBodyCI(0, TreeMotionState, treeShape, btVector4(0, 0, 1, 1));
+	btRigidBody* treeRigidBody = new btRigidBody(treeRigidBodyCI);
+	dynamicsWorld->addRigidBody(treeRigidBody);
+
 	// falling object
 	btDefaultMotionState* fallMotionState =
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
@@ -386,7 +424,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	camcomponent = new sge::CameraComponent(camentity);
 	camentity->setComponent(camcomponent);
 
-	cameraPos = glm::vec3(5.0f, 10.0f, 50.0f);
+	cameraPos = glm::vec3(5.0f, 10.0f, 48.0f);
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     camcomponent->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
@@ -401,7 +439,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
     camcomponent2 = new sge::CameraComponent(camentity2);
     camentity2->setComponent(camcomponent2);
 
-	sge::math::vec3 cameraPos2 = glm::vec3(5.0f, 10.0f, 50.0f);
+	sge::math::vec3 cameraPos2 = glm::vec3(5.0f, 10.0f, 48.0f);
 	sge::math::vec3 cameraFront2 = glm::vec3(0.0f, 0.0f, -1.0f);
 	sge::math::vec3 cameraUp2 = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -640,6 +678,7 @@ void BulletTestScene::draw()
     renderer->renderModels(1, &modentityFloor);
 	renderer->renderModels(1, &modentityTree);
 	renderer->renderModels(1, &modentityTreeLeaves);
+	renderer->renderModels(1, &modentityRoom);
 
     renderer->end();
     renderer->render();
