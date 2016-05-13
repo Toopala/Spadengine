@@ -480,47 +480,53 @@ namespace sge
 
         device->bindPipeline(model->getPipeline());
 
-        device->bindIndexBuffer(model->getModelResource()->getIndexBuffer());
-        device->bindVertexBuffer(model->getModelResource()->getVertexBuffer());
-
-        device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
-        device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
-
-        device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
-        device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
-
-		if (model->diffTexture != nullptr)
+		for (int i = 0; i < model->getModelResource()->getMeshes().size(); i++)
 		{
-			device->bindTexture(model->diffTexture, 0);
-		}
-     
-		if (model->normTexture != nullptr)
-		{
-			device->bindTexture(model->normTexture, 1);
-		}
-        
-		if (model->specTexture != nullptr)
-		{
-			device->bindTexture(model->specTexture, 2);
-		}
-        
+			device->bindIndexBuffer(model->getModelResource()->getMeshes()[i]->getIndexBuffer());
+			device->bindVertexBuffer(model->getModelResource()->getMeshes()[i]->getVertexBuffer());
 
-        device->draw(model->getModelResource()->getVerticeArray()->size());
+			device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
+			device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
 
-		if (model->diffTexture != nullptr)
-		{
-			device->debindTexture(model->diffTexture, 0);
-		}
+			device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
+			device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 
-		if (model->normTexture != nullptr)
-		{
-			device->debindTexture(model->normTexture, 1);
-		}
+			Texture* diff = model->getModelResource()->getMeshes()[i]->diffuseTexture;
+			Texture* norm = model->getModelResource()->getMeshes()[i]->normalTexture;
+			Texture* spec = model->getModelResource()->getMeshes()[i]->specularTexture;
+			if (diff)
+			{
+				device->bindTexture(diff, 0);
+			}
 
-		if (model->specTexture != nullptr)
-		{
-			device->debindTexture(model->specTexture, 2);
-		}
+			if (norm)
+			{
+				device->bindTexture(norm, 1);
+			}
+
+			if (spec)
+			{
+				device->bindTexture(spec, 2);
+			}
+
+
+			device->draw(model->getModelResource()->getMeshes()[i]->vertices.size());
+
+			if (diff)
+			{
+				device->debindTexture(diff, 0);
+			}
+
+			if (norm)
+			{
+				device->debindTexture(norm, 1);
+			}
+
+			if (spec)
+			{
+				device->debindTexture(spec, 2);
+			}
+		}        
 
         device->debindPipeline(model->getPipeline());
 

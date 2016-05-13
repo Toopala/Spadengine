@@ -37,10 +37,5 @@ namespace sge
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 		float shininess;
-
-	public:
-		Texture* diffTexture;
-		Texture* normTexture;
-		Texture* specTexture;
 	};
 }

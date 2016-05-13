@@ -136,7 +136,7 @@ private:
 	sge::TransformComponent* modtransform2;
 	sge::TransformComponent* modtransformFloor;
 	sge::TransformComponent* modtransformTree;
-	sge::TransformComponent* modtransformTreeLeaves;
+	//sge::TransformComponent* modtransformTreeLeaves;
 	sge::TransformComponent* modtransformRoom;
 
     sge::TransformComponent* modtransformLight;
@@ -147,7 +147,7 @@ private:
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
 	sge::ModelComponent* modcomponentTree;
-	sge::ModelComponent* modcomponentTreeLeaves;
+	//sge::ModelComponent* modcomponentTreeLeaves;
 	sge::ModelComponent* modcomponentRoom;
 
     sge::PointLightComponent* plcompo;

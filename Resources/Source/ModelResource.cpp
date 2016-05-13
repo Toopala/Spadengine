@@ -12,68 +12,17 @@ namespace sge
 		meshes.erase(meshes.begin(), meshes.end());
 	}
 
-	std::vector<Vertex>* ModelResource::getVerticeArray()
-	{ 
-		return &meshes[0].vertices;
-	}
-	std::vector<unsigned int>* ModelResource::getIndexArray()
-	{ 
-		return &meshes[0].indices;
-	}
-	sge::Texture* ModelResource::getDiffuseTexture()
+	std::vector<Mesh*> ModelResource::getMeshes()
 	{
-		for (size_t i = 0; i < meshes[0].textures.size(); i++)
-		{
-			if (meshes[0].textures[i].getTypeName() == "texture_diffuse")
-			{
-                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
-			}
-		}
-
-		return nullptr;
-	}
-	sge::Texture* ModelResource::getNormalTexture()
-	{
-		for (size_t i = 0; i < meshes[0].textures.size(); i++)
-		{
-			if (meshes[0].textures[i].getTypeName() == "texture_normal")
-			{
-                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
-			}
-		}
-
-		return nullptr;
-	}
-
-	sge::Texture* ModelResource::getSpecularTexture()
-	{
-		for (size_t i = 0; i < meshes[0].textures.size(); i++)
-		{
-			if (meshes[0].textures[i].getTypeName() == "texture_specular")
-			{
-                return device->createTexture(meshes[0].textures[i].getSize().x, meshes[0].textures[i].getSize().y, meshes[0].textures[i].getData());
-			}
-		}
-
-		return nullptr;
+		return meshes;
 	}
 
 	void ModelResource::createBuffers()
 	{
-		for (auto &mesh : meshes)
+		for (auto mesh : meshes)
 		{
-			mesh.createBuffers(device);
+			mesh->createBuffers(device);
 		}
-	}
-
-	sge::Buffer* ModelResource::getVertexBuffer()
-	{
-		return meshes[0].getVertexBuffer();
-	}
-
-	sge::Buffer* ModelResource::getIndexBuffer()
-	{
-		return meshes[0].getIndexBuffer();
 	}
 
 	/*  Functions   */
@@ -115,7 +64,7 @@ namespace sge
 
 	}
 
-	Mesh ModelResource::processMesh(aiMesh* mesh, const aiScene* scene)
+	Mesh* ModelResource::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		// Data to fill
 		std::vector<Vertex> vertices;
@@ -167,12 +116,6 @@ namespace sge
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			// We assume a convention for sampler names in the shaders. Each diffuse texture should be named
-			// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-			// Same applies to other texture as the following list summarizes:
-			// Diffuse: texture_diffuseN
-			// Specular: texture_specularN
-			// Normal: texture_normalN
 
 			// 1. Diffuse maps
 			std::vector<sge::TextureResource> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -186,7 +129,7 @@ namespace sge
 		}
 
 		// Return a mesh object created from the extracted mesh data
-		return Mesh(vertices, indices, textures);
+		return new Mesh(vertices, indices, textures);
 	}
 
 	std::vector<sge::TextureResource> ModelResource::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

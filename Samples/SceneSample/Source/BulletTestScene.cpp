@@ -132,7 +132,7 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 	fallRigidBodyCI.m_restitution = 1.0f;
 	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	//fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
 
 	sge::MyPhysicsComponent* physcomponent = new sge::MyPhysicsComponent(modentity);
@@ -204,11 +204,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleFloor = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/floorSpecularNormal.dae");
 	modelHandleFloor.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeDiffuseSpecular.dae");
+	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
-
-	modelHandleTreeLeaves = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeLeavesDiffuseSpecular.dae");
-	modelHandleTreeLeaves.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
@@ -280,29 +277,10 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityTree->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
-	// Tree leaves
-	modentityTreeLeaves = EManager->createEntity();
-
-	modtransformTreeLeaves = new sge::TransformComponent(modentityTreeLeaves);
-	modentityTreeLeaves->setComponent(modtransformTreeLeaves);
-
-	modcomponentTreeLeaves = new sge::ModelComponent(modentityTreeLeaves);
-	modcomponentTreeLeaves->setShininess(256.0f);
-	modentityTreeLeaves->setComponent(modcomponentTreeLeaves);
-
-	modcomponentTreeLeaves->setModelResource(&modelHandleTreeLeaves);
-	modcomponentTreeLeaves->setRenderer(engine->getRenderer());
-
-	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
-
-	modentityTreeLeaves->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
-
 	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipeline);
-	modcomponentTreeLeaves->setPipeline(pipeline);
 
 	// Room
 	modentityRoom = EManager->createEntity();
@@ -395,14 +373,12 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipeline);
-	modcomponentTreeLeaves->setPipeline(pipeline);
 	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
-	modelHandleTreeLeaves.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
@@ -433,12 +409,15 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	// !!!!! Warning
 	btConvexHullShape* fallShapeSuzanne = new btConvexHullShape();
 
-	for (int j = 0; j < modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->size(); j++)
+	for (int i = 0; i < modelHandle.getResource<sge::ModelResource>()->getMeshes().size(); i++)
 	{
-		sge::math::vec3 vertexPos = sge::math::vec3(modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.x, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.y, modelHandle.getResource<sge::ModelResource>()->getVerticeArray()->at(j).Position.z);
-		btVector3 position(btScalar(vertexPos.x), btScalar(vertexPos.y), btScalar(vertexPos.z));
-		fallShapeSuzanne->addPoint(position);
-	}
+		for (int j = 0; j < modelHandle.getResource<sge::ModelResource>()->getMeshes()[i]->vertices.size(); j++)
+		{
+			sge::math::vec3 vertexPos = sge::math::vec3(modelHandle.getResource<sge::ModelResource>()->getMeshes()[i]->vertices[j].Position.x, modelHandle.getResource<sge::ModelResource>()->getMeshes()[i]->vertices[j].Position.y, modelHandle.getResource<sge::ModelResource>()->getMeshes()[i]->vertices[j].Position.z);
+			btVector3 position(btScalar(vertexPos.x), btScalar(vertexPos.y), btScalar(vertexPos.z));
+			fallShapeSuzanne->addPoint(position);
+		}
+	}	
 	
 	//create a hull approximation
 	btShapeHull* hull = new btShapeHull(fallShapeSuzanne);
@@ -542,7 +521,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	GameObjects.push_back(modentityRoom);
 	GameObjects.push_back(modentityFloor);
 	GameObjects.push_back(modentityTree);
-	GameObjects.push_back(modentityTreeLeaves);
 
 	sge::Entity* camentity = EManager->createEntity();
     sge::Entity* camentity2 = EManager->createEntity();
@@ -633,7 +611,6 @@ BulletTestScene::~BulletTestScene()
 	sge::ResourceManager::getMgr().release(modelHandle2);
 	sge::ResourceManager::getMgr().release(modelHandleFloor);
 	sge::ResourceManager::getMgr().release(modelHandleTree);
-	sge::ResourceManager::getMgr().release(modelHandleTreeLeaves);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
