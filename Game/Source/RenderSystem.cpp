@@ -44,13 +44,16 @@ namespace sge
         // Init sprite/text rendering.
         Handle<ShaderResource> pixelShaderHandle;
         Handle<ShaderResource> vertexShaderHandle;
+		Handle<ShaderResource> textPixelShaderHandle;
 
 #ifdef DIRECTX11
         vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
-        pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
+		pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
+        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.cso");
 #elif OPENGL4
         vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
         pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
+		textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.glsl");
 #endif
 
         sge::VertexLayoutDescription vertexLayoutDescription = { 2,
@@ -71,9 +74,11 @@ namespace sge
 
         const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
         const std::vector<char>& pShaderData = pixelShaderHandle.getResource<ShaderResource>()->loadShader();
+		const std::vector<char>& tpShaderData = textPixelShaderHandle.getResource<ShaderResource>()->loadShader();
 
         sprVertexShader = device->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
         sprPixelShader = device->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
+		textPixelShader = device->createShader(sge::ShaderType::PIXEL, tpShaderData.data(), tpShaderData.size());
 
         sprPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, sprPixelShader);
         sprVertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
@@ -84,6 +89,12 @@ namespace sge
         device->bindVertexBuffer(sprVertexBuffer);
         device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
         device->debindPipeline(sprPipeline);
+
+		textPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, textPixelShader);
+		device->bindPipeline(textPipeline);
+		device->bindVertexBuffer(sprVertexBuffer);
+		device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
+		device->debindPipeline(textPipeline);
 
         // Init model rendering.
         modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
@@ -365,7 +376,7 @@ namespace sge
     void RenderSystem::renderText(TextComponent* text)
     {
         // TODO text rendering uses sprite pipeline. Change if necessary.
-        device->bindPipeline(sprPipeline);
+        device->bindPipeline(textPipeline);
 
         sge::Font* font = text->getFont();
         FT_GlyphSlot slot = font->face->glyph;
@@ -383,6 +394,7 @@ namespace sge
             {
                 FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
 
+				/*
                 unsigned char* expandedData = new unsigned char[2 * slot->bitmap.width * slot->bitmap.rows];
                 for (size_t j = 0; j < slot->bitmap.rows; j++)
                 {
@@ -392,18 +404,20 @@ namespace sge
                         expandedData[2 * (k + j * slot->bitmap.width) + 1] = (k >= slot->bitmap.width || j >= slot->bitmap.rows) ? 0 : slot->bitmap.buffer[k + slot->bitmap.width * j];
                     }
                 }
+				*/
 
-                sge::Texture* texture = device->createTextTexture(slot->bitmap.width, slot->bitmap.rows, expandedData);
+                sge::Texture* texture = device->createTextTexture(slot->bitmap.width, slot->bitmap.rows, slot->bitmap.buffer);
 
                 Character character;
                 character.size = sge::math::vec2(slot->bitmap.width, slot->bitmap.rows);
                 character.horiBearing = sge::math::vec2(slot->metrics.horiBearingX, slot->metrics.horiBearingY);
                 character.vertBearing = sge::math::vec2(slot->metrics.vertBearingX, slot->metrics.vertBearingY);
                 character.metrics = sge::math::vec2(slot->metrics.width, slot->metrics.height);
+				character.advance = sge::math::vec2(slot->advance.x / 32, slot->advance.y / 32);
                 characters.push_back(character);
 
                 charTextures.push_back(texture);
-                delete[] expandedData;
+                //delete[] expandedData;
             }
             previousText = text->getText();
         }
@@ -442,7 +456,10 @@ namespace sge
 			sge::math::mat4 testi = text->getComponent<TransformComponent>()->getMatrix();
             sprPixelUniformData.color = text->getColor();
 
-            pen.x += originalScale.x * characters[i].size.x * 2;
+
+			pen.x += originalScale.x * characters[i].advance.x;
+	
+ 
 
             device->bindVertexUniformBuffer(sprVertexUniformBuffer, 0);
             device->copyData(sprVertexUniformBuffer, sizeof(sprVertexUniformData), &sprVertexUniformData);
@@ -459,7 +476,7 @@ namespace sge
 
         text->getComponent<TransformComponent>()->setPosition(originalPosition);
         text->getComponent<TransformComponent>()->setScale(originalScale);
-        device->debindPipeline(sprPipeline);
+        device->debindPipeline(textPipeline);
 
         if (++pass >= cameras.size())
             pass = 0;
