@@ -12,17 +12,17 @@ namespace sge
 		PaStreamParameters outputParameters;
 
 		outputParameters.device = Pa_GetDefaultOutputDevice();
-		outputParameters.channelCount = CHANNEL_COUNT;
+		outputParameters.channelCount = CHANNEL_COUNT;		/*Stereo output*/
 		outputParameters.sampleFormat = paInt32;
-		outputParameters.suggestedLatency = 0.01;
-		outputParameters.hostApiSpecificStreamInfo = 0;
+		outputParameters.suggestedLatency =Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
+		outputParameters.hostApiSpecificStreamInfo = NULL;
 
 		err = Pa_OpenStream(&stream,
 			NO_INPUT,
 			&outputParameters,
 			SAMPLE_RATE,
 			paFramesPerBufferUnspecified,
-			paNoFlag,
+			paClipOff,
 			&paStreamCallBack,
 			this);
 
@@ -90,7 +90,7 @@ namespace sge
 				AudioFile *audioFile = data->audiofile;
 
 				int *outputBuffer = new int[stereoFrameCount];
-				int* bufferCursor = outputBuffer;
+				int *bufferCursor = outputBuffer;
 
 				unsigned int framesLeft = (unsigned int)frameCount;
 				unsigned int framesRead;
@@ -136,7 +136,8 @@ namespace sge
 						++outputCursor;
 					}
 				}
-				else {
+				else
+				{
 					for (unsigned long i = 0; i < stereoFrameCount; ++i)
 					{
 						*outputCursor += (0.5 * outputBuffer[i]);

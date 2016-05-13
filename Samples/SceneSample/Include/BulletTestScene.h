@@ -15,6 +15,7 @@
 #include "Game/TransformComponent.h"
 
 #include "Game/Component.h"
+#include "Audio/Audio.h"
 
 // FORWARD DECLARE
 struct sge::Pipeline;
@@ -44,6 +45,11 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
+
+	// Audio test
+	sge::Audio mixer;
+	//mixer.stop();
+
 	///MouseLook
 	bool useMouse;
 	void mouseLook(int x, int y);
@@ -161,6 +167,8 @@ private:
 
 	btConvexHullShape* simplifiedConvexShape;
 	void spawnObject(sge::math::vec3 pos);
+
+	bool played;
 };
 
 namespace sge

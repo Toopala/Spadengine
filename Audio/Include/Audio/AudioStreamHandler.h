@@ -1,7 +1,7 @@
 #pragma once
 
 #include "portaudio.h"
-#include "pa_asio.h"
+//#include "pa_asio.h"
 #include "sndfile.h"
 #include <stdio.h>
 #include <vector>
@@ -39,8 +39,8 @@ namespace sge
 
 	private:
 		const int CHANNEL_COUNT = 2;
-		const int SAMPLE_RATE = 44000;
-		const PaStreamParameters * NO_INPUT = nullptr;
+		const int SAMPLE_RATE = 44100;
+		const PaStreamParameters *NO_INPUT = nullptr;
 
 		PaStream *stream;
 		std::vector<Playback*> data;
