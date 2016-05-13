@@ -541,11 +541,6 @@ namespace sge
 		shader = nullptr;
 	}
 
-    Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
-    {
-        return nullptr;
-    }
-
 	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
 	{
 		DX11Texture* dx11Texture = new DX11Texture();
@@ -585,6 +580,56 @@ namespace sge
 		checkError(result);
 
         result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->view);
+
+		checkError(result);
+
+		impl->context->GenerateMips(dx11Texture->view);
+
+		return &dx11Texture->header;
+	}
+
+
+	Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
+	{
+		return nullptr;
+
+		DX11Texture* dx11Texture = new DX11Texture();
+
+		D3D11_TEXTURE2D_DESC textureDesc;
+		HRESULT result = S_OK;
+
+		ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+
+		if (source)
+		{
+			D3D11_SUBRESOURCE_DATA data;
+			data.pSysMem = source;
+			data.SysMemPitch = static_cast<UINT>(width * 4);
+			data.SysMemSlicePitch = 0;
+
+			result = impl->device->CreateTexture2D(&textureDesc, &data, &dx11Texture->texture);
+		}
+		else
+		{
+			result = impl->device->CreateTexture2D(&textureDesc, NULL, &dx11Texture->texture);
+		}
+
+		checkError(result);
+
+		result = impl->device->CreateShaderResourceView(dx11Texture->texture, nullptr, &dx11Texture->view);
 
 		checkError(result);
 

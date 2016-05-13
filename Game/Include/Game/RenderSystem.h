@@ -34,6 +34,7 @@ namespace sge
         sge::math::vec2 horiBearing;
         sge::math::vec2 vertBearing;
         sge::math::vec2 metrics;
+		sge::math::vec2 advance;
     };
 
     enum Clear
@@ -92,11 +93,14 @@ namespace sge
 
         // Sprite rendering data.
         Pipeline* sprPipeline;
+		Pipeline* textPipeline;
         Buffer* sprVertexBuffer;
         Buffer* sprVertexUniformBuffer;
         Buffer* sprPixelUniformBuffer;
+		Buffer* textPixelUniformBuffer;
         Shader* sprVertexShader;
         Shader* sprPixelShader;
+		Shader* textPixelShader;
 
         struct SprVertexUniformData
         {

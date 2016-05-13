@@ -143,13 +143,13 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 	GameObjects.push_back(modentity);
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f), played(false)
 {
 	std::vector<char> pShaderData;
 	std::vector<char> vShaderData;
 
-	// Audio test
-	//sge::Audio mixer;
+
+	
 
 #ifdef DIRECTX11
 	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
@@ -686,6 +686,22 @@ void BulletTestScene::update(float step)
 		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
 	}
 	//------------------------------------------------
+	
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_3) && played == true)
+	{
+		played = false;
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_4))
+	{
+		mixer.stop();
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_2) && played == false)
+	{
+		mixer.play("../Assets/Audio/scifi.flac");
+		played = true;
+	}		
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
 	{
