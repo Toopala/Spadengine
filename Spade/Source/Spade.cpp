@@ -3,7 +3,12 @@
 
 namespace sge
 {
-	Spade::Spade() : running(true), accumulator(0.0f), step(0.0f)
+	Spade::Spade() : 
+        window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720),
+        renderer(window),
+        running(true), 
+        accumulator(0.0f), 
+        step(0.0f)
 	{
 #ifdef OPENGL4
 
@@ -34,9 +39,7 @@ namespace sge
 
 	void Spade::init()
 	{
-		window = new Window("Spade Game Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720);
-        renderer = new RenderSystem(*window);
-		renderer->init();
+		renderer.init();
 		step = 1.0f / 60.0f;
 
 		mouseInput = new sge::MouseInput();
@@ -52,9 +55,7 @@ namespace sge
 		delete sceneManager;
 		delete mouseInput;
 		delete keyboardInput;
-		delete gamepadInput;
-		delete renderer;
-		delete window;
+        delete gamepadInput;
 
 		SDL_Quit();
 	}	

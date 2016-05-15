@@ -49,6 +49,7 @@ namespace sge
         ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
     };
 
+    __declspec(align(16))
 	class RenderSystem
 	{
 	public:
@@ -84,6 +85,11 @@ namespace sge
         void setClearColor(const math::vec4& color);
 
 	private:
+        
+        void initShaders();
+        void initSpriteRendering();
+        void initTextRendering();
+        void initModelRendering();
 
         void calculateLightData();
 		
@@ -93,15 +99,12 @@ namespace sge
 
         // Sprite rendering data.
         Pipeline* sprPipeline;
-		Pipeline* textPipeline;
         Buffer* sprVertexBuffer;
         Buffer* sprVertexUniformBuffer;
         Buffer* sprPixelUniformBuffer;
-		Buffer* textPixelUniformBuffer;
         Shader* sprVertexShader;
         Shader* sprPixelShader;
-		Shader* textPixelShader;
-
+		
         __declspec(align(16))
         struct SprVertexUniformData
         {
@@ -113,6 +116,11 @@ namespace sge
         {
             math::vec4 color;
         } sprPixelUniformData;
+
+        // Text rendering data.
+        Pipeline* textPipeline;
+        Buffer* textVertexBuffer;
+        Shader* textPixelShader;
 
         // Model rendering data.
         Buffer* modelVertexUniformBuffer;

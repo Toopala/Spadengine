@@ -39,66 +39,12 @@ namespace sge
     void RenderSystem::init()
 	{
 		device->init();
+        
+        initShaders();
 
-        // TODO move different inits to separate methods.
-        // Init sprite/text rendering.
-        Handle<ShaderResource> pixelShaderHandle;
-        Handle<ShaderResource> vertexShaderHandle;
-		Handle<ShaderResource> textPixelShaderHandle;
-
-#ifdef DIRECTX11
-        vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
-		pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
-        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.cso");
-#elif OPENGL4
-        vertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
-        pixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
-		textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.glsl");
-#endif
-
-        sge::VertexLayoutDescription vertexLayoutDescription = { 2,
-        {
-            { 0, 3, sge::VertexSemantic::POSITION },
-            { 0, 2, sge::VertexSemantic::TEXCOORD }
-        } };
-
-        float vertexData[] = {
-            -1.0f,  1.0f, 0.0f,     0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
-            1.0f,   -1.0f, 0.0f,    1.0f, 0.0f,
-
-            1.0f,   1.0f, 0.0f,     1.0f, 1.0f,
-            -1.0f,  1.0f, 0.0f,     0.0f, 1.0f,
-            1.0f,   -1.0f, 0.0f,    1.0f, 0.0f,
-        };
-
-        const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
-        const std::vector<char>& pShaderData = pixelShaderHandle.getResource<ShaderResource>()->loadShader();
-		const std::vector<char>& tpShaderData = textPixelShaderHandle.getResource<ShaderResource>()->loadShader();
-
-        sprVertexShader = device->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-        sprPixelShader = device->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-		textPixelShader = device->createShader(sge::ShaderType::PIXEL, tpShaderData.data(), tpShaderData.size());
-
-        sprPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, sprPixelShader);
-        sprVertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
-        sprVertexUniformBuffer = device->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(sprVertexUniformData));
-        sprPixelUniformBuffer = device->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(sprPixelUniformData));
-
-        device->bindPipeline(sprPipeline);
-        device->bindVertexBuffer(sprVertexBuffer);
-        device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
-        device->debindPipeline(sprPipeline);
-
-		textPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, textPixelShader);
-		device->bindPipeline(textPipeline);
-		device->bindVertexBuffer(sprVertexBuffer);
-		device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
-		device->debindPipeline(textPipeline);
-
-        // Init model rendering.
-        modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
-        modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
+        initSpriteRendering();
+        initTextRendering();
+        initModelRendering();
 
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
@@ -484,7 +430,7 @@ namespace sge
 
         device->bindPipeline(model->getPipeline());
 
-		for (int i = 0; i < model->getModelResource()->getMeshes().size(); i++)
+		for (size_t i = 0; i < model->getModelResource()->getMeshes().size(); i++)
 		{
 			device->bindIndexBuffer(model->getModelResource()->getMeshes()[i]->getIndexBuffer());
 			device->bindVertexBuffer(model->getModelResource()->getMeshes()[i]->getVertexBuffer());
@@ -553,14 +499,6 @@ namespace sge
 
     void RenderSystem::calculateLightData()
     {
-
-        //DirLight dirLight[MAX_DIR_LIGHTS];
-        //PointLight pointLights[MAX_POINT_LIGHTS];
-        //sge::math::vec4 CamPos;
-        //int numofpl;
-        //int numofdl;
-        //int pad[2];
-        
         modelPixelUniformData.numofpl = pointLights.size();
         modelPixelUniformData.numofdl = dirLights.size();
 
@@ -573,5 +511,93 @@ namespace sge
         {
             modelPixelUniformData.pointLights[i] = pointLights[i]->getLightData();
         }
+    }
+
+    void RenderSystem::initShaders()
+    {
+        Handle<ShaderResource> sprPixelShaderHandle;
+        Handle<ShaderResource> sprVertexShaderHandle;
+        Handle<ShaderResource> textPixelShaderHandle;
+
+
+#ifdef DIRECTX11
+        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
+        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
+        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.cso");
+#elif OPENGL4
+        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
+        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
+        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.glsl");
+#endif
+
+        const std::vector<char>& sprVertexShaderData = sprVertexShaderHandle.getResource<ShaderResource>()->loadShader();
+        const std::vector<char>& sprPixelShaderData = sprPixelShaderHandle.getResource<ShaderResource>()->loadShader();
+        const std::vector<char>& textPixelShaderData = textPixelShaderHandle.getResource<ShaderResource>()->loadShader();
+
+        sprVertexShader = device->createShader(sge::ShaderType::VERTEX, sprVertexShaderData.data(), sprVertexShaderData.size());
+        sprPixelShader = device->createShader(sge::ShaderType::PIXEL, sprPixelShaderData.data(), sprPixelShaderData.size());
+        textPixelShader = device->createShader(sge::ShaderType::PIXEL, textPixelShaderData.data(), textPixelShaderData.size());
+    }
+
+    void RenderSystem::initSpriteRendering()
+    {
+        sge::VertexLayoutDescription vertexLayoutDescription = { 2,
+        {
+            { 0, 3, sge::VertexSemantic::POSITION },
+            { 0, 2, sge::VertexSemantic::TEXCOORD }
+        } };
+
+        float vertexData[] = {
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+
+            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+        };
+
+        sprPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, sprPixelShader);
+        sprVertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+        sprVertexUniformBuffer = device->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(sprVertexUniformData));
+        sprPixelUniformBuffer = device->createBuffer(sge::BufferType::UNIFORM, sge::BufferUsage::DYNAMIC, sizeof(sprPixelUniformData));
+
+        device->bindPipeline(sprPipeline);
+        device->bindVertexBuffer(sprVertexBuffer);
+        device->copyData(sprVertexBuffer, sizeof(vertexData), vertexData);
+        device->debindPipeline(sprPipeline);
+    }
+
+    void RenderSystem::initTextRendering()
+    {
+        sge::VertexLayoutDescription vertexLayoutDescription = { 2,
+        {
+            { 0, 3, sge::VertexSemantic::POSITION },
+            { 0, 2, sge::VertexSemantic::TEXCOORD }
+        } };
+
+        float vertexData[] = {
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+
+        textPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, textPixelShader);
+        textVertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, sizeof(vertexData));
+
+        device->bindPipeline(textPipeline);
+        device->bindVertexBuffer(textVertexBuffer);
+        device->copyData(textVertexBuffer, sizeof(vertexData), vertexData);
+        device->debindPipeline(textPipeline);
+    }
+
+    void RenderSystem::initModelRendering()
+    {
+        modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
+        modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
     }
 }

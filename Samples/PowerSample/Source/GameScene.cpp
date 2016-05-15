@@ -9,7 +9,6 @@ TODO enko
 
 Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
 Rendersystemille defaulttikamera!
-Tekstuurien piirto oikein GL:llä!
 SpotLightComponent do!
 Instanced rendering do!
 Deferred rendering do!
