@@ -17,7 +17,7 @@ namespace sge
 		void update();
 
         void setPerspective(float fov, float aspectRatio, float near, float far);
-        void setOrtho(float left, float right, float top, float bottom, float near, float far);
+        void setOrtho(float left, float right, float bottom, float top, float near, float far);
 
         void setViewport(int x, int y, unsigned int width, unsigned int height);
         void setViewport(const Viewport& viewport);

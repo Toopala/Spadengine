@@ -102,11 +102,13 @@ namespace sge
         Shader* sprPixelShader;
 		Shader* textPixelShader;
 
+        __declspec(align(16))
         struct SprVertexUniformData
         {
             math::mat4 MVP;
         } sprVertexUniformData;
 
+        __declspec(align(16))
         struct SprPixelUniformData
         {
             math::vec4 color;
@@ -116,6 +118,7 @@ namespace sge
         Buffer* modelVertexUniformBuffer;
         Buffer* modelPixelUniformBuffer;
 
+        __declspec(align(16))
         struct ModelVertexUniformData
         {
             sge::math::mat4 PV;
@@ -123,6 +126,7 @@ namespace sge
 			float shininess;
         } modelVertexUniformData;
 
+        __declspec(align(16))
         struct ModelPixelUniformData
         {
             DirLight dirLights[MAX_DIR_LIGHTS];
@@ -130,7 +134,8 @@ namespace sge
             sge::math::vec4 CamPos;
             int numofpl;
             int numofdl;
-            int pad[2];
+            int numofsl;
+            int pad;
         } modelPixelUniformData;
 
         // Text rendering data.

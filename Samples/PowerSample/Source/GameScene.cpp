@@ -5,13 +5,19 @@
 #include "Renderer/RenderTarget.h"
 
 /*
-TODO
-
+TODO enko
 
 Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
-Sorttaus takasin kuntoon jos tarviijaksaahaluaa
 Rendersystemille defaulttikamera!
-
+Tekstuurien piirto oikein GL:llä!
+SpotLightComponent do!
+Instanced rendering do!
+Deferred rendering do!
+Render targeteille depth-puskuri!
+Optimoi bulletscenea (nykii ihan vitusti)
+    - Esim valojen dataa ei tarvii viedä joka objektille erikseen
+    - Sorttaus takasin kuntoon jos tarviijaksaahaluaa
+Tee se demo ja siihen kaikkea hauskaa (blur, hdr voe pojat efektejä)
 */
 
 GameScene::GameScene(sge::Spade* engine) :
@@ -62,7 +68,7 @@ GameScene::GameScene(sge::Spade* engine) :
     
     renderTarget = renderer->getDevice()->createRenderTarget(targetCount, targetTextures);
 
-    targetEntity = createEntity(targetTextures[3], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+    targetEntity = createEntity(targetTextures[0], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 GameScene::~GameScene()
@@ -188,9 +194,6 @@ sge::Entity* GameScene::createEntity(sge::Texture* texture, float x, float y, fl
 
 sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
 {
-    // TODO cameracomponent doesn't use transform component and directly
-    // requests input from (old design) spade singleton. These should be fixed.
-    // Input system needs more planning to do.
     sge::Entity* entity = entityManager.createEntity();
 
     auto transform = transformFactory.create(entity);
@@ -200,7 +203,7 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     transform->setFront({ 0.0f, 0.0f, -1.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
 
-    cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
+    cameracomponent->setOrtho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 1000.0f);
     cameracomponent->setViewport(x, y, width, height);
 
     return entity;

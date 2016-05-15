@@ -25,9 +25,9 @@ namespace sge
         proj = math::perspective(math::radians(fov), aspectRatio, near, far);
     }
 
-    void CameraComponent::setOrtho(float left, float right, float top, float bottom, float near, float far)
+    void CameraComponent::setOrtho(float left, float right, float bottom, float top, float near, float far)
     {
-        proj = math::ortho(left, right, top, bottom, near, far);
+        proj = math::ortho(left, right, bottom, top, near, far);
     }
 
     void CameraComponent::setViewport(int x, int y, unsigned int width, unsigned int height)

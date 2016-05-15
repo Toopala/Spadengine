@@ -87,7 +87,6 @@ namespace sge
         glEnable(GL_BLEND);
 		glEnable(GL_MULTISAMPLE);
 
-        glCullFace(GL_BACK);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		checkError();

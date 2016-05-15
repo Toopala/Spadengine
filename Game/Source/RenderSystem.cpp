@@ -63,13 +63,13 @@ namespace sge
         } };
 
         float vertexData[] = {
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            -1.0f,  1.0f, 0.0f,     0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+            1.0f,   -1.0f, 0.0f,    1.0f, 0.0f,
 
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+            1.0f,   1.0f, 0.0f,     1.0f, 1.0f,
+            -1.0f,  1.0f, 0.0f,     0.0f, 1.0f,
+            1.0f,   -1.0f, 0.0f,    1.0f, 0.0f,
         };
 
         const std::vector<char>& vShaderData = vertexShaderHandle.getResource<ShaderResource>()->loadShader();
@@ -99,19 +99,6 @@ namespace sge
         // Init model rendering.
         modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
         modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
-
-		/*modelPixelUniformData.pointLights[1].position = math::vec4(15.0, 4.0, 15.0, 1.0);
-		modelPixelUniformData.pointLights[1].constant = float(1.0);
-		modelPixelUniformData.pointLights[1].mylinear = float(0.022);
-		modelPixelUniformData.pointLights[1].quadratic = float(0.0019);
-		modelPixelUniformData.pointLights[1].pad = 0.0f;
-		modelPixelUniformData.pointLights[1].ambient = math::vec4(0.0125, 0.05, 0.0125, 1.0);
-		modelPixelUniformData.pointLights[1].diffuse = math::vec4(0.2, 0.8, 0.2, 1.0);
-		modelPixelUniformData.pointLights[1].specular = math::vec4(0.25, 1.0, 0.25, 1.0);
-
-        modelPixelUniformData.numofpl = 2;
-        modelPixelUniformData.numofdl = 1;
-        */
 
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
@@ -447,8 +434,8 @@ namespace sge
                 pen.y += characters[i].metrics.y / 64 - characters[i].horiBearing.y / 64;
             }
 
-            text->getParent()->getComponent<TransformComponent>()->setPosition(originalPosition + glm::vec3(pen.x, pen.y, 0));
-            text->getParent()->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(characters[i].size.x, characters[i].size.y, 1));
+            text->getComponent<TransformComponent>()->setPosition(originalPosition + glm::vec3(pen.x, pen.y, 0));
+            text->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(characters[i].size.x, characters[i].size.y, 1));
 
             device->bindViewport(cameras[pass]->getViewport());
 
