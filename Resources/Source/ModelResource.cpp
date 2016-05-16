@@ -156,7 +156,7 @@ namespace sge
 			{
 				// If texture hasn't been loaded already, load it
 				std::string temp(str.C_Str());
-				temp = "../Assets/" + temp;
+				temp = "../Assets/" + temp; // TODO no hardcodings!
 				sge::TextureResource* texture = new sge::TextureResource(temp);
 				texture->setTypename(typeName);
 				textures.push_back(*texture);
