@@ -19,18 +19,4 @@ namespace sge
 	void LightComponent::update()
 	{
 	}
-
-	void LightComponent::setAsDirLight(DirLight* dirLight)
-	{
-		this->dirLight = dirLight;
-
-		lightType = dirLightEnum;
-	}
-
-	void LightComponent::setAsPointLight(PointLight* pointLight)
-	{
-		this->pointLight = pointLight;
-
-		lightType = pointLightEnum;
-	}
 }

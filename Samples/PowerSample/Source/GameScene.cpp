@@ -5,13 +5,18 @@
 #include "Renderer/RenderTarget.h"
 
 /*
-TODO
-
+TODO enko
 
 Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
-Sorttaus takasin kuntoon jos tarviijaksaahaluaa
 Rendersystemille defaulttikamera!
-
+SpotLightComponent do!
+Instanced rendering do!
+Deferred rendering do!
+Render targeteille depth-puskuri!
+Optimoi bulletscenea (nykii ihan vitusti)
+    - Esim valojen dataa ei tarvii viedä joka objektille erikseen
+    - Sorttaus takasin kuntoon jos tarviijaksaahaluaa
+Tee se demo ja siihen kaikkea hauskaa (blur, hdr voe pojat efektejä)
 */
 
 GameScene::GameScene(sge::Spade* engine) :
@@ -49,6 +54,8 @@ GameScene::GameScene(sge::Spade* engine) :
     entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
     entities.back()->setTag("FRONT");
 
+	textEntities.push_back(createText(100, 100, "Spadengine"));
+
     guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
 
     targetTextures = new sge::Texture*[targetCount];
@@ -60,7 +67,7 @@ GameScene::GameScene(sge::Spade* engine) :
     
     renderTarget = renderer->getDevice()->createRenderTarget(targetCount, targetTextures);
 
-    targetEntity = createEntity(targetTextures[3], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+    targetEntity = createEntity(targetTextures[0], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 GameScene::~GameScene()
@@ -143,6 +150,7 @@ void GameScene::draw()
 
     renderer->begin();
     renderer->renderSprites(entities.size(), entities.data());
+	renderer->renderTexts(textEntities.size(), textEntities.data());
     renderer->end();
 
     renderer->render();
@@ -185,9 +193,6 @@ sge::Entity* GameScene::createEntity(sge::Texture* texture, float x, float y, fl
 
 sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
 {
-    // TODO cameracomponent doesn't use transform component and directly
-    // requests input from (old design) spade singleton. These should be fixed.
-    // Input system needs more planning to do.
     sge::Entity* entity = entityManager.createEntity();
 
     auto transform = transformFactory.create(entity);
@@ -197,7 +202,7 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     transform->setFront({ 0.0f, 0.0f, -1.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
 
-    cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
+    cameracomponent->setOrtho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 1000.0f);
     cameracomponent->setViewport(x, y, width, height);
 
     return entity;
@@ -211,8 +216,9 @@ sge::Entity* GameScene::createText(float x, float y, const std::string& text)
     auto textcomponent = textFactory.create(entity);
     
     transform->setPosition({ x, y, 0.0f });
+	transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
-    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    textcomponent->setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
     textcomponent->setText(text);
 

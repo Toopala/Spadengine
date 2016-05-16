@@ -43,6 +43,7 @@ private:
     sge::Spade* engine;
     sge::RenderSystem* renderer;
     std::vector<sge::Entity*> entities;
+	std::vector<sge::Entity*> textEntities;
     std::vector<sge::Entity*> cameras;
     sge::Entity* fullscreenCamera;
     sge::Entity* guiText;

@@ -32,7 +32,7 @@ namespace sge
 
         RenderSystem* getRenderer()
 		{
-			return renderer;
+			return &renderer;
 		}
 
 		const float getStep() const
@@ -49,10 +49,11 @@ namespace sge
 		void update(float deltaTime);
 		void draw();
 
-		sge::Window* window;
+		sge::Window window;
+        sge::RenderSystem renderer;
+
 		sge::SceneManager* sceneManager;
 		sge::EventManager* eventManager;
-        sge::RenderSystem* renderer;
 
 		bool running;
 		float step;

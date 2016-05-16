@@ -44,6 +44,10 @@ namespace sge
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<sge::TextureResource> textures;
+		
+		sge::Texture* diffuseTexture;
+		sge::Texture* normalTexture;
+		sge::Texture* specularTexture;
 
 		sge::Buffer* vertexBuffer;
 		sge::Buffer* indexBuffer;
@@ -54,11 +58,26 @@ namespace sge
 		{
 			this->vertices = vertices;
 			this->indices = indices;
-			this->textures = textures;
+			this->textures = textures;			
 		}
 
 		void createBuffers(GraphicsDevice* device)
 		{
+			for (auto texture : textures)
+			{
+				if (texture.getTypeName() == "texture_diffuse")
+				{
+					diffuseTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+				}
+				else if (texture.getTypeName() == "texture_normal")
+				{
+					normalTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+				}
+				else if (texture.getTypeName() == "texture_specular")
+				{
+					specularTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+				}
+			}
 			//plaa
 			vertexBuffer = device->createBuffer(sge::BufferType::VERTEX, sge::BufferUsage::DYNAMIC, vertices.size()*sizeof(Vertex));
 			indexBuffer = device->createBuffer(sge::BufferType::INDEX, sge::BufferUsage::DYNAMIC, indices.size()*sizeof(unsigned int));
@@ -76,6 +95,8 @@ namespace sge
 		{
 			return indexBuffer;
 		}
+
+
 	};
 
 	class ModelResource : public sge::Resource
@@ -85,23 +106,20 @@ namespace sge
 		ModelResource(const std::string& resourcePath);
 		~ModelResource();
 
-		std::vector<Vertex>* getVerticeArray();
-		std::vector<unsigned int>* getIndexArray();
-		sge::Texture* getDiffuseTexture();
-		sge::Texture* getNormalTexture();
-		sge::Texture* getSpecularTexture();
+		std::vector<Mesh*> getMeshes();
 
 		void createBuffers();
-
-		sge::Buffer* getVertexBuffer();
-		sge::Buffer* getIndexBuffer();
 
         void setDevice(GraphicsDevice* device) { this->device = device; }
 
 	private:
+		std::vector<sge::Texture*> diffuseTextures;
+		std::vector<sge::Texture*> specularTextures;
+		std::vector<sge::Texture*> normalTextures;
+
         GraphicsDevice* device;
 		/*  Model Data  */
-		std::vector<Mesh> meshes;
+		std::vector<Mesh*> meshes;
 		std::string directory;
 		std::vector<sge::TextureResource> textures_loaded; // Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 
@@ -112,7 +130,7 @@ namespace sge
 		// Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
 		void processNode(aiNode* node, const aiScene* scene);
 
-		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+		Mesh* processMesh(aiMesh* mesh, const aiScene* scene);
 
 		std::vector<sge::TextureResource> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 	};

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "Game/Entity.h"
 #include <string>
 
 namespace sge

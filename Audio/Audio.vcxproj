@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Audio\Audio.h" />
+    <ClInclude Include="Include\Audio\AudioStreamHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio.cpp" />
+    <ClCompile Include="Source\AudioStreamHandler.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA41831E-83C0-4C9F-9F0D-2B15D61440EE}</ProjectGuid>

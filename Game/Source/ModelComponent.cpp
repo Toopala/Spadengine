@@ -7,7 +7,7 @@
 namespace sge
 {
 	ModelComponent::ModelComponent(Entity* entity) :
-		RenderComponent(entity), shininess(100.0f), diffTexture(nullptr), normTexture(nullptr), specTexture(nullptr)
+		RenderComponent(entity), shininess(2.0f)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -28,9 +28,6 @@ namespace sge
 	void ModelComponent::setModelResource(sge::Handle <sge::ModelResource>* modelHandle)
 	{
 		this->modelHandle = modelHandle;
-		diffTexture = modelHandle->getResource<ModelResource>()->getDiffuseTexture();
-		normTexture = modelHandle->getResource<ModelResource>()->getNormalTexture();
-		specTexture = modelHandle->getResource<ModelResource>()->getSpecularTexture();
 	}
 
 	void ModelComponent::setShininess(float shine)

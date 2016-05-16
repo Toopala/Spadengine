@@ -14,6 +14,9 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 
+#include "Game/Component.h"
+#include "Audio/Audio.h"
+
 // FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
@@ -42,6 +45,11 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 private:
+
+	// Audio test
+	sge::Audio mixer;
+	//mixer.stop();
+
 	///MouseLook
 	bool useMouse;
 	void mouseLook(int x, int y);
@@ -108,6 +116,9 @@ private:
 	sge::Handle <sge::ModelResource> modelHandle;
 	sge::Handle <sge::ModelResource> modelHandle2;
 	sge::Handle <sge::ModelResource> modelHandleFloor;
+	sge::Handle <sge::ModelResource> modelHandleTree;
+	sge::Handle <sge::ModelResource> modelHandleTreeLeaves;
+	sge::Handle <sge::ModelResource> modelHandleRoom;
 
 	sge::EntityManager* EManager;
     std::vector<sge::Entity*> cameras;
@@ -119,12 +130,81 @@ private:
 	sge::Entity* modentity;
 	sge::Entity* modentity2;
 	sge::Entity* modentityFloor;
+	sge::Entity* modentityTree;
+	sge::Entity* modentityTreeLeaves;
+	sge::Entity* modentityRoom;
+
+    sge::Entity* modentityLight;
+	sge::Entity* modentityLight2;
+	sge::Entity* modentityLight3;
+
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
 	sge::TransformComponent* modtransformFloor;
+	sge::TransformComponent* modtransformTree;
+	//sge::TransformComponent* modtransformTreeLeaves;
+	sge::TransformComponent* modtransformRoom;
+
+    sge::TransformComponent* modtransformLight;
+	sge::TransformComponent* modtransformLight2;
+	sge::TransformComponent* modtransformLight3;
+
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
 	sge::ModelComponent* modcomponentFloor;
+	sge::ModelComponent* modcomponentTree;
+	//sge::ModelComponent* modcomponentTreeLeaves;
+	sge::ModelComponent* modcomponentRoom;
+
+    sge::PointLightComponent* plcompo;
+	sge::PointLightComponent* plcompo2;
+	sge::PointLightComponent* plcompo3;
+    sge::DirLightComponent* dlcompo;
+
+	std::vector<sge::Entity*> GameObjects;
 
 	float alpha;
+
+	btConvexHullShape* simplifiedConvexShape;
+	void spawnObject(sge::math::vec3 pos);
+
+	bool played;
 };
+
+namespace sge
+{
+	class TransformComponent;
+
+	class MyPhysicsComponent : public Component
+	{
+	public:
+		MyPhysicsComponent(Entity* ent) : Component(ent), transform(nullptr), body(nullptr)
+		{
+			transform = getParent()->getComponent<TransformComponent>();
+
+			SGE_ASSERT(transform);
+		}
+
+		void update()
+		{
+			btTransform trans;
+			if (body != nullptr)
+			{
+				body->getMotionState()->getWorldTransform(trans);
+
+				getParent()->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+				getParent()->getComponent<sge::TransformComponent>()->setAngle(trans.getRotation().getAngle());
+				getParent()->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
+			}			
+		};
+
+		void setRigidBody(btRigidBody* body)
+		{
+			this->body = body;
+		}
+	private:
+		btRigidBody* body;
+		TransformComponent* transform;
+	};
+}
+

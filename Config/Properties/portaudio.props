@@ -5,16 +5,20 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../ThirdParty/portaudio/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../ThirdParty/portaudio/include;$(SolutionDir)/../ThirdParty/libsndfile/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/portaudio/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>portaudio_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/portaudio/lib/;$(SolutionDir)/../ThirdParty/libsndfile/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>portaudio_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/portaudio/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>portaudio_x86.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../ThirdParty/portaudio/lib/;$(SolutionDir)/../ThirdParty/libsndfile/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>portaudio_x86.lib;libsndfile-1.lib;</AdditionalDependencies>
     </Lib>
+    <PostBuildEvent>
+      <Command>XCOPY "$(SolutionDir)..\ThirdParty\portaudio\lib\*.dll" "$(TargetDir)" /D /K /Y
+XCOPY "$(SolutionDir)..\ThirdParty\libsndfile\lib\*.dll" "$(TargetDir)" /D /K /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

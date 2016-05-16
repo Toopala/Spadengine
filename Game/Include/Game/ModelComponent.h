@@ -5,13 +5,11 @@
 #include "Resources/ResourceManager.h"
 #include "Resources/ModelResource.h"
 #include "Renderer/Pipeline.h"
-
 #include "Renderer/Texture.h"
 
 namespace sge
 {
 	class TransformComponent;
-
 	class ModelComponent : public RenderComponent
 	{
 	public:
@@ -39,10 +37,5 @@ namespace sge
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 		float shininess;
-
-	public:
-		Texture* diffTexture;
-		Texture* normTexture;
-		Texture* specTexture;
 	};
 }

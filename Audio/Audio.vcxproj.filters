@@ -18,9 +18,15 @@
     <ClInclude Include="Include\Audio\Audio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Audio\AudioStreamHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AudioStreamHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

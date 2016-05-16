@@ -165,11 +165,11 @@ TestScene::TestScene(sge::Spade* engine) : engine(engine)
 	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
 	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
 
-	vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
-	indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
-
-	texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
-	texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
+	//vertices = modelHandle.getResource<sge::ModelResource>()->getVerticeArray();
+	//indices = modelHandle.getResource<sge::ModelResource>()->getIndexArray();
+	//
+	//texture = modelHandle.getResource<sge::ModelResource>()->getDiffuseTexture();
+	//texture2 = modelHandle.getResource<sge::ModelResource>()->getNormalTexture();
 
 	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
 	viewport = { 0, 0, 1280, 720 };

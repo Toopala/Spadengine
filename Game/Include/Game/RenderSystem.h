@@ -9,10 +9,14 @@
 #include "Renderer/RenderQueue.h"
 
 #include "Game/LightComponent.h"
-
+#include "Game/PointLightComponent.h"
+#include "Game/DirLightComponent.h"
+#include "Game/SpotLightComponent.h"
 
 namespace sge
 {
+    const int MAX_DIR_LIGHTS = 10;
+    const int MAX_POINT_LIGHTS = 40;
 	class Window;
     class RenderComponent;
     class SpriteComponent;
@@ -30,6 +34,7 @@ namespace sge
         sge::math::vec2 horiBearing;
         sge::math::vec2 vertBearing;
         sge::math::vec2 metrics;
+		sge::math::vec2 advance;
     };
 
     enum Clear
@@ -44,6 +49,7 @@ namespace sge
         ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
     };
 
+    __declspec(align(16))
 	class RenderSystem
 	{
 	public:
@@ -79,6 +85,13 @@ namespace sge
         void setClearColor(const math::vec4& color);
 
 	private:
+        
+        void initShaders();
+        void initSpriteRendering();
+        void initTextRendering();
+        void initModelRendering();
+
+        void calculateLightData();
 		
 		RenderQueue queue;
         GraphicsDevice* device;
@@ -91,23 +104,29 @@ namespace sge
         Buffer* sprPixelUniformBuffer;
         Shader* sprVertexShader;
         Shader* sprPixelShader;
-
+		
+        __declspec(align(16))
         struct SprVertexUniformData
         {
             math::mat4 MVP;
         } sprVertexUniformData;
 
+        __declspec(align(16))
         struct SprPixelUniformData
         {
             math::vec4 color;
         } sprPixelUniformData;
 
+        // Text rendering data.
+        Pipeline* textPipeline;
+        Buffer* textVertexBuffer;
+        Shader* textPixelShader;
+
         // Model rendering data.
         Buffer* modelVertexUniformBuffer;
         Buffer* modelPixelUniformBuffer;
 
-      
-
+        __declspec(align(16))
         struct ModelVertexUniformData
         {
             sge::math::mat4 PV;
@@ -115,14 +134,16 @@ namespace sge
 			float shininess;
         } modelVertexUniformData;
 
+        __declspec(align(16))
         struct ModelPixelUniformData
         {
-            DirLight dirLight;
-            PointLight pointLights[40];
+            DirLight dirLights[MAX_DIR_LIGHTS];
+            PointLight pointLights[MAX_POINT_LIGHTS];
             sge::math::vec4 CamPos;
             int numofpl;
             int numofdl;
-            int pad[2];
+            int numofsl;
+            int pad;
         } modelPixelUniformData;
 
         // Text rendering data.
@@ -132,7 +153,9 @@ namespace sge
 
         // Global rendering data.
         std::vector<CameraComponent*> cameras;
-        std::vector<LightComponent*> lights;
+        std::vector<SpotLightComponent*> spotLights;
+        std::vector<DirLightComponent*> dirLights;
+        std::vector<PointLightComponent*> pointLights;
 
         bool initialized;
         bool acceptingCommands;

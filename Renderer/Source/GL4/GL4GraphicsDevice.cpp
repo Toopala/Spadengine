@@ -87,7 +87,6 @@ namespace sge
         glEnable(GL_BLEND);
 		glEnable(GL_MULTISAMPLE);
 
-        glCullFace(GL_BACK);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		checkError();
@@ -385,7 +384,7 @@ namespace sge
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 		checkError();
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, 0x190A, GL_UNSIGNED_BYTE, source);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, source);
 
 		checkError();
 		glGenerateMipmap(GL_TEXTURE_2D);
