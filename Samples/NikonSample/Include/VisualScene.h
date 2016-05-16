@@ -42,6 +42,7 @@ public:
 
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
+	void mouseLook(int mouseX, int mouseY);
 private:
 	sge::Spade *engine;
 	sge::RenderSystem *renderer;
@@ -62,15 +63,24 @@ private:
 	sge::Texture* texture2;
 
 	// Handle
-	sge::Handle <sge::ModelResource> modelHandle;
+	sge::Handle <sge::ModelResource> modelHandleCube
+									,modelHandleRoom;
 
 	// Entity
 	sge::EntityManager* EManager;
-	sge::Entity* modentity;
+	sge::Entity* modentityCube, *modentityRoom, *modentityLight;
 
-	sge::TransformComponent* modtransform;
+	sge::TransformComponent* modtransformCube, *modtransformRoom, *modtransformLight;
 
-	sge::ModelComponent* modcomponent;
+	sge::ModelComponent* modComponentCube, *modComponentRoom, *modComponentLight;
+
+
+	// Light components
+	sge::PointLightComponent* pointLightComp;
+
+	// Vector for game objects
+	std::vector<sge::Entity*> gameObjects;
+
 
 	// Camera
 	std::vector<sge::Entity*> cameras;
@@ -82,6 +92,14 @@ private:
 	glm::vec3 cameraPos;
 	glm::vec3 cameraUp;
 
+	// Mouse look
+	bool useMouse;
+	float lastX, lastY;
+	float yaw, pitch;
+	int mouseXpos, mouseYpos;
+	int mousseX, mousseY;
+	bool firstMouse = true;
+	float camSpeed;
 
-	float alpha = 0;
+	float alpha = 0.0f;
 };
