@@ -49,7 +49,9 @@ namespace sge
         ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
     };
 
+#ifdef DIRECTX11
     __declspec(align(16))
+#endif
 	class RenderSystem
 	{
 	public:
@@ -62,12 +64,12 @@ namespace sge
 		GraphicsDevice* getDevice() const { return device; }
 
         // TODO should we take in entities or components? 
-        void renderSprites(size_t count, Entity** sprites);
-        void renderTexts(size_t count, Entity** texts);
-        void renderModels(size_t count, Entity** models);
-        void renderLights(size_t count, Entity** lights);
+        void renderSprites(size_t count, Entity* sprites[]);
+        void renderTexts(size_t count, Entity* texts[]);
+        void renderModels(size_t count, Entity* models[]);
+        void renderLights(size_t count, Entity* lights[]);
 
-        void addCameras(size_t count, Entity** cameras);
+        void addCameras(size_t count, Entity* cameras[]);
         void setRenderTarget(RenderTarget* renderTarget);
 
 		void begin();
@@ -105,13 +107,17 @@ namespace sge
         Shader* sprVertexShader;
         Shader* sprPixelShader;
 		
+#ifdef DIRECTX11
         __declspec(align(16))
+#endif
         struct SprVertexUniformData
         {
             math::mat4 MVP;
         } sprVertexUniformData;
 
+#ifdef DIRECTX11
         __declspec(align(16))
+#endif
         struct SprPixelUniformData
         {
             math::vec4 color;
@@ -126,7 +132,9 @@ namespace sge
         Buffer* modelVertexUniformBuffer;
         Buffer* modelPixelUniformBuffer;
 
+#ifdef DIRECTX11
         __declspec(align(16))
+#endif
         struct ModelVertexUniformData
         {
             sge::math::mat4 PV;
@@ -134,7 +142,9 @@ namespace sge
 			float shininess;
         } modelVertexUniformData;
 
+#ifdef DIRECTX11
         __declspec(align(16))
+#endif
         struct ModelPixelUniformData
         {
             DirLight dirLights[MAX_DIR_LIGHTS];

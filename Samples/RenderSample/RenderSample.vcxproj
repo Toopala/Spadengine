@@ -44,6 +44,8 @@
     <Import Project="..\..\Config\Properties\Renderer.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\freetype.props" />
+    <Import Project="..\..\Config\Properties\Spade.props" />
+    <Import Project="..\..\Config\Properties\HID.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -58,6 +60,8 @@
     <Import Project="..\..\Config\Properties\Renderer.props" />
     <Import Project="..\..\Config\Properties\Game.props" />
     <Import Project="..\..\Config\Properties\freetype.props" />
+    <Import Project="..\..\Config\Properties\Spade.props" />
+    <Import Project="..\..\Config\Properties\HID.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -87,7 +91,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GameScene.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\GameScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

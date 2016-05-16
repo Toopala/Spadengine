@@ -67,7 +67,7 @@ namespace sge
         initialized = false;
 	}
 
-    void RenderSystem::renderSprites(size_t count, Entity** sprites)
+    void RenderSystem::renderSprites(size_t count, Entity* sprites[])
     {
         SGE_ASSERT(acceptingCommands);
 
@@ -95,7 +95,7 @@ namespace sge
         }
     }
 
-    void RenderSystem::renderTexts(size_t count, Entity** texts)
+    void RenderSystem::renderTexts(size_t count, Entity* texts[])
     {
         SGE_ASSERT(acceptingCommands);
 
@@ -123,7 +123,7 @@ namespace sge
         }
     }
 
-    void RenderSystem::renderModels(size_t count, Entity** models)
+    void RenderSystem::renderModels(size_t count, Entity* models[])
     {
         SGE_ASSERT(acceptingCommands);
 
@@ -148,7 +148,7 @@ namespace sge
         }
     }
 
-    void RenderSystem::renderLights(size_t count, Entity** lights)
+    void RenderSystem::renderLights(size_t count, Entity* lights[])
     {
         SGE_ASSERT(acceptingCommands);
 
