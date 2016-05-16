@@ -64,15 +64,23 @@ private:
 
 	// Handle
 	sge::Handle <sge::ModelResource> modelHandleCube
-									, modelHandleFloor;
+									,modelHandleRoom;
 
 	// Entity
 	sge::EntityManager* EManager;
-	sge::Entity* modentity;
+	sge::Entity* modentityCube, *modentityRoom, *modentityLight;
 
-	sge::TransformComponent* modtransform;
+	sge::TransformComponent* modtransformCube, *modtransformRoom, *modtransformLight;
 
-	sge::ModelComponent* modcomponent;
+	sge::ModelComponent* modComponentCube, *modComponentRoom, *modComponentLight;
+
+
+	// Light components
+	sge::PointLightComponent* pointLightComp;
+
+	// Vector for game objects
+	std::vector<sge::Entity*> gameObjects;
+
 
 	// Camera
 	std::vector<sge::Entity*> cameras;
@@ -93,5 +101,5 @@ private:
 	bool firstMouse = true;
 	float camSpeed;
 
-	float alpha = 0;
+	float alpha = 0.0f;
 };
