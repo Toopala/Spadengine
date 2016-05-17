@@ -63,7 +63,7 @@
     <Import Project="..\..\Config\Properties\Core.props" />
     <Import Project="..\..\Config\Properties\Spade.props" />
     <Import Project="..\..\Config\Properties\stb_image.props" />
-    <Import Project="..\..\Config\Properties\assimpDebug.props" />
+    <Import Project="..\..\Config\Properties\assimpRelease.props" />
     <Import Project="..\..\Config\Properties\bulletphysics.props" />
     <Import Project="..\..\Config\Properties\portaudio.props" />
     <Import Project="..\..\Config\Properties\Audio.props" />

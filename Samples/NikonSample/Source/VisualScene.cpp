@@ -75,7 +75,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	// ----------------------------------------------------
 
 	// Assimp models
-	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
+	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
 	modelHandleCube.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -98,7 +98,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(modentityCube->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(10));
 
 	modComponentCube->setPipeline(pipeline);
 
@@ -111,7 +111,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityRoom->setComponent(modtransformRoom);
 
 	modComponentRoom = new sge::ModelComponent(modentityRoom);
-	modComponentRoom->setShininess(1000.0f);
+	modComponentRoom->setShininess(250.0f);
 	modentityRoom->setComponent(modComponentRoom);
 
 	modComponentRoom->setModelResource(&modelHandleRoom);
@@ -120,8 +120,9 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityRoom->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
+	modentityRoom->getComponent<sge::TransformComponent>()->setScale(modentityRoom->getComponent<sge::TransformComponent>()->getScale()*glm::vec3(0.6f));
 
-	modComponentRoom->setPipeline(pipeline);
+	modComponentRoom->setPipeline(pipelineNormals);
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 
@@ -136,14 +137,33 @@ VisualScene::VisualScene(sge::Spade *engine)
 	sge::PointLight pointLight;
 	pointLight.position = sge::math::vec4(0.0f);
 	pointLight.constant = float(1.0);
-	pointLight.mylinear = float(0.022);
-	pointLight.quadratic = float(0.0019);
+	pointLight.mylinear = float(0.09);
+	pointLight.quadratic = float(0.0032);
 	pointLight.pad = 0.0f;
-	pointLight.ambient = sge::math::vec4(0.0125, 0.05, 0.0125, 1.0);
-	pointLight.diffuse = sge::math::vec4(0.2, 0.8, 0.2, 1.0);
-	pointLight.specular = sge::math::vec4(0.25, 1.0, 0.25, 1.0);
+	pointLight.ambient = sge::math::vec4(0.05f, 0.05f, 0.05f, 1.0);
+	pointLight.diffuse = sge::math::vec4(3.0f, 3.0f, 3.0f, 1.0);
+	pointLight.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight->getComponent<sge::PointLightComponent>()->setLightData(pointLight);
+
+	modentityLight2 = EManager->createEntity();
+	modtransformLight2 = new sge::TransformComponent(modentityLight2);
+	modentityLight2->setComponent(modtransformLight2);
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	pointLightComp2 = new sge::PointLightComponent(modentityLight2);
+	modentityLight2->setComponent(pointLightComp2);
+
+	sge::PointLight pointLight2;
+	pointLight2.position = sge::math::vec4(0.0f);
+	pointLight2.constant = float(1.0);
+	pointLight2.mylinear = float(0.09);
+	pointLight2.quadratic = float(0.0032);
+	pointLight2.pad = 0.0f;
+	pointLight2.ambient = sge::math::vec4(0.05f, 0.05f, 0.05f, 1.0);
+	pointLight2.diffuse = sge::math::vec4(3.0f, 3.0f, 3.0f, 1.0);
+	pointLight2.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
+
+	modentityLight2->getComponent<sge::PointLightComponent>()->setLightData(pointLight2);
 
 	// Push back game entities
 	gameObjects.push_back(modentityCube);
@@ -184,7 +204,7 @@ void VisualScene::update(float step)
 		if (!useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
 	{
 		if (useMouse == true)
 		{
@@ -193,7 +213,7 @@ void VisualScene::update(float step)
 		}
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
 	{
 		if (useMouse == true)
 		{
@@ -201,7 +221,7 @@ void VisualScene::update(float step)
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - cameraFront*camSpeed);
 		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
 	{
 		if (useMouse == true)
 		{
@@ -211,7 +231,7 @@ void VisualScene::update(float step)
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - sge::math::cross(frontTemp, upTemp)*camSpeed);
 		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
 	{
 		if (useMouse == true)
 		{
@@ -238,11 +258,16 @@ void VisualScene::update(float step)
 	//modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 	
 	alpha += 0.01f;
-	float lightX = 15.0f*cos(alpha);
-	float lightY = 15.0f*sin(alpha);
+	rotate += sge::math::radians(0.5f);
+	float lightX = -25.0f*cos(alpha);
+	float lightY = -25.0f*sin(alpha);
+	float lightZ = -25.0f*sin(alpha);
 
-	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, 4.0f, lightY));
+	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
 	modentityLight->getComponent<sge::PointLightComponent>()->update();
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
+	modentityLight2->getComponent<sge::PointLightComponent>()->update();
+	modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
@@ -268,13 +293,11 @@ void VisualScene::draw()
 	renderer->begin();
 	
 	// Render all game objects
-	for (int i = 0; i < gameObjects.size(); ++i)
-	{
-		renderer->renderModels(1, &gameObjects[i]);
-	}
+	renderer->renderModels(gameObjects.size(), gameObjects.data());
 
 	// Render lights
 	renderer->renderLights(1, &modentityLight);
+	renderer->renderLights(1, &modentityLight2);
 
 	renderer->end();
 
