@@ -150,10 +150,10 @@ namespace sge
             DirLight dirLights[MAX_DIR_LIGHTS];
             PointLight pointLights[MAX_POINT_LIGHTS];
             sge::math::vec4 CamPos;
-            int numofpl;
-            int numofdl;
-            int numofsl;
-            int pad;
+            float numofpl;
+			float numofdl;
+			float numofsl;
+			float pad;
         } modelPixelUniformData;
 
         // Text rendering data.

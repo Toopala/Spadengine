@@ -499,8 +499,10 @@ namespace sge
 
     void RenderSystem::calculateLightData()
     {
-        modelPixelUniformData.numofpl = pointLights.size();
-        modelPixelUniformData.numofdl = dirLights.size();
+        modelPixelUniformData.numofpl = (float)pointLights.size();
+        modelPixelUniformData.numofdl = (float)dirLights.size();
+		modelPixelUniformData.numofsl = 0.0f;
+		modelPixelUniformData.pad = 0.0f;
 
         for (size_t i = 0; i < dirLights.size(); i++)
         {
