@@ -17,6 +17,9 @@
     <image id="NormalMapTile_png" name="NormalMapTile_png">
       <init_from>NormalMapTile.png</init_from>
     </image>
+	<image id="SpecularMapTile_png" name="SpecularMapTile_png">
+      <init_from>SpecularMapTile.png</init_from>
+    </image>
   </library_images>
   <library_effects>
     <effect id="Material_001-effect">
@@ -29,6 +32,16 @@
         <newparam sid="diff_png-sampler">
           <sampler2D>
             <source>diff_png-surface</source>
+          </sampler2D>
+        </newparam>
+		<newparam sid="SpecularMapTile_png-surface">
+          <surface type="2D">
+            <init_from>SpecularMapTile_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="SpecularMapTile_png-sampler">
+          <sampler2D>
+            <source>SpecularMapTile_png-surface</source>
           </sampler2D>
         </newparam>
         <newparam sid="NormalMapTile_png-surface">
@@ -53,7 +66,7 @@
               <texture texture="diff_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
-              <color sid="specular">0.5 0.5 0.5 1</color>
+              <texture texture="SpecularMapTile_png-sampler" texcoord="UVMap"/>
             </specular>
             <shininess>
               <float sid="shininess">50</float>

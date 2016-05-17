@@ -251,7 +251,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modtransformFloor);
 
 	modcomponentFloor = new sge::ModelComponent(modentityFloor);
-	modcomponentFloor->setShininess(100.0f);
+	modcomponentFloor->setShininess(256.0f);
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);

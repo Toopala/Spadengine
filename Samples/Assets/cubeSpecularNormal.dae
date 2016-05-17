@@ -17,8 +17,8 @@
     <image id="rockwall_normal_map_png" name="rockwall_normal_map_png">
       <init_from>rockwall_normal_map.png</init_from>
     </image>
-    <image id="Untitled" name="Untitled">
-      <init_from>Untitled.png</init_from>
+    <image id="rockwall_specular_map" name="rockwall_specular_map">
+      <init_from>rockwall_specular_map.png</init_from>
     </image>
   </library_images>
   <library_effects>
@@ -34,14 +34,14 @@
             <source>rockwall_diffuse_map_png-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="Untitled-surface">
+        <newparam sid="rockwall_specular_map-surface">
           <surface type="2D">
-            <init_from>Untitled</init_from>
+            <init_from>rockwall_specular_map</init_from>
           </surface>
         </newparam>
-        <newparam sid="Untitled-sampler">
+        <newparam sid="rockwall_specular_map-sampler">
           <sampler2D>
-            <source>Untitled-surface</source>
+            <source>rockwall_specular_map-surface</source>
           </sampler2D>
         </newparam>
         <newparam sid="rockwall_normal_map_png-surface">
@@ -66,7 +66,7 @@
               <texture texture="rockwall_diffuse_map_png-sampler" texcoord="Cube-mesh-map-0"/>
             </diffuse>
             <specular>
-              <texture texture="Untitled-sampler" texcoord="Cube-mesh-map-0"/>
+              <texture texture="rockwall_specular_map-sampler" texcoord="Cube-mesh-map-0"/>
             </specular>
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
