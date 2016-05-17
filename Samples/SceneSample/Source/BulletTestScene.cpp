@@ -132,7 +132,7 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 	fallRigidBodyCI.m_restitution = 1.0f;
 	fallRigidBodyCI.m_friction = 0.5f;
 	fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	//fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
 	dynamicsWorld->addRigidBody(fallRigidBody);
 
 	sge::MyPhysicsComponent* physcomponent = new sge::MyPhysicsComponent(modentity);
@@ -207,6 +207,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
@@ -277,10 +280,21 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityTree->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 
-	modcomponent->setPipeline(pipelineNormals);
-	modcomponent2->setPipeline(pipelineNormals);
-	modcomponentFloor->setPipeline(pipelineNormals);
-	modcomponentTree->setPipeline(pipeline);
+	// Earth
+	modentityEarth = EManager->createEntity();
+
+	modtransformEarth = new sge::TransformComponent(modentityEarth);
+	modentityEarth->setComponent(modtransformEarth);
+
+	modcomponentEarth = new sge::ModelComponent(modentityEarth);
+	modcomponentEarth->setShininess(50.0f);
+	modentityEarth->setComponent(modcomponentEarth);
+
+	modcomponentEarth->setModelResource(&modelHandleEarth);
+	modcomponentEarth->setRenderer(engine->getRenderer());
+
+	modentityEarth->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	modentityEarth->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Room
 	modentityRoom = EManager->createEntity();
@@ -369,16 +383,19 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
    // dlcompo = new sge::DirLightComponent(modentityLight);
    // modentityLight->setComponent(dlcompo);
 
-	modcomponent->setPipeline(pipeline); // Kiva vaihtaa tata aina
+	// Set Pipelines
+	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipeline);
+	modcomponentEarth->setPipeline(pipeline);
 	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
 	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
+	modelHandleEarth.getResource<sge::ModelResource>()->createBuffers();
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 	// Bullet test
@@ -392,19 +409,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
-
-
-	groundShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
-	topShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
-	
-	wall1Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
-	wall2Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
-	wall3Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
-	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
-
-	btCylinderShape* treeShape = new btCylinderShape(btVector3(btScalar(0.4), btScalar(15.0), btScalar(0.4)));
-	
-	fallShape = new btBoxShape(btVector3(1, 1, 1));
 
 	// !!!!! Warning
 	btConvexHullShape* fallShapeSuzanne = new btConvexHullShape();
@@ -429,9 +433,16 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	{
 		simplifiedConvexShape->addPoint(hull->getVertexPointer()[i]);
 	}
-
 	// !!!!! Warning
 
+
+	groundShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
+	topShape = new btBoxShape(btVector3(btScalar(51.), btScalar(1.), btScalar(51.)));
+
+	wall1Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
+	wall2Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
+	wall3Shape = new btBoxShape(btVector3(btScalar(1.), btScalar(51.), btScalar(51.)));
+	wall4Shape = new btBoxShape(btVector3(btScalar(51.), btScalar(51.), btScalar(1.)));
 	// Floor
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
@@ -475,11 +486,37 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	dynamicsWorld->addRigidBody(wall4RigidBody);
 
 	// Tree
+	btCylinderShape* treeShape = new btCylinderShape(btVector3(btScalar(0.4), btScalar(15.0), btScalar(0.4)));
+
 	btDefaultMotionState* TreeMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
 	btRigidBody::btRigidBodyConstructionInfo
 		treeRigidBodyCI(0, TreeMotionState, treeShape, btVector4(0, 0, 1, 1));
 	btRigidBody* treeRigidBody = new btRigidBody(treeRigidBodyCI);
 	dynamicsWorld->addRigidBody(treeRigidBody);
+
+	//sge::MyPhysicsComponent* physcomponentTree = new sge::MyPhysicsComponent(modentityTree);
+	//physcomponentTree->setRigidBody(treeRigidBody);
+	//modentityTree->setComponent(physcomponentTree);
+
+	// Earth
+	btSphereShape* sphereShape = new btSphereShape(btScalar(9.5f));
+	modentityEarth->getComponent<sge::TransformComponent>()->setScale(sge::math::vec3(10.0f));
+
+	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(20, 15, 0)));
+	btScalar massE = 10;
+	btVector3 fallInertiaE(0, 0, 0);
+	sphereShape->calculateLocalInertia(10.0f, fallInertiaE);
+	btRigidBody::btRigidBodyConstructionInfo
+		earthRigidBodyCI(massE, EarthMotionState, sphereShape, fallInertiaE);
+	earthRigidBodyCI.m_restitution = 1.0f;
+	earthRigidBodyCI.m_rollingFriction = 0.5f;
+	btRigidBody* earthRigidBody = new btRigidBody(earthRigidBodyCI);
+	earthRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(earthRigidBody);
+
+	sge::MyPhysicsComponent* physcomponentEarth = new sge::MyPhysicsComponent(modentityEarth);
+	physcomponentEarth->setRigidBody(earthRigidBody);
+	modentityEarth->setComponent(physcomponentEarth);
 
 	// falling object
 	btDefaultMotionState* fallMotionState =
@@ -499,6 +536,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity->setComponent(physcomponent);
 
 	// falling object 2
+	fallShape = new btBoxShape(btVector3(1, 1, 1));
+
 	btDefaultMotionState* fallMotionState2 =
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(5, 23, 0)));
 	btScalar mass2 = 1;
@@ -521,6 +560,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	GameObjects.push_back(modentityRoom);
 	GameObjects.push_back(modentityFloor);
 	GameObjects.push_back(modentityTree);
+	GameObjects.push_back(modentityEarth);
 
 	sge::Entity* camentity = EManager->createEntity();
     sge::Entity* camentity2 = EManager->createEntity();
@@ -611,6 +651,7 @@ BulletTestScene::~BulletTestScene()
 	sge::ResourceManager::getMgr().release(modelHandle2);
 	sge::ResourceManager::getMgr().release(modelHandleFloor);
 	sge::ResourceManager::getMgr().release(modelHandleTree);
+	sge::ResourceManager::getMgr().release(modelHandleEarth);
 
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
