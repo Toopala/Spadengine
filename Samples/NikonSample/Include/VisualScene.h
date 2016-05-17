@@ -63,20 +63,19 @@ private:
 	sge::Texture* texture2;
 
 	// Handle
-	sge::Handle <sge::ModelResource> modelHandleCube
-									,modelHandleRoom;
-
+	sge::Handle <sge::ModelResource> modelHandleCube, modelHandleRoom;
+									
 	// Entity
 	sge::EntityManager* EManager;
-	sge::Entity* modentityCube, *modentityRoom, *modentityLight;
+	sge::Entity* modentityCube, *modentityRoom, *modentityLight, *modentityLight2;
 
-	sge::TransformComponent* modtransformCube, *modtransformRoom, *modtransformLight;
+	sge::TransformComponent* modtransformCube, *modtransformRoom, *modtransformLight, *modtransformLight2;
 
-	sge::ModelComponent* modComponentCube, *modComponentRoom, *modComponentLight;
+	sge::ModelComponent* modComponentCube, *modComponentRoom, *modComponentLight, *modComponentLight2;
 
 
 	// Light components
-	sge::PointLightComponent* pointLightComp;
+	sge::PointLightComponent *pointLightComp, *pointLightComp2;
 
 	// Vector for game objects
 	std::vector<sge::Entity*> gameObjects;
@@ -102,4 +101,5 @@ private:
 	float camSpeed;
 
 	float alpha = 0.0f;
+	float rotate = 0.0f;
 };
