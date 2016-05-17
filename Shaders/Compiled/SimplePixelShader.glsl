@@ -1,6 +1,8 @@
 #version 440 core
+
 in vec2 outTexCoords;
-out vec4 finalColor;
+
+layout(location = 0) out vec4 finalColor;
 
 layout(binding = 0) uniform sampler2D texture;
 

@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 in vec2 texcoords;
 in vec3 normals;
@@ -6,7 +6,7 @@ in vec3 fragPosition;
 in mat3 TBNVout;
 in float shininessVout;
 
-out vec4 outColor;
+layout(location = 0) out vec4 outColor;
 
 layout(binding = 0) uniform sampler2D diffuseTex;
 layout(binding = 1) uniform sampler2D normalTex;
@@ -14,6 +14,7 @@ layout(binding = 2) uniform sampler2D specularTex;
 
 #define NUM_POINT_LIGHTS 40
 #define NUM_DIR_LIGHTS 10
+#define NUM_SPOT_LIGHTS 0
 
 //float shininess = 100.0;
 
@@ -35,25 +36,29 @@ struct PointLight
 	float constant;
 	float mylinear;
 	float quadratic;
-	float pad;
+	float pad2;
 	
 };
 
-layout (std140, binding = 1) uniform pixelUniform
+layout(binding = 1, std140) uniform pixelUniform
 {
 	DirLight dirLight[NUM_DIR_LIGHTS];
 	PointLight pointLights[NUM_POINT_LIGHTS];
 	vec4 viewPos;
-	int numofpl;
-	int numofdl;
-	int pad[3];
+	float numofpl;
+	float numofdl;
+	float numofsl;
+	float pad;
 };
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir);
 
-void main()
+void main()		
 {
+	int dl = int(numofdl);
+	int pl = int(numofpl);
+	
 	vec3 normal = normalize(normals);
 	normal = texture(normalTex, texcoords).rgb;
 	normal = normalize(normal * 2.0 - 1.0);
@@ -61,10 +66,10 @@ void main()
 	vec3 viewDir = TBNVout * normalize(viewPos.xyz - fragPosition);
     vec3 result = vec3(0.0);
 	
-	for(int i = 0; i < numofdl; i++)
+	for(int i = 0; i < dl; i++)
 		result += CalculateDirectionLight(dirLight[i], normal, viewDir);
 	
-	for(int i = 0; i < numofpl; i++)
+	for(int i = 0; i < pl; i++)
 		result += CalculatePointLight(pointLights[i], normal, viewDir);
     
 	outColor = vec4(result, 1.0);
