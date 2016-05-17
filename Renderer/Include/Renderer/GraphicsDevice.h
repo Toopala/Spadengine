@@ -7,6 +7,7 @@
 namespace sge
 {
 	class Window;
+	struct CubeMap;
 	struct Buffer;
 	struct Pipeline;
     struct RenderTarget;
@@ -46,6 +47,9 @@ namespace sge
 		Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
 		void deleteTexture(Texture* texture);
 
+		CubeMap* createCubeMap(size_t width, size_t height, unsigned char* source[]);
+		void deleteCubeMap(CubeMap* cubeMap);
+
 		void bindPipeline(Pipeline* pipeline);
 		void debindPipeline(Pipeline* pipeline);
 
@@ -61,6 +65,9 @@ namespace sge
 
 		void bindTexture(Texture* texture, size_t slot);
 		void debindTexture(Texture* texture, size_t slot);
+
+		void bindCubeMap(CubeMap* cubeMap, size_t slot);
+		void debindCubeMap(CubeMap* cubeMap, size_t slot);
 
 		void copyData(Buffer* buffer, size_t size, const void* data);
 		void copySubData(Buffer* buffer, size_t offset, size_t size, const void* data);

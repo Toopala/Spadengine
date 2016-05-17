@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Renderer\Buffer.h" />
+    <ClInclude Include="Include\Renderer\CubeMap.h" />
     <ClInclude Include="Include\Renderer\DX11\DX11Buffer.h" />
     <ClInclude Include="Include\Renderer\DX11\DX11Pipeline.h" />
     <ClInclude Include="Include\Renderer\DX11\DX11RenderTarget.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Include\Renderer\DX11\DX11Texture.h" />
     <ClInclude Include="Include\Renderer\Enumerations.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Buffer.h" />
+    <ClInclude Include="Include\Renderer\GL4\GL4CubeMap.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Pipeline.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4RenderTarget.h" />
     <ClInclude Include="Include\Renderer\GL4\GL4Shader.h" />

@@ -119,5 +119,11 @@
     <ClInclude Include="Include\Renderer\DX11\DX11RenderTarget.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Renderer\CubeMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Renderer\GL4\GL4CubeMap.h">
+      <Filter>Header Files\GL4</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

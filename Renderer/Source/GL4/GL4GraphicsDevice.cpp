@@ -10,6 +10,7 @@
 
 #include "Renderer/GraphicsDevice.h"
 #include "Renderer/GL4/GL4Buffer.h"
+#include "Renderer/GL4/GL4CubeMap.h"
 #include "Renderer/GL4/GL4Pipeline.h"
 #include "Renderer/GL4/GL4RenderTarget.h"
 #include "Renderer/GL4/GL4Shader.h"
@@ -408,6 +409,41 @@ namespace sge
 		texture = nullptr;
 	}
 
+	CubeMap* GraphicsDevice::createCubeMap(size_t width, size_t height, unsigned char* source[])
+	{
+		GL4CubeMap* gl4CubeMap = new GL4CubeMap();
+
+		glGenTextures(1, &gl4CubeMap->id);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, gl4CubeMap->id);
+
+		for (size_t i = 0; i < 6; i++)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source[i]
+			);
+		}
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+		return &gl4CubeMap->header;
+	}
+
+	void GraphicsDevice::deleteCubeMap(CubeMap* cubeMap)
+	{
+		GL4CubeMap* gl4CubeMap = reinterpret_cast<GL4CubeMap*>(cubeMap);
+
+		checkError();
+
+		delete gl4CubeMap;
+		cubeMap = nullptr;
+	}
+
 	void GraphicsDevice::bindPipeline(Pipeline* pipeline)
 	{
 		GL4Pipeline* gl4Pipeline = reinterpret_cast<GL4Pipeline*>(pipeline);
@@ -507,8 +543,6 @@ namespace sge
 	void GraphicsDevice::bindTexture(Texture* texture, size_t slot)
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
-
-		checkError();
 		glBindTexture(GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(texture)->id);
 
 		checkError();
@@ -518,6 +552,20 @@ namespace sge
 	{
         glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		checkError();
+	}
+
+	void GraphicsDevice::bindCubeMap(CubeMap* cubeMap, size_t slot)
+	{
+		glBindTexture(GL_TEXTURE_CUBE_MAP, reinterpret_cast<GL4CubeMap*>(cubeMap)->id);
+
+		checkError();
+	}
+
+	void GraphicsDevice::debindCubeMap(CubeMap* cubeMap, size_t slot)
+	{
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		checkError();
 	}
