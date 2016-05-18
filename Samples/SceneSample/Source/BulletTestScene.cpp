@@ -187,7 +187,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");

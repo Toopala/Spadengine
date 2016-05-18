@@ -82,26 +82,25 @@ void main()
 	
     vec3 result = vec3(0.0);
 	
+	//Lights
+	for(int i = 0; i < dl; i++)
+		result += CalculateDirectionLight(dirLight[i], normal, viewDir);
+	
+	for(int i = 0; i < pl; i++)
+		result += CalculatePointLight(pointLights[i], normal, viewDir);
+	
 	//Cubemap
 	vec4 glossyColor = vec4(0.0);
 	float glossyFactor = 0.0;
 	vec4 vEnvColor = vec4(0.0);
-	vec4 result2 = vec4(0.0);
+	vec4 cubeColor = vec4(1.0);
 	if(hasCubeTex == 1)
 	{
-		glossyColor = texture2D(specularTex, vec2(texcoords),1.0).rgba;
-		glossyFactor = glossyness.x * glossyColor.x;
+		glossyFactor = glossyness.x;
 		vEnvColor = texture(cubeTex, reflect(viewDir, normal));	
-		result2 = (1.0-glossyFactor)*vec4(result, 1.0) + glossyFactor*vEnvColor;
-		result = vec3(0.15, 0.15, 0.15) * result2.rgb;
+		cubeColor = (1.0-glossyFactor)*vec4(result, 1.0) + glossyFactor*vEnvColor;
+		result = result * cubeColor.rgb;
 	}
-	
-	//Lights
-	for(int i = 0; i < dl; i++)
-		result += result2.rgb * CalculateDirectionLight(dirLight[i], normal, viewDir);
-	
-	for(int i = 0; i < pl; i++)
-		result += result2.rgb * CalculatePointLight(pointLights[i], normal, viewDir);
 	
 	outColor = vec4(result, 1.0);
 }
