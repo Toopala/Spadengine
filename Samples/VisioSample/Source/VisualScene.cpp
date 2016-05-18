@@ -23,20 +23,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	, useMouse(false)
 	, camSpeed(1.0f)
 {
-	std::vector<char> pShaderData;
-	std::vector<char> vShaderData;
-
-	// Audio test
-	// sge::Audio mixer;
-
-#ifdef DIRECTX11
-	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
-	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
-#elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderLightsNoNormalTexture.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShaderLightsNoNormalTexture.glsl", pShaderData);
-#endif
-
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
@@ -45,13 +31,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 		{ 0, 3, sge::VertexSemantic::TANGENT },
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
-
-
-	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-
-	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
 	//--------------
 	// New pipeline
@@ -66,17 +45,20 @@ VisualScene::VisualScene(sge::Spade *engine)
 	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderDataNormals);
 #endif
 
-	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderData.size());
-	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderData.size());
+	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderDataNormals.size());
+	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderDataNormals.size());
 
-	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
-	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
+	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
+	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
 
 	// ----------------------------------------------------
 
 	// Assimp models
-	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandleCube.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandleCube2.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
@@ -90,7 +72,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityCube->setComponent(modtransformCube);
 
 	modComponentCube = new sge::ModelComponent(modentityCube);
-	modComponentCube->setShininess(250.0f);
+	modComponentCube->setShininess(15.0f);
 	modentityCube->setComponent(modComponentCube);
 
 	modComponentCube->setModelResource(&modelHandleCube);
@@ -98,11 +80,32 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(modentityCube->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(10));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(modentityCube->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(5));
 
 	modComponentCube->setPipeline(pipeline);
 
 	modelHandleCube.getResource<sge::ModelResource>()->createBuffers();
+
+	// Cube2
+	modentityCube2 = EManager->createEntity();
+
+	modtransformCube2 = new sge::TransformComponent(modentityCube2);
+	modentityCube2->setComponent(modtransformCube2);
+
+	modComponentCube2 = new sge::ModelComponent(modentityCube2);
+	modComponentCube2->setShininess(15.0f);
+	modentityCube2->setComponent(modComponentCube2);
+
+	modComponentCube2->setModelResource(&modelHandleCube2);
+	modComponentCube2->setRenderer(engine->getRenderer());
+
+	modentityCube2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
+	modentityCube2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
+	modentityCube2->getComponent<sge::TransformComponent>()->setScale(modentityCube2->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(5));
+
+	modComponentCube2->setPipeline(pipeline);
+
+	modelHandleCube2.getResource<sge::ModelResource>()->createBuffers();
 
 	// Room for scene
 	modentityRoom = EManager->createEntity();
@@ -122,7 +125,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setScale(modentityRoom->getComponent<sge::TransformComponent>()->getScale()*glm::vec3(0.6f));
 
-	modComponentRoom->setPipeline(pipelineNormals);
+	modComponentRoom->setPipeline(pipeline);
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
 
@@ -167,6 +170,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	// Push back game entities
 	gameObjects.push_back(modentityCube);
+	gameObjects.push_back(modentityCube2);
 	gameObjects.push_back(modentityRoom);
 
 	// Camera
@@ -253,7 +257,7 @@ void VisualScene::update(float step)
 		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
 	}
 
-	modentityCube->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(0.0f, 0.0f, 0.0f));
+	//modentityCube->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setAngle(0.0f);
 	//modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 	
@@ -267,7 +271,8 @@ void VisualScene::update(float step)
 	modentityLight->getComponent<sge::PointLightComponent>()->update();
 	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
 	modentityLight2->getComponent<sge::PointLightComponent>()->update();
-	modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
+	//modentityCube->getComponent<sge::TransformComponent>()->setAngle(-rotate);
+	//modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
@@ -390,8 +395,7 @@ VisualScene::~VisualScene()
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 
 
-	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
-	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
+	
 
 	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 }
