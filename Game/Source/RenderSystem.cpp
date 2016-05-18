@@ -19,6 +19,8 @@
 #include "Game/TextComponent.h"
 #include "Game/TransformComponent.h"
 
+#include "Renderer/CubeMap.h"
+
 
 namespace sge
 {
@@ -438,43 +440,71 @@ namespace sge
 			device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
 			device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
 
-			device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
-			device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
+			
+			modelPixelUniformData.hasDiffuseTex = 0;		
+			modelPixelUniformData.hasNormalTex = 0;	
+			modelPixelUniformData.hasSpecularTex = 0;	
+			modelPixelUniformData.hasCubeTex = 0;
 
 			Texture* diff = model->getModelResource()->getMeshes()[i]->diffuseTexture;
 			Texture* norm = model->getModelResource()->getMeshes()[i]->normalTexture;
 			Texture* spec = model->getModelResource()->getMeshes()[i]->specularTexture;
+			CubeMap* cube = model->getCubeMap();
 			if (diff)
 			{
 				device->bindTexture(diff, 0);
+				modelPixelUniformData.hasDiffuseTex = 1;
 			}
 
 			if (norm)
 			{
 				device->bindTexture(norm, 1);
+				modelPixelUniformData.hasNormalTex = 1;
 			}
 
 			if (spec)
 			{
 				device->bindTexture(spec, 2);
-			}
+				modelPixelUniformData.hasSpecularTex = 1;
+			}			
+			
+			modelPixelUniformData.glossyness = model->getGlossyness();
 
+			if (cube)
+			{
+				device->bindCubeMap(cube, 3);
+				modelPixelUniformData.hasCubeTex = 1;
+			}			
+
+			device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
+			device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 
 			device->draw(model->getModelResource()->getMeshes()[i]->vertices.size());
+
+			device->debindCubeMap(cube, 3);
 
 			if (diff)
 			{
 				device->debindTexture(diff, 0);
+				modelPixelUniformData.hasDiffuseTex = 0;
 			}
 
 			if (norm)
 			{
 				device->debindTexture(norm, 1);
+				modelPixelUniformData.hasNormalTex = 0;
 			}
 
 			if (spec)
 			{
 				device->debindTexture(spec, 2);
+				modelPixelUniformData.hasSpecularTex = 0;
+			}
+
+			if (cube)
+			{
+				device->debindCubeMap(cube, 3);
+				modelPixelUniformData.hasCubeTex = 0;
 			}
 		}        
 

@@ -6,6 +6,7 @@
 #include "Resources/ModelResource.h"
 #include "Renderer/Pipeline.h"
 #include "Renderer/Texture.h"
+#include "Renderer/CubeMap.h"
 
 namespace sge
 {
@@ -32,10 +33,20 @@ namespace sge
 
 		float getShininess();
 
+		void setGlossyness(float gloss);
+
+		float getGlossyness();
+
+		CubeMap* getCubeMap();
+
+		void setCubeMap(CubeMap* cube);
+
 	private:
 		
+		CubeMap* myCube;
 		sge::Handle <sge::ModelResource>* modelHandle;
 		Pipeline* pipeline;
 		float shininess;
+		float glossyness;
 	};
 }

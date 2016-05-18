@@ -145,20 +145,6 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 
 BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f), played(false)
 {
-	std::vector<char> pShaderData;
-	std::vector<char> vShaderData;
-
-
-	
-
-#ifdef DIRECTX11
-	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
-	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
-#elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderLightsNoNormalTexture.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShaderLightsNoNormalTexture.glsl", pShaderData);
-#endif
-
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
@@ -168,14 +154,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-
-	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
-
 	//--------------
-	// New pipeline
+	// pipeline
 	std::vector<char> pShaderDataNormals;
 	std::vector<char> vShaderDataNormals;
 
@@ -207,7 +187,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -288,6 +268,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modcomponentEarth = new sge::ModelComponent(modentityEarth);
 	modcomponentEarth->setShininess(50.0f);
+	modcomponentEarth->setGlossyness(1.0f);
+
+	//modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap())
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
@@ -387,8 +370,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
-	modcomponentTree->setPipeline(pipeline);
-	modcomponentEarth->setPipeline(pipeline);
+	modcomponentTree->setPipeline(pipelineNormals);
+	modcomponentEarth->setPipeline(pipelineNormals);
 	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
@@ -653,14 +636,14 @@ BulletTestScene::~BulletTestScene()
 	sge::ResourceManager::getMgr().release(modelHandleTree);
 	sge::ResourceManager::getMgr().release(modelHandleEarth);
 
-	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
+	//engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
 
 
-	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
-	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
+	//engine->getRenderer()->getDevice()->deleteShader(vertexShader);
+	//engine->getRenderer()->getDevice()->deleteShader(pixelShader);
 
-	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
+	//engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 }
 
 void BulletTestScene::update(float step)
