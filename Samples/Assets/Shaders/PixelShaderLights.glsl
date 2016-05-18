@@ -90,19 +90,20 @@ void main()
 		result += CalculatePointLight(pointLights[i], normal, viewDir);
 	
 	//Cubemap
-	vec4 glossyColor = vec4(0.0);
-	float glossyFactor = 0.0;
-	vec4 vEnvColor = vec4(0.0);
-	vec4 cubeColor = vec4(1.0);
+	vec3 I = vec3(0.0);
+	vec3 R = vec3(0.0);
+	vec3 cubeColor = vec3(0.0);
 	if(hasCubeTex == 1)
 	{
-		glossyFactor = glossyness.x;
-		vEnvColor = texture(cubeTex, reflect(viewDir, normal));	
-		cubeColor = (1.0-glossyFactor)*vec4(result, 1.0) + glossyFactor*vEnvColor;
-		result = result * cubeColor.rgb;
+		I = normalize(fragPosition - viewPos.rgb);
+		R = reflect(I, normal);
+		cubeColor = texture(cubeTex, R).rgb;
+		outColor = vec4(cubeColor, 1.0);
 	}
-	
-	outColor = vec4(result, 1.0);
+	else
+	{
+		outColor = vec4(result, 1.0);
+	}
 }
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
@@ -132,10 +133,6 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	else
 	{
 		specular = light.specular.xyz * spec;
-	}
-	if(hasCubeTex == 1)
-	{
-		specular = vec3(0.15,0.15,0.15) * specular;
 	}
 	return (ambient + diffuse + specular);
 }
@@ -171,10 +168,6 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 	else
 	{
 		specular = light.specular.xyz * spec;
-	}
-	if(hasCubeTex == 1)
-	{
-		specular = vec3(0.15,0.15,0.15) * specular;
 	}
 	ambient *= attenuation;
 	diffuse *= attenuation;

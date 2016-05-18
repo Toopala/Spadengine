@@ -276,12 +276,12 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	sge::Handle<sge::TextureResource> tex4;
 	sge::Handle<sge::TextureResource> tex5;
 	sge::Handle<sge::TextureResource> tex6;
-	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_BK.png");
-	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_DN.png");
-	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_FR.png");
-	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_LF.png");
-	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_RT.png");
-	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_UP.png");
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/right.jpg"); //TODO fix order
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/left.jpg");
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/top.jpg");
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/bottom.jpg");
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/back.jpg");
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/front.jpg");
 	
 	unsigned char* source[6];
 	source[0] = tex1.getResource<sge::TextureResource>()->getData();
@@ -290,7 +290,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	source[3] = tex4.getResource<sge::TextureResource>()->getData();
 	source[4] = tex5.getResource<sge::TextureResource>()->getData();
 	source[5] = tex6.getResource<sge::TextureResource>()->getData();
-	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(64, 64, source));
+	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(2048, 2048, source));
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
