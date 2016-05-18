@@ -65,6 +65,7 @@ void main()
 	
 	vec3 normal = vec3(0.0);
 	vec3 viewDir= vec3(0.0);
+	//normal texture
 	if(hasNormalTex == 1)
 	{
 		normal = normalize(normals);
@@ -81,12 +82,6 @@ void main()
 	
     vec3 result = vec3(0.0);
 	
-	for(int i = 0; i < dl; i++)
-		result += CalculateDirectionLight(dirLight[i], normal, viewDir);
-	
-	for(int i = 0; i < pl; i++)
-		result += CalculatePointLight(pointLights[i], normal, viewDir);
-    
 	//Cubemap
 	vec4 glossyColor = vec4(0.0);
 	float glossyFactor = 0.0;
@@ -98,8 +93,15 @@ void main()
 		glossyFactor = glossyness.x * glossyColor.x;
 		vEnvColor = texture(cubeTex, reflect(viewDir, normal));	
 		result2 = (1.0-glossyFactor)*vec4(result, 1.0) + glossyFactor*vEnvColor;
-		result = result2.rgb;
+		result = vec3(0.15, 0.15, 0.15) * result2.rgb;
 	}
+	
+	//Lights
+	for(int i = 0; i < dl; i++)
+		result += result2.rgb * CalculateDirectionLight(dirLight[i], normal, viewDir);
+	
+	for(int i = 0; i < pl; i++)
+		result += result2.rgb * CalculatePointLight(pointLights[i], normal, viewDir);
 	
 	outColor = vec4(result, 1.0);
 }
@@ -131,6 +133,10 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	else
 	{
 		specular = light.specular.xyz * spec;
+	}
+	if(hasCubeTex == 1)
+	{
+		specular = vec3(0.15,0.15,0.15) * specular;
 	}
 	return (ambient + diffuse + specular);
 }
@@ -166,6 +172,10 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 	else
 	{
 		specular = light.specular.xyz * spec;
+	}
+	if(hasCubeTex == 1)
+	{
+		specular = vec3(0.15,0.15,0.15) * specular;
 	}
 	ambient *= attenuation;
 	diffuse *= attenuation;

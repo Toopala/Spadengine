@@ -187,7 +187,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -269,8 +269,28 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponentEarth = new sge::ModelComponent(modentityEarth);
 	modcomponentEarth->setShininess(50.0f);
 	modcomponentEarth->setGlossyness(1.0f);
-
-	//modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap())
+	
+	sge::Handle<sge::TextureResource> tex1;
+	sge::Handle<sge::TextureResource> tex2;
+	sge::Handle<sge::TextureResource> tex3;
+	sge::Handle<sge::TextureResource> tex4;
+	sge::Handle<sge::TextureResource> tex5;
+	sge::Handle<sge::TextureResource> tex6;
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_BK.png");
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_DN.png");
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_FR.png");
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_LF.png");
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_RT.png");
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedroomCubeMap_UP.png");
+	
+	unsigned char* source[6];
+	source[0] = tex1.getResource<sge::TextureResource>()->getData();
+	source[1] = tex2.getResource<sge::TextureResource>()->getData();
+	source[2] = tex3.getResource<sge::TextureResource>()->getData();
+	source[3] = tex4.getResource<sge::TextureResource>()->getData();
+	source[4] = tex5.getResource<sge::TextureResource>()->getData();
+	source[5] = tex6.getResource<sge::TextureResource>()->getData();
+	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(64, 64, source));
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
