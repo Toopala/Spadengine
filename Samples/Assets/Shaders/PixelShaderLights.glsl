@@ -94,12 +94,26 @@ void main()
 	vec3 I = vec3(0.0);
 	vec3 R = vec3(0.0);
 	vec4 cubeColor = vec4(0.0);
+	float glossyFactor = 0.0;
+	vec4 glossyColor = vec4(0.0);
+	vec4 resultCube = vec4(0.0);
 	if(hasCubeTex == 1)
 	{
 		I = viewDir;
 		R = reflect(I, normal);
 		cubeColor = texture(cubeTex, R);
-		outColor = cubeColor;
+		if(hasSpecularTex == 1)
+		{
+			glossyColor = texture(specularTex, texcoords);
+			glossyFactor = glossyness * glossyColor.x;
+		}
+		else
+		{
+			glossyFactor = glossyness;
+		}		
+		
+		resultCube = (1.0-glossyFactor)* vec4(result, 1.0) + (glossyFactor)*cubeColor;
+		outColor = resultCube;
 	}
 	else
 	{
