@@ -52,7 +52,6 @@ private:
 	sge::math::mat4 P;
 
 	sge::Pipeline* pipeline;
-	sge::Pipeline* pipelineNormals;
 	sge::Buffer* vertexBuffer;
 	sge::Buffer* uniformBuffer;
 	sge::Shader* vertexShader;
