@@ -1,5 +1,5 @@
 #version 440 core
-#extension GL_NV_shadow_samplers_cube : enable
+//#extension GL_NV_shadow_samplers_cube : enable
 
 in vec2 texcoords;
 in vec3 normals;
@@ -93,13 +93,13 @@ void main()
 	//Cubemap
 	vec3 I = vec3(0.0);
 	vec3 R = vec3(0.0);
-	vec3 cubeColor = vec3(0.0);
+	vec4 cubeColor = vec4(0.0);
 	if(hasCubeTex == 1)
 	{
 		I = normalize(fragPosition - viewPos.rgb);
 		R = reflect(I, normal);
-		cubeColor = textureCube(cubeTex, R).rgb;
-		outColor = vec4(cubeColor, 1.0);
+		cubeColor = texture(cubeTex, R);
+		outColor = cubeColor;
 	}
 	else
 	{

@@ -174,26 +174,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
 	//--------------
 
-	//--------------
-	// pipeline cubemap
-	std::vector<char> pShaderDataCube;
-	std::vector<char> vShaderDataCube;
-
-#ifdef DIRECTX11
-	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderDataNormals);
-	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderDataNormals);
-#elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderCube.glsl", vShaderDataCube);
-	loadTextShader("../Assets/Shaders/PixelShaderCube.glsl", pShaderDataCube);
-#endif
-
-	vertexShaderCube = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataCube.data(), vShaderDataCube.size());
-	pixelShaderCube = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataCube.data(), pShaderDataCube.size());
-
-	pipelineCube = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShaderCube, pixelShaderCube);
-	engine->getRenderer()->getDevice()->bindPipeline(pipelineCube);
-	//--------------
-
 	//Assimp test
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
@@ -207,7 +187,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleCube.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -411,7 +391,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modcomponentTree->setPipeline(pipelineNormals);
-	modcomponentEarth->setPipeline(pipelineCube);
+	modcomponentEarth->setPipeline(pipelineNormals);
 	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();

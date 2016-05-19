@@ -558,6 +558,7 @@ namespace sge
 
 	void GraphicsDevice::bindCubeMap(CubeMap* cubeMap, size_t slot)
 	{
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, reinterpret_cast<GL4CubeMap*>(cubeMap)->id);
 
 		checkError();
@@ -565,6 +566,7 @@ namespace sge
 
 	void GraphicsDevice::debindCubeMap(CubeMap* cubeMap, size_t slot)
 	{
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		checkError();
