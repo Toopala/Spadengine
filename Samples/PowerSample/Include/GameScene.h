@@ -1,12 +1,28 @@
-#include <vector>
-
 #include "Game/Scene.h"
+
+#include "Game/ComponentFactory.h"
+#include "Game/EntityManager.h"
+
+#include "Resources/ModelResource.h"
+#include "Resources/ResourceManager.h"
 
 // Forward declares
 namespace sge
 {
-    class Spade;
+    class Entity;
     class RenderSystem;
+    class Spade;
+
+    struct Pipeline;
+    struct Shader;
+    struct Texture;
+
+    class DirLightComponent;
+    class PointLightComponent;
+    class SpotLightComponent;
+    class ModelComponent;
+    class TransformComponent;
+    class CameraComponent;
 }
 
 class GameScene : public sge::Scene
@@ -20,6 +36,31 @@ public:
     void draw();
 
 private:
+    void initPipelines();
+    void initResources();
+
+    sge::Entity* createEarth();
+    sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
+
+    sge::Entity* earthEntity;
+    sge::Entity* cameraEntity;
+
     sge::Spade* engine;
     sge::RenderSystem* renderer;
+    sge::GraphicsDevice* device;
+
+    sge::Handle<sge::ModelResource> earthResource;
+
+    sge::Pipeline* pipeline;
+
+    sge::Shader* vertexShader;
+    sge::Shader* pixelShader;
+
+    sge::ComponentFactory<sge::TransformComponent> transformFactory;
+    sge::ComponentFactory<sge::ModelComponent> modelFactory;
+    sge::ComponentFactory<sge::CameraComponent> cameraFactory;
+    sge::ComponentFactory<sge::DirLightComponent> dirLightFactory;
+    sge::ComponentFactory<sge::PointLightComponent> pointLightFactory;
+
+    sge::EntityManager entityManager;
 };

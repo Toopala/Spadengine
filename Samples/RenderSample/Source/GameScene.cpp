@@ -4,20 +4,6 @@
 #include "Renderer/Texture.h"
 #include "Renderer/RenderTarget.h"
 
-/*
-TODO enko
-
-Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
-SpotLightComponent do!
-Instanced rendering do!
-Deferred rendering do!
-Render targeteille depth-puskuri!
-Optimoi bulletscenea (nykii ihan vitusti)
-    - Esim valojen dataa ei tarvii viedä joka objektille erikseen
-    - Sorttaus takasin kuntoon jos tarviijaksaahaluaa
-Tee se demo ja siihen kaikkea hauskaa (blur, hdr voe pojat efektejä)
-*/
-
 GameScene::GameScene(sge::Spade* engine) :
     engine(engine),
     renderer(engine->getRenderer()),

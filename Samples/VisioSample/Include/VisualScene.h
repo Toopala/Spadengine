@@ -63,15 +63,15 @@ private:
 	sge::Texture* texture2;
 
 	// Handle
-	sge::Handle <sge::ModelResource> modelHandleCube, modelHandleCube2, modelHandleRoom;
+	sge::Handle <sge::ModelResource> modelHandleCube, modelHandleCube2, modelHandleCube3, modelHandleRoom;
 									
 	// Entity
 	sge::EntityManager* EManager;
-	sge::Entity* modentityCube, *modentityCube2, *modentityRoom, *modentityLight, *modentityLight2;
+	sge::Entity* modentityCube, *modentityCube2, *modentityCube3, *modentityRoom, *modentityLight, *modentityLight2;
 
-	sge::TransformComponent *modtransformCube, *modtransformCube2, *modtransformRoom, *modtransformLight, *modtransformLight2;
+	sge::TransformComponent *modtransformCube, *modtransformCube2, *modtransformCube3, *modtransformRoom, *modtransformLight, *modtransformLight2;
 
-	sge::ModelComponent* modComponentCube,*modComponentCube2, *modComponentRoom, *modComponentLight, *modComponentLight2;
+	sge::ModelComponent* modComponentCube,*modComponentCube2, *modComponentCube3, *modComponentRoom, *modComponentLight, *modComponentLight2;
 
 
 	// Light components

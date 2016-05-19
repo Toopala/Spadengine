@@ -45,6 +45,7 @@
     <Import Project="..\..\Config\Properties\Spade.props" />
     <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpDebug.props" />
+    <Import Project="..\..\Config\Properties\bulletphysics.props" />
     <Import Project="..\..\Config\Properties\freetype.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -61,6 +62,7 @@
     <Import Project="..\..\Config\Properties\Spade.props" />
     <Import Project="..\..\Config\Properties\stb_image.props" />
     <Import Project="..\..\Config\Properties\assimpRelease.props" />
+    <Import Project="..\..\Config\Properties\bulletphysics.props" />
     <Import Project="..\..\Config\Properties\freetype.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
