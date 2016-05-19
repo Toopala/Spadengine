@@ -105,8 +105,8 @@ GameScene::GameScene(sge::Spade* engine) :
 }
 
 GameScene::~GameScene()
-{
-	physicsSystem->getWorld()->removeRigidBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
+{ // DEBUG ASSERTION FAILURE
+	/*physicsSystem->getWorld()->removeRigidBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
 	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>()->getMotionState();
 	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>();
 	sge::ResourceManager::getMgr().release(modelHandle);
@@ -117,7 +117,7 @@ GameScene::~GameScene()
 	{
 		delete camera;
 	}
-	cameras.clear();
+	cameras.clear();*/
 }
 
 void GameScene::loadTextShader(const std::string& path, std::vector<char>& data)
@@ -177,7 +177,7 @@ void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
     // First pass
-	renderer->addCameras(1, &cameras.front());
+	// renderer->addCameras(1, &cameras.front());
 
     renderer->begin();
     
