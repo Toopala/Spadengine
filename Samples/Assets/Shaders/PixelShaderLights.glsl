@@ -90,13 +90,13 @@ void main()
 	for(int i = 0; i < pl; i++)
 		result += CalculatePointLight(pointLights[i], normal, viewDir);
 	
-	//Cubemap
+	//Cubemap TODO: fix
 	vec3 I = vec3(0.0);
 	vec3 R = vec3(0.0);
 	vec4 cubeColor = vec4(0.0);
 	if(hasCubeTex == 1)
 	{
-		I = normalize(fragPosition - viewPos.rgb);
+		I = viewDir;
 		R = reflect(I, normal);
 		cubeColor = texture(cubeTex, R);
 		outColor = cubeColor;
