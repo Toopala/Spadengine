@@ -84,7 +84,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(0.9f));
 
 	modComponentCube->setPipeline(pipeline);
 
@@ -163,7 +163,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityLight = EManager->createEntity();
 	modtransformLight = new sge::TransformComponent(modentityLight);
 	modentityLight->setComponent(modtransformLight);
-	modentityLight->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(26.0f, -26.0f, 26.0f));
+	modentityLight->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 5.0f, 9.0f));
 	pointLightComp = new sge::PointLightComponent(modentityLight);
 	modentityLight->setComponent(pointLightComp);
 
@@ -173,8 +173,8 @@ VisualScene::VisualScene(sge::Spade *engine)
 	pointLight.mylinear = float(0.09);
 	pointLight.quadratic = float(0.0032);
 	pointLight.pad = 0.0f;
-	pointLight.ambient = sge::math::vec4(0.05f, 0.05f, 0.05f, 1.0);
-	pointLight.diffuse = sge::math::vec4(3.0f, 3.0f, 3.0f, 1.0);
+	pointLight.ambient = sge::math::vec4(0.1f, 0.1f, 0.1f, 1.0);
+	pointLight.diffuse = sge::math::vec4(5.0f, 5.0f, 0.0f, 1.0);
 	pointLight.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight->getComponent<sge::PointLightComponent>()->setLightData(pointLight);
@@ -182,7 +182,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityLight2 = EManager->createEntity();
 	modtransformLight2 = new sge::TransformComponent(modentityLight2);
 	modentityLight2->setComponent(modtransformLight2);
-	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-26.0f, -26.0f, -26.0f));
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 5.0f, 9.0f));
 	pointLightComp2 = new sge::PointLightComponent(modentityLight2);
 	modentityLight2->setComponent(pointLightComp2);
 
@@ -192,8 +192,8 @@ VisualScene::VisualScene(sge::Spade *engine)
 	pointLight2.mylinear = float(0.09);
 	pointLight2.quadratic = float(0.0032);
 	pointLight2.pad = 0.0f;
-	pointLight2.ambient = sge::math::vec4(0.05f, 0.05f, 0.05f, 1.0);
-	pointLight2.diffuse = sge::math::vec4(3.0f, 3.0f, 3.0f, 1.0);
+	pointLight2.ambient = sge::math::vec4(0.1f, 0.1f, 0.1f, 1.0);
+	pointLight2.diffuse = sge::math::vec4(0.0f, 5.0f, 5.0f, 1.0);
 	pointLight2.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight2->getComponent<sge::PointLightComponent>()->setLightData(pointLight2);
@@ -288,13 +288,13 @@ void VisualScene::update(float step)
 	modentityCube2->getComponent<sge::TransformComponent>()->setAngle(-rotate);
 	modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
 
-	//float lightX = -25.0f*cos(alpha);
-	//float lightY = -25.0f*sin(alpha);
-	//float lightZ = -25.0f*sin(alpha);
+	float lightX = -25.0f*cos(alpha);
+	float lightY = -25.0f*sin(alpha);
+	float lightZ = -25.0f*sin(alpha);
 
-	//modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
+	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
 	modentityLight->getComponent<sge::PointLightComponent>()->update();
-	//modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
 	modentityLight2->getComponent<sge::PointLightComponent>()->update();
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
