@@ -153,6 +153,11 @@ namespace sge
             float numofpl;
 			float numofdl;
 			float numofsl;
+			float glossyness;
+			int hasDiffuseTex;
+			int hasNormalTex;
+			int hasSpecularTex;
+			int hasCubeTex;
 			float pad;
         } modelPixelUniformData;
 

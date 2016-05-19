@@ -17,8 +17,8 @@
     <image id="NormalMapTile_png" name="NormalMapTile_png">
       <init_from>sci_fi_normal.jpg</init_from>
     </image>
-    <image id="Untitled_png" name="Untitled_png">
-      <init_from>Untitled.png</init_from>
+    <image id="sci_fi_specular" name="sci_fi_specular">
+      <init_from>sci_fi_specular.png</init_from>
     </image>
   </library_images>
   <library_effects>
@@ -34,14 +34,14 @@
             <source>diff-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="Untitled_png-surface">
+        <newparam sid="sci_fi_specular-surface">
           <surface type="2D">
-            <init_from>Untitled_png</init_from>
+            <init_from>sci_fi_specular</init_from>
           </surface>
         </newparam>
-        <newparam sid="Untitled_png-sampler">
+        <newparam sid="sci_fi_specular-sampler">
           <sampler2D>
-            <source>Untitled_png-surface</source>
+            <source>sci_fi_specular-surface</source>
           </sampler2D>
         </newparam>
         <newparam sid="NormalMapTile_png-surface">
@@ -66,10 +66,10 @@
               <texture texture="diff-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
-              <texture texture="Untitled_png-sampler" texcoord="UVMap"/>
+              <texture texture="sci_fi_specular-sampler" texcoord="UVMap"/>
             </specular>
             <shininess>
-              <float sid="shininess">33</float>
+              <float sid="shininess">50</float>
             </shininess>
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>

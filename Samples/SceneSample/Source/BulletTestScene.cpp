@@ -145,20 +145,6 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 
 BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f), played(false)
 {
-	std::vector<char> pShaderData;
-	std::vector<char> vShaderData;
-
-
-	
-
-#ifdef DIRECTX11
-	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderData);
-	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderData);
-#elif OPENGL4
-	loadTextShader("../Assets/Shaders/VertexShaderLightsNoNormalTexture.glsl", vShaderData);
-	loadTextShader("../Assets/Shaders/PixelShaderLightsNoNormalTexture.glsl", pShaderData);
-#endif
-
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
 		{ 0, 3, sge::VertexSemantic::POSITION },
@@ -168,14 +154,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 		{ 0, 2, sge::VertexSemantic::TEXCOORD }
 	} };
 
-	vertexShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderData.data(), vShaderData.size());
-	pixelShader = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderData.data(), pShaderData.size());
-
-	pipeline = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-	engine->getRenderer()->getDevice()->bindPipeline(pipeline);
-
 	//--------------
-	// New pipeline
+	// pipeline
 	std::vector<char> pShaderDataNormals;
 	std::vector<char> vShaderDataNormals;
 
@@ -194,6 +174,26 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
 	//--------------
 
+	//--------------
+	// pipeline cubemap
+	std::vector<char> pShaderDataCube;
+	std::vector<char> vShaderDataCube;
+
+#ifdef DIRECTX11
+	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderDataNormals);
+	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderDataNormals);
+#elif OPENGL4
+	loadTextShader("../Assets/Shaders/VertexShaderCube.glsl", vShaderDataCube);
+	loadTextShader("../Assets/Shaders/PixelShaderCube.glsl", pShaderDataCube);
+#endif
+
+	vertexShaderCube = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataCube.data(), vShaderDataCube.size());
+	pixelShaderCube = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataCube.data(), pShaderDataCube.size());
+
+	pipelineCube = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShaderCube, pixelShaderCube);
+	engine->getRenderer()->getDevice()->bindPipeline(pipelineCube);
+	//--------------
+
 	//Assimp test
 	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
@@ -207,7 +207,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -251,7 +251,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modtransformFloor);
 
 	modcomponentFloor = new sge::ModelComponent(modentityFloor);
-	modcomponentFloor->setShininess(100.0f);
+	modcomponentFloor->setShininess(256.0f);
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
@@ -288,6 +288,29 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modcomponentEarth = new sge::ModelComponent(modentityEarth);
 	modcomponentEarth->setShininess(50.0f);
+	modcomponentEarth->setGlossyness(1.0f);
+	
+	sge::Handle<sge::TextureResource> tex1;
+	sge::Handle<sge::TextureResource> tex2;
+	sge::Handle<sge::TextureResource> tex3;
+	sge::Handle<sge::TextureResource> tex4;
+	sge::Handle<sge::TextureResource> tex5;
+	sge::Handle<sge::TextureResource> tex6;
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/right.jpg"); //TODO fix order
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/left.jpg");
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/top.jpg");
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/bottom.jpg");
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/back.jpg");
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/front.jpg");
+	
+	unsigned char* source[6];
+	source[0] = tex1.getResource<sge::TextureResource>()->getData();
+	source[1] = tex2.getResource<sge::TextureResource>()->getData();
+	source[2] = tex3.getResource<sge::TextureResource>()->getData();
+	source[3] = tex4.getResource<sge::TextureResource>()->getData();
+	source[4] = tex5.getResource<sge::TextureResource>()->getData();
+	source[5] = tex6.getResource<sge::TextureResource>()->getData();
+	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(2048, 2048, source));
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
@@ -387,8 +410,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent->setPipeline(pipelineNormals);
 	modcomponent2->setPipeline(pipelineNormals);
 	modcomponentFloor->setPipeline(pipelineNormals);
-	modcomponentTree->setPipeline(pipeline);
-	modcomponentEarth->setPipeline(pipeline);
+	modcomponentTree->setPipeline(pipelineNormals);
+	modcomponentEarth->setPipeline(pipelineCube);
 	modcomponentRoom->setPipeline(pipelineNormals);
 
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
@@ -653,14 +676,14 @@ BulletTestScene::~BulletTestScene()
 	sge::ResourceManager::getMgr().release(modelHandleTree);
 	sge::ResourceManager::getMgr().release(modelHandleEarth);
 
-	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
+	//engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
 
 
-	engine->getRenderer()->getDevice()->deleteShader(vertexShader);
-	engine->getRenderer()->getDevice()->deleteShader(pixelShader);
+	//engine->getRenderer()->getDevice()->deleteShader(vertexShader);
+	//engine->getRenderer()->getDevice()->deleteShader(pixelShader);
 
-	engine->getRenderer()->getDevice()->deletePipeline(pipeline);
+	//engine->getRenderer()->getDevice()->deletePipeline(pipeline);
 }
 
 void BulletTestScene::update(float step)

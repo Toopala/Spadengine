@@ -7,7 +7,7 @@
 namespace sge
 {
 	ModelComponent::ModelComponent(Entity* entity) :
-		RenderComponent(entity), shininess(2.0f)
+		RenderComponent(entity), shininess(2.0f), glossyness(0.0f)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 
@@ -38,5 +38,25 @@ namespace sge
 	float ModelComponent::getShininess()
 	{
 		return shininess;
+	}
+
+	void ModelComponent::setGlossyness(float gloss)
+	{
+		this->glossyness = gloss;
+	}
+
+	float ModelComponent::getGlossyness()
+	{
+		return glossyness;
+	}
+
+	CubeMap* ModelComponent::getCubeMap()
+	{
+		return myCube;
+	}
+
+	void ModelComponent::setCubeMap(CubeMap* cube)
+	{
+		myCube = cube;
 	}
 }

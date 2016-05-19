@@ -1,4 +1,5 @@
 #version 440 core
+#extension GL_NV_shadow_samplers_cube : enable
 
 in vec2 texcoords;
 in vec3 normals;
@@ -11,12 +12,11 @@ layout(location = 0) out vec4 outColor;
 layout(binding = 0) uniform sampler2D diffuseTex;
 layout(binding = 1) uniform sampler2D normalTex;
 layout(binding = 2) uniform sampler2D specularTex;
+layout(binding = 3) uniform samplerCube cubeTex;
 
 #define NUM_POINT_LIGHTS 40
 #define NUM_DIR_LIGHTS 10
 #define NUM_SPOT_LIGHTS 0
-
-//float shininess = 100.0;
 
 struct DirLight
 {
@@ -48,6 +48,11 @@ layout(binding = 1, std140) uniform pixelUniform
 	float numofpl;
 	float numofdl;
 	float numofsl;
+	float glossyness;
+	int hasDiffuseTex;
+	int hasNormalTex;
+	int hasSpecularTex;
+	int hasCubeTex;
 	float pad;
 };
 
@@ -59,25 +64,60 @@ void main()
 	int dl = int(numofdl);
 	int pl = int(numofpl);
 	
-	vec3 normal = normalize(normals);
-	normal = texture(normalTex, texcoords).rgb;
-	normal = normalize(normal * 2.0 - 1.0);
+	vec3 normal = vec3(0.0);
+	vec3 viewDir= vec3(0.0);
+	//normal texture
+	if(hasNormalTex == 1)
+	{
+		normal = normalize(normals);
+		normal = texture(normalTex, texcoords).rgb;
+		normal = normalize(normal * 2.0 - 1.0);
+		
+		viewDir = TBNVout * normalize(viewPos.xyz - fragPosition);
+	}
+	else
+	{
+		normal = normalize(normals);
+		viewDir = normalize(viewPos.xyz - fragPosition);
+	}	
 	
-	vec3 viewDir = TBNVout * normalize(viewPos.xyz - fragPosition);
     vec3 result = vec3(0.0);
 	
+	//Lights
 	for(int i = 0; i < dl; i++)
 		result += CalculateDirectionLight(dirLight[i], normal, viewDir);
 	
 	for(int i = 0; i < pl; i++)
 		result += CalculatePointLight(pointLights[i], normal, viewDir);
-    
-	outColor = vec4(result, 1.0);
+	
+	//Cubemap
+	vec3 I = vec3(0.0);
+	vec3 R = vec3(0.0);
+	vec3 cubeColor = vec3(0.0);
+	if(hasCubeTex == 1)
+	{
+		I = normalize(fragPosition - viewPos.rgb);
+		R = reflect(I, normal);
+		cubeColor = textureCube(cubeTex, R).rgb;
+		outColor = vec4(cubeColor, 1.0);
+	}
+	else
+	{
+		outColor = vec4(result, 1.0);
+	}
 }
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-	vec3 lightDir = TBNVout * normalize(-light.direction.xyz);
+	vec3 lightDir= vec3(0.0);
+	if(hasNormalTex == 1)
+	{
+		lightDir = TBNVout * normalize(-light.direction.xyz);
+	}
+	else
+	{
+		lightDir = normalize(-light.direction.xyz);
+	}
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
@@ -86,13 +126,30 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	// Combine results
 	vec3 ambient = light.ambient.xyz * texture(diffuseTex, texcoords).rgb;
 	vec3 diffuse = light.diffuse.xyz * diff * texture(diffuseTex, texcoords).rgb;
-	vec3 specular = light.specular.xyz * spec * texture(specularTex, texcoords).rgb;
+	vec3 specular = vec3(0.0);
+	if(hasSpecularTex == 1)
+	{	
+		specular = light.specular.xyz * spec * texture(specularTex, texcoords).rgb;
+	}
+	else
+	{
+		specular = light.specular.xyz * spec;
+	}
 	return (ambient + diffuse + specular);
 }
 
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 {
-	vec3 lightDir = TBNVout * normalize(light.position.xyz - fragPosition);
+	vec3 lightDir= vec3(0.0);
+	if(hasNormalTex == 1)
+	{
+		lightDir = TBNVout * normalize(light.position.xyz - fragPosition);
+	}
+	else
+	{
+		lightDir = normalize(light.position.xyz - fragPosition);
+	}
+	
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// Specular shading
@@ -104,7 +161,15 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 	// Combine results
 	vec3 ambient = light.ambient.xyz * texture(diffuseTex, texcoords).rgb;
 	vec3 diffuse = light.diffuse.xyz * diff * texture(diffuseTex, texcoords).rgb;
-	vec3 specular = light.specular.xyz * spec * texture(specularTex, texcoords).rgb;
+	vec3 specular = vec3(0.0);
+	if(hasSpecularTex == 1)
+	{
+		specular = light.specular.xyz * spec * texture(specularTex, texcoords).rgb;
+	}
+	else
+	{
+		specular = light.specular.xyz * spec;
+	}
 	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;

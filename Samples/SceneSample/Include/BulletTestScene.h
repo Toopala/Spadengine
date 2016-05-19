@@ -95,12 +95,12 @@ private:
 	sge::math::mat4 V;
 	sge::math::mat4 P;
 
-	sge::Pipeline* pipeline;
+	sge::Pipeline* pipelineCube;
 	sge::Pipeline* pipelineNormals;
 	sge::Buffer* vertexBuffer;
 	sge::Buffer* uniformBuffer;
-	sge::Shader* vertexShader;
-	sge::Shader* pixelShader;
+	sge::Shader* vertexShaderCube;
+	sge::Shader* pixelShaderCube;
 	sge::Shader* vertexShader2;
 	sge::Shader* pixelShader2;
 	sge::Texture* texture;
