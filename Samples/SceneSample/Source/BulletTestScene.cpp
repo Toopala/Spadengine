@@ -187,7 +187,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeBothDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleCube.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -284,12 +284,12 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/front.jpg");
 	
 	unsigned char* source[6];
-	source[5] = tex1.getResource<sge::TextureResource>()->getData();
-	source[4] = tex2.getResource<sge::TextureResource>()->getData();
-	source[3] = tex3.getResource<sge::TextureResource>()->getData();
+	source[0] = tex2.getResource<sge::TextureResource>()->getData();
+	source[1] = tex1.getResource<sge::TextureResource>()->getData();
 	source[2] = tex4.getResource<sge::TextureResource>()->getData();
-	source[1] = tex5.getResource<sge::TextureResource>()->getData();
-	source[0] = tex6.getResource<sge::TextureResource>()->getData();
+	source[3] = tex3.getResource<sge::TextureResource>()->getData();
+	source[4] = tex6.getResource<sge::TextureResource>()->getData();
+	source[5] = tex5.getResource<sge::TextureResource>()->getData();
 	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(2048, 2048, source));
 	modentityEarth->setComponent(modcomponentEarth);
 
