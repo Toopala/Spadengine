@@ -310,7 +310,6 @@ namespace sge
 
     void RenderSystem::renderText(TextComponent* text)
     {
-        // TODO text rendering uses sprite pipeline. Change if necessary.
         device->bindPipeline(textPipeline);
 
         sge::Font* font = text->getFont();
@@ -325,21 +324,11 @@ namespace sge
                 characters.erase(characters.begin());
             }
 
+			// Goes through all characters, loads them and stores the glyph info and textures needed to render text for later use
+			// in order to make the actual drawing faster and more efficient.
             for (size_t i = 0; i < text->getText().size(); i++)
             {
                 FT_Load_Char(font->face, text->getText()[i], FT_LOAD_RENDER);
-
-				/*
-                unsigned char* expandedData = new unsigned char[2 * slot->bitmap.width * slot->bitmap.rows];
-                for (size_t j = 0; j < slot->bitmap.rows; j++)
-                {
-                    for (size_t k = 0; k < slot->bitmap.width; k++)
-                    {
-                        expandedData[2 * (k + j * slot->bitmap.width)] = 255;
-                        expandedData[2 * (k + j * slot->bitmap.width) + 1] = (k >= slot->bitmap.width || j >= slot->bitmap.rows) ? 0 : slot->bitmap.buffer[k + slot->bitmap.width * j];
-                    }
-                }
-				*/
 
                 sge::Texture* texture = device->createTextTexture(slot->bitmap.width, slot->bitmap.rows, slot->bitmap.buffer);
 
@@ -352,7 +341,6 @@ namespace sge
                 characters.push_back(character);
 
                 charTextures.push_back(texture);
-                //delete[] expandedData;
             }
             previousText = text->getText();
         }
@@ -363,7 +351,7 @@ namespace sge
         SGE_ASSERT(cameras.size() > pass);
 
         // Render text
-        sge::math::vec2 pen = { 0, 0 };
+        sge::math::vec2 pen = { 0, 0 }; // The position where the character is drawn.
         sge::math::vec3 originalPosition = text->getParent()->getComponent<TransformComponent>()->getPosition();
         sge::math::vec3 originalScale = text->getParent()->getComponent<TransformComponent>()->getScale();
         for (size_t i = 0; i < text->getText().size(); i++)
@@ -375,13 +363,14 @@ namespace sge
                 device->bindTexture(texture, 0);
             }
 
+			// Calculates the y position of current character.
             pen.y = characters[i].vertBearing.y / 32 - font->characterSize;
-
             if (characters[i].metrics.y / 64 - characters[i].horiBearing.y / 64 > 0)
             {
                 pen.y += characters[i].metrics.y / 64 - characters[i].horiBearing.y / 64;
             }
 
+			// Places the character in its desired position.
             text->getComponent<TransformComponent>()->setPosition(originalPosition + glm::vec3(pen.x, pen.y, 0));
             text->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(characters[i].size.x, characters[i].size.y, 1));
 
@@ -391,10 +380,8 @@ namespace sge
 			sge::math::mat4 testi = text->getComponent<TransformComponent>()->getMatrix();
             sprPixelUniformData.color = text->getColor();
 
-
+			// Calculates the x position of the next character.
 			pen.x += originalScale.x * characters[i].advance.x;
-	
- 
 
             device->bindVertexUniformBuffer(sprVertexUniformBuffer, 0);
             device->copyData(sprVertexUniformBuffer, sizeof(sprVertexUniformData), &sprVertexUniformData);

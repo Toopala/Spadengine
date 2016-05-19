@@ -10,11 +10,13 @@ namespace sge
 			std::cout << "An error occurred during library initialization." << std::endl;
 		}
 
+		// Set desired font
 		setFont(resourcePath);
 	}
 
 	FontResource::~FontResource()
 	{
+		// Free FreeType library and current face
 		FT_Done_FreeType(library);
 		FT_Done_Face(font.face);
 	}
@@ -36,6 +38,7 @@ namespace sge
 
 	void FontResource::setCharacterSize(float size)
 	{
+		// Characters are in 300 dpi
 		error = FT_Set_Char_Size(font.face, 64 * size, 64 * size, 300, 300);
 		if (error)
 		{
