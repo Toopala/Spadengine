@@ -3,6 +3,14 @@
 #include "Game/Entity.h"
 #include "Renderer/Texture.h"
 #include "Renderer/RenderTarget.h"
+#include "Renderer/Enumerations.h"
+#include "Renderer/Window.h"
+#include "Renderer/GraphicsDevice.h"
+#include "Renderer/Pipeline.h"
+#include "Renderer/Shader.h"
+#include "Renderer/VertexLayout.h"
+
+#include "Core/Random.h"
 
 /*
 TODO
@@ -16,115 +24,148 @@ Rendersystemille defaulttikamera!
 
 GameScene::GameScene(sge::Spade* engine) :
     engine(engine),
-    renderer(engine->getRenderer()),
-    textureResource(sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/spade.png")),
-    fontResource(sge::ResourceManager::getMgr().load<sge::FontResource>("../Assets/verdana.ttf")),
-    texture(engine->getRenderer()->getDevice()->createTexture(
-        textureResource.getResource<sge::TextureResource>()->getSize().x,
-        textureResource.getResource<sge::TextureResource>()->getSize().y,
-        textureResource.getResource<sge::TextureResource>()->getData())),
-    targetTextures(nullptr),
-    renderTarget(nullptr),
-    targetCount(4)
+    renderer(engine->getRenderer())
 {
-    // TODO initialization should be easier.
-    // TODO downloading resources and creating textures is messy.
+	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
+	{
+		{ 0, 3, sge::VertexSemantic::POSITION },
+		{ 0, 3, sge::VertexSemantic::NORMAL },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 3, sge::VertexSemantic::TANGENT },
+		{ 0, 2, sge::VertexSemantic::TEXCOORD }
+	} };
 
-    const int border = 16;
-    const int screenAreaWidth = 1280 - border * 2;
-    const int screenAreaHeight = 720 - border * 2;
-    const int camWidth = screenAreaWidth / 2;
-    const int camHeight = screenAreaHeight / 2;
+	std::vector<char> pShaderDataNormals;
+	std::vector<char> vShaderDataNormals;
+	
+#ifdef DIRECTX11
+	loadBinaryShader("../../Shaders/Compiled/VertexShaderLights.cso", vShaderDataNormals);
+	loadBinaryShader("../../Shaders/Compiled/PixelShaderLights.cso", pShaderDataNormals);
+#elif OPENGL4
+	loadTextShader("../Assets/Shaders/VertexShaderLights.glsl", vShaderDataNormals);
+	loadTextShader("../Assets/Shaders/PixelShaderLights.glsl", pShaderDataNormals);
+#endif
 
-    cameras.push_back(createCamera(0, 0,                camWidth, camHeight));
-    cameras.push_back(createCamera(camWidth, 0,         camWidth, camHeight));
-    cameras.push_back(createCamera(camWidth, camHeight, camWidth, camHeight));
-    cameras.push_back(createCamera(0, camHeight,        camWidth, camHeight));
+	vertexShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::VERTEX, vShaderDataNormals.data(), vShaderDataNormals.size());
+	pixelShader2 = engine->getRenderer()->getDevice()->createShader(sge::ShaderType::PIXEL, pShaderDataNormals.data(), pShaderDataNormals.size());
 
-    fullscreenCamera = createCamera(border, border, screenAreaWidth, screenAreaHeight);
+	pipelineNormals = engine->getRenderer()->getDevice()->createPipeline(&vertexLayoutDescription, vertexShader2, pixelShader2);
+	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
 
-    entities.push_back(createEntity(texture, 256.0f, 256.0f, 96.0f, 64.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 25.0f));
-    entities.back()->setTag("BEHNID");
+	//// Systems ////
+	physicsSystem = new sge::PhysicsSystem();
 
-    entities.push_back(createEntity(texture, 192.0f, 256.0f, 64.0f, 64.0f, 2.1f, 0.5f, 0.5f, 0.5f, 1.0f, 50.0f));
-    entities.back()->setTag("FRONT");
+	//// Entities //// Creating entities without difficult components
 
-    guiText = createText(256.0f, 256.0f, "YOLO :D:::D");
+	// Cube
+	largeCube = entityManager.createEntity();
+	largeCube->setComponent(transformFactory.create(largeCube));
+	largeCube->setComponent(physicsSystem->createPhysicsComponent(largeCube));
+	largeCube->setComponent(modelFactory.create(largeCube));
 
-    targetTextures = new sge::Texture*[targetCount];
+	// Camera
+	camera = entityManager.createEntity();
+	camera->setComponent(transformFactory.create(camera));
+	camera->setComponent(cameraFactory.create(camera));
+	cameraPos = glm::vec3(5.0f, 10.0f, 48.0f);
+	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	camera->getComponent<sge::CameraComponent>()->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+	camera->getComponent<sge::CameraComponent>()->setViewport(1280 - 420, 720 - 280, 320, 180);
+	camera->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
+	camera->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+	camera->getComponent<sge::TransformComponent>()->setUp(cameraUp);
+	cameras.push_back(camera);
 
-    for (size_t i = 0; i < targetCount; i++)
-    {
-        targetTextures[i] = renderer->getDevice()->createTexture(1280, 720);
-    }
-    
-    renderTarget = renderer->getDevice()->createRenderTarget(targetCount, targetTextures);
+	// sge::TransformComponent* cubeTrans = largeCube->getComponent<sge::TransformComponent>();
 
-    targetEntity = createEntity(targetTextures[3], 1280.0f / 2, 720.0f / 2, 1280.0f / 2, 720.0f / 2, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+	//// Model handles ////
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	//// Free-for-all //// getters setters
+
+	largeCube->getComponent<sge::ModelComponent>()->setShininess(15.0f);
+	largeCube->getComponent<sge::ModelComponent>()->setModelResource(&modelHandle);
+	largeCube->getComponent<sge::ModelComponent>()->setRenderer(engine->getRenderer());
+	largeCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
+	largeCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
+	largeCube->getComponent<sge::ModelComponent>()->setPipeline(pipelineNormals);
+	modelHandle.getResource<sge::ModelResource>()->createBuffers();
+	
+
+
+
+
+	//// Bullet ////
+	btScalar mass = 1;
+	boxShape = new btBoxShape(btVector3(1, 1, 1));
+	largeCube->getComponent<sge::PhysicsComponent>()->createBody(boxShape, btQuaternion(0, 0, 0, 1), btVector3(5, 20, 0), mass, btVector3(0, 0, 0));
+	physicsSystem->addBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
 }
 
 GameScene::~GameScene()
 {
-    // TODO this should probably be not deleted here, but in the texture resource.
-    renderer->getDevice()->deleteTexture(texture);
+	physicsSystem->getWorld()->removeRigidBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
+	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>()->getMotionState();
+	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>();
+	sge::ResourceManager::getMgr().release(modelHandle);
+	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
+	delete physicsSystem;
 
-    for (size_t i = 0; i < targetCount; i++)
-    {
-        renderer->getDevice()->deleteTexture(targetTextures[i]);
-    }
-    
-    renderer->getDevice()->deleteRenderTarget(renderTarget);
+	for (auto &camera : cameras)
+	{
+		delete camera;
+	}
+	cameras.clear();
 }
+
+void GameScene::loadTextShader(const std::string& path, std::vector<char>& data)
+{
+	std::ifstream file;
+
+	file.open(path, std::ios::in);
+
+	if (file.is_open())
+	{
+		std::cout << "Text shader opened!" << std::endl;
+
+		std::stringstream stream;
+		std::string str;
+
+		stream << file.rdbuf();
+
+		str = stream.str();
+
+		std::copy(str.begin(), str.end(), std::back_inserter(data));
+
+		data.push_back('\0');
+	}
+}
+
+void GameScene::loadBinaryShader(const std::string& path, std::vector<char>& data)
+{
+	std::ifstream file;
+
+	file.open(path, std::ios::in | std::ios::ate | std::ios::binary);
+
+	if (file.is_open())
+	{
+		std::cout << "Binary shader opened!" << std::endl;
+		data.resize(static_cast<size_t>(file.tellg()));
+
+		file.seekg(0, std::ios::beg);
+		file.read(data.data(), data.size());
+		file.close();
+	}
+}
+
 
 void GameScene::update(float step)
 {
-    // TODO sprite should be moving 32 pixels per second!
-    sge::math::vec3 speed(0.0f, 64.0f * step, 0.0f);
-    float alpha = 5.0f * step;
+	physicsSystem->stepWorld(step);
 
-    // TODO how about moving this input checking to input component or something?
-    if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
-    {
-        entities.front()->getComponent<sge::TransformComponent>()->addPosition(-speed);
-    }
-
-    if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
-    {
-        entities.front()->getComponent<sge::TransformComponent>()->addPosition(speed);
-    }
-
-    if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
-    {
-        entities.front()->getComponent<sge::TransformComponent>()->addAngle(alpha);
-    }
-
-    if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
-    {
-        entities.front()->getComponent<sge::TransformComponent>()->addAngle(-alpha);
-    }
-
-    if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
-    {
-        // TODO weird but works?
-        engine->stop();
-    }
-
-    cameras[2]->getComponent<sge::TransformComponent>()->addPosition({ 32.0f * step, 0.0f, 0.0f });
-
-    // TODO update camera where? What if we have multiple cameras? Do we need a system for them?
-    for (auto camera : cameras)
-    {
-        camera->getComponent<sge::CameraComponent>()->update();
-    }
-
-    fullscreenCamera->getComponent<sge::CameraComponent>()->update();
-
-    // TODO binding viewport? Getting device from renderer from spade is a long way.
-    // Also looks awful. So awful.
-    //engine->getRenderer()->getDevice()->bindViewport(camera->getComponent<sge::CameraComponent>()->getViewport());
-
-    // TODO can we simplify this? Do we need to set VP every frame manually?
-    //spriteRenderSystem.setVP(cameras.back()->getComponent<sge::CameraComponent>()->getViewProj());
+	// Inputs and stuffs
 }
 
 void GameScene::interpolate(float alpha)
@@ -136,85 +177,99 @@ void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
     // First pass
-    renderer->setRenderTarget(renderTarget);
-    renderer->addCameras(cameras.size(), cameras.data());
-    renderer->setClearColor(0.5f, 0.0f, 0.5, 1.0f);
-    renderer->clear(sge::COLOR);
+	renderer->addCameras(1, &cameras.front());
 
     renderer->begin();
-    renderer->renderSprites(entities.size(), entities.data());
+    
+	// !!!!! Fix this !!!!!
+	//renderer->renderModel(largeCube->getComponent<sge::ModelComponent>());
+
     renderer->end();
 
     renderer->render();
 
     // Second pass
-    renderer->setClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    renderer->clear();
 
-    renderer->addCameras(1, &fullscreenCamera);
-
-    renderer->begin();
-    renderer->renderSprites(1, &targetEntity);
-    renderer->end();
-
-    renderer->render();
-
+	//renderer->setClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+    //renderer->clear();
+	// renderer->render();
+	
     // Present to screen
     renderer->present();
+	renderer->setClearColor(0.0f, 0.0f, 0.5f, 1.0f);
     renderer->clear();
 }
 
-sge::Entity* GameScene::createEntity(sge::Texture* texture, float x, float y, float width, float height, float depth, float r, float g, float b, float a, float angle)
+void GameScene::mouseLook(int mouseX, int mouseY)
 {
-    // TODO this should be easier.
-    sge::Entity* entity = entityManager.createEntity();
+	if (firstMouse)
+	{
+		lastX += mouseX;
+		lastY += mouseY;
+		firstMouse = false;
+	}
 
-    auto transform = transformFactory.create(entity);
-    auto sprite = spriteFactory.create(entity);
+	mousseX += mouseX;
+	mousseY += mouseY;
 
-    transform->setPosition({ x, y, depth });
-    transform->setScale({ width, height, 1.0f });
-    transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
-    transform->setAngle(angle);
+	float xoffset = mousseX - lastX;
+	float yoffset = lastY - mousseY;
+	lastX = static_cast<float>(mousseX);
+	lastY = static_cast<float>(mousseY);
 
-    sprite->setTexture(texture);
-    sprite->setColor({ r, g, b, a });
+	float sensitivity = 0.15f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
 
-    return entity;
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	sge::math::vec3 front;
+	front.x = sge::math::cos(sge::math::radians(pitch)) * sge::math::cos(sge::math::radians(yaw));
+	front.y = sge::math::sin(sge::math::radians(pitch));
+	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
+	cameraFront = sge::math::normalize(front);
 }
 
-sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
-{
-    // TODO cameracomponent doesn't use transform component and directly
-    // requests input from (old design) spade singleton. These should be fixed.
-    // Input system needs more planning to do.
-    sge::Entity* entity = entityManager.createEntity();
 
-    auto transform = transformFactory.create(entity);
-    auto cameracomponent = cameraFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 0.0f, 10.0f });
-    transform->setFront({ 0.0f, 0.0f, -1.0f });
-    transform->setUp({ 0.0f, 1.0f, 0.0f });
+//sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
+//{
+//    // TODO cameracomponent doesn't use transform component and directly
+//    // requests input from (old design) spade singleton. These should be fixed.
+//    // Input system needs more planning to do.
+//    sge::Entity* entity = entityManager.createEntity();
+//
+//    auto transform = transformFactory.create(entity);
+//    auto cameracomponent = cameraFactory.create(entity);
+//
+//    transform->setPosition({ 0.0f, 0.0f, 10.0f });
+//    transform->setFront({ 0.0f, 0.0f, -1.0f });
+//    transform->setUp({ 0.0f, 1.0f, 0.0f });
+//
+//    cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
+//    cameracomponent->setViewport(x, y, width, height);
+//
+//    return entity;
+//}
 
-    cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
-    cameracomponent->setViewport(x, y, width, height);
-
-    return entity;
-}
-
-sge::Entity* GameScene::createText(float x, float y, const std::string& text)
-{
-    sge::Entity* entity = entityManager.createEntity();
-
-    auto transform = transformFactory.create(entity);
-    auto textcomponent = textFactory.create(entity);
-    
-    transform->setPosition({ x, y, 0.0f });
-
-    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
-    textcomponent->setText(text);
-
-    return entity;
-}
+//sge::Entity* GameScene::createText(float x, float y, const std::string& text)
+//{
+//    sge::Entity* entity = entityManager.createEntity();
+//
+//    auto transform = transformFactory.create(entity);
+//    auto textcomponent = textFactory.create(entity);
+//    
+//    transform->setPosition({ x, y, 0.0f });
+//
+//    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+//    textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
+//    textcomponent->setText(text);
+//
+//    return entity;
+//}

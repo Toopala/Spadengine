@@ -41,6 +41,8 @@ namespace sge
 			return body;
 		}*/
 
+	
+
 		btRigidBody* createBody(btCollisionShape* objectShape, btQuaternion& rotation, btVector3& location, btScalar& objectMass, btVector3& inertia);
 
 

@@ -12,7 +12,10 @@ namespace sge
 
 	PhysicsComponent::~PhysicsComponent()
 	{
+		/*delete body->getMotionState();
+		delete body;*/ // May B
 	}
+	
 
 	void PhysicsComponent::update()
 	{
@@ -34,6 +37,7 @@ namespace sge
 			= new btDefaultMotionState(btTransform(rotation, location));
 		btScalar mass = objectMass;
 		btVector3 fallInertia = inertia;
+		shape->calculateLocalInertia(mass, fallInertia);
 		btRigidBody::btRigidBodyConstructionInfo consInfo(mass, motiState, shape, fallInertia);
 		body = new btRigidBody(consInfo);
 		return body;
