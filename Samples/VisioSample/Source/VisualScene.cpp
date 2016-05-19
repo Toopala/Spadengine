@@ -57,13 +57,17 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandleCube.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandleCube2.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	modelHandleCube3 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandleCube3.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	// Create new entity for cube model
+	// Create new entity for models
+	// Cube 1
 	EManager = new sge::EntityManager();
 
 	modentityCube = EManager->createEntity();
@@ -80,13 +84,13 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(modentityCube->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(5));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5));
 
 	modComponentCube->setPipeline(pipeline);
 
 	modelHandleCube.getResource<sge::ModelResource>()->createBuffers();
 
-	// Cube2
+	// Cube 3
 	modentityCube2 = EManager->createEntity();
 
 	modtransformCube2 = new sge::TransformComponent(modentityCube2);
@@ -99,13 +103,34 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modComponentCube2->setModelResource(&modelHandleCube2);
 	modComponentCube2->setRenderer(engine->getRenderer());
 
-	modentityCube2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
+	modentityCube2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(20.0f, 0.0f, 0.0f));
 	modentityCube2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube2->getComponent<sge::TransformComponent>()->setScale(modentityCube2->getComponent<sge::TransformComponent>()->getScale() * glm::vec3(5));
+	modentityCube2->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5));
 
 	modComponentCube2->setPipeline(pipeline);
 
 	modelHandleCube2.getResource<sge::ModelResource>()->createBuffers();
+
+	// Cube 3
+	modentityCube3 = EManager->createEntity();
+
+	modtransformCube3 = new sge::TransformComponent(modentityCube3);
+	modentityCube3->setComponent(modtransformCube3);
+
+	modComponentCube3 = new sge::ModelComponent(modentityCube3);
+	modComponentCube3->setShininess(15.0f);
+	modentityCube3->setComponent(modComponentCube3);
+
+	modComponentCube3->setModelResource(&modelHandleCube3);
+	modComponentCube3->setRenderer(engine->getRenderer());
+
+	modentityCube3->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-20.0f, 0.0f, 0.0f));
+	modentityCube3->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
+	modentityCube3->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5));
+
+	modComponentCube3->setPipeline(pipeline);
+
+	modelHandleCube3.getResource<sge::ModelResource>()->createBuffers();
 
 	// Room for scene
 	modentityRoom = EManager->createEntity();
@@ -123,17 +148,22 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityRoom->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setAngle(sge::math::radians(-90.0f));
-	modentityRoom->getComponent<sge::TransformComponent>()->setScale(modentityRoom->getComponent<sge::TransformComponent>()->getScale()*glm::vec3(0.6f));
+	modentityRoom->getComponent<sge::TransformComponent>()->setScale(glm::vec3(0.6f));
 
 	modComponentRoom->setPipeline(pipeline);
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();
 
+	// Push back game entities
+	gameObjects.push_back(modentityCube);
+	gameObjects.push_back(modentityCube2);
+	gameObjects.push_back(modentityCube3);
+	gameObjects.push_back(modentityRoom);
 
 	// Lights
 	modentityLight = EManager->createEntity();
 	modtransformLight = new sge::TransformComponent(modentityLight);
 	modentityLight->setComponent(modtransformLight);
-	modentityLight->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	modentityLight->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(26.0f, -26.0f, 26.0f));
 	pointLightComp = new sge::PointLightComponent(modentityLight);
 	modentityLight->setComponent(pointLightComp);
 
@@ -152,7 +182,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityLight2 = EManager->createEntity();
 	modtransformLight2 = new sge::TransformComponent(modentityLight2);
 	modentityLight2->setComponent(modtransformLight2);
-	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-26.0f, -26.0f, -26.0f));
 	pointLightComp2 = new sge::PointLightComponent(modentityLight2);
 	modentityLight2->setComponent(pointLightComp2);
 
@@ -167,11 +197,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	pointLight2.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight2->getComponent<sge::PointLightComponent>()->setLightData(pointLight2);
-
-	// Push back game entities
-	gameObjects.push_back(modentityCube);
-	gameObjects.push_back(modentityCube2);
-	gameObjects.push_back(modentityRoom);
 
 	// Camera
 	sge::Entity* camentity = EManager->createEntity();
@@ -256,23 +281,21 @@ void VisualScene::update(float step)
 #endif
 		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
 	}
-
-	//modentityCube->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(0.0f, 0.0f, 0.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setAngle(0.0f);
-	//modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(sge::math::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
 	
 	alpha += 0.01f;
 	rotate += sge::math::radians(0.5f);
-	float lightX = -25.0f*cos(alpha);
-	float lightY = -25.0f*sin(alpha);
-	float lightZ = -25.0f*sin(alpha);
 
-	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
+	modentityCube2->getComponent<sge::TransformComponent>()->setAngle(-rotate);
+	modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
+
+	//float lightX = -25.0f*cos(alpha);
+	//float lightY = -25.0f*sin(alpha);
+	//float lightZ = -25.0f*sin(alpha);
+
+	//modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
 	modentityLight->getComponent<sge::PointLightComponent>()->update();
-	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
+	//modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
 	modentityLight2->getComponent<sge::PointLightComponent>()->update();
-	//modentityCube->getComponent<sge::TransformComponent>()->setAngle(-rotate);
-	//modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
 	{
