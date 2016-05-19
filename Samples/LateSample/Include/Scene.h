@@ -14,6 +14,7 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/ComponentFactory.h"
+#include "Game/PhysicsComponent.h"
 
 // FORWARD DECLARE
 struct sge::Pipeline;
@@ -42,6 +43,7 @@ public:
 
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
+	void mouseLook();
 
 private:
 	// Engine:
@@ -51,40 +53,76 @@ private:
 
 	// Pipeline:
 	sge::Pipeline *pipeline;
-	sge::Pipeline *pipelineNormals;
 
-	// Buffer:
+	// Buffers:
 	sge::Buffer *vertexBuffer;
 	sge::Buffer *uniformBuffer;
 
-	// Shader:
+	// Shaders:
 	sge::Shader *vertexShader;
 	sge::Shader *pixelShader;
 
-	// Light:
+	// Lights:
 	sge::Entity *pointLightEntity;
 	sge::TransformComponent *pointLightTransform;
 	sge::ModelComponent *pointLightModel;
 	sge::PointLightComponent *pointLightComponent;
 
-	// Texture:
-	sge::Texture* texture;
-	sge::Texture* texture2;
+	sge::Entity *pointLightEntity2;
+	sge::TransformComponent *pointLightTransform2;
+	sge::ModelComponent *pointLightModel2;
+	sge::PointLightComponent *pointLightComponent2;
 
-	// Camera:
+	sge::Entity *dirLightEntity;
+	sge::TransformComponent *dirLightTransform;
+	sge::ModelComponent *dirLightModel;
+	sge::DirLightComponent* dirLightComponent;
+
+	// Cameras:
 	std::vector<sge::Entity*> cameras;
 	sge::TransformComponent* cameraTransform;
 	sge::CameraComponent *cameraComponent;
 
+	glm::vec3 cameraPos;
+	glm::vec3 cameraFront;
+	glm::vec3 cameraUp;
+
 	// Mouse:
 	sge::math::ivec2 mouse;
+	float lastX, lastY;
+	float yaw, pitch;
+	int mouseXpos, mouseYpos;
+	int mouseX, mouseY;
+	bool firstMouse = true;
+	bool useMouse = false;
 
-	// Model:
-	sge::Handle<sge::ModelResource> cubeModelHandle;
-	sge::Entity *cubeModel;
+	// Models:
+
+	// Cube:
+	sge::Handle<sge::ModelResource> cubeHandle;
+	sge::Entity *cubeEntity;
 	sge::TransformComponent *cubeTransform;
 	sge::ModelComponent *cubeComponent;
+	sge::PhysicsComponent *cubePhysics;
 
-	// Game objects:
+	// Car:
+	sge::Handle<sge::ModelResource> carHandle;
+	sge::Entity *carEntity;
+	sge::TransformComponent *carTransform;
+	sge::ModelComponent *carComponent;
+
+	// Room:
+	sge::Handle<sge::ModelResource> roomHandle;
+	sge::Entity *roomEntity;
+	sge::TransformComponent *roomTransform;
+	sge::ModelComponent *roomComponent;
+
+	// Entity vectors:
 	std::vector<sge::Entity*> gameObjects;
+	std::vector<sge::Entity*> pointLights;
+	std::vector<sge::Entity*> dirLights;
+
+	// Misc:
+	float alpha = 0;
+	float movementSpeed = 5;
 };
