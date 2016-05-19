@@ -335,8 +335,7 @@ namespace sge
 		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
 
 		checkError();
-		// TODO testing anisotropic filtering
-		// TODO check for anisotropy support
+
 		float maxValue;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
@@ -369,10 +368,8 @@ namespace sge
 		checkError();
 
 		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
-
 		checkError();
-		// TODO testing anisotropic filtering
-		// TODO check for anisotropy support
+
 		float maxValue;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
