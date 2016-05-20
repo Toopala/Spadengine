@@ -17,6 +17,11 @@ namespace sge
 		* \return Pointer to an empty Entity.
 		*/
 		Entity* createEntity();
+
+		std::vector<Entity*>& getEntities()
+		{
+			return entities;
+		}
 	private:
 		std::vector<Entity*> entities; /**< Vector of Entity pointers. */
 	};

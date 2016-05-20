@@ -21,6 +21,13 @@ namespace sge
 
 	PhysicsSystem::~PhysicsSystem()
 	{
+		for (auto &comp : comps) // Removes all rigidbodies from all components
+		{
+			dynamicsWorld->removeRigidBody(comp->getBody<btRigidBody>());
+			delete comp->getBody<btRigidBody>()->getMotionState();
+			delete comp->getBody<btRigidBody>();
+		}
+
 		delete dynamicsWorld;
 		delete solver;
 		delete collisionConfiguration;

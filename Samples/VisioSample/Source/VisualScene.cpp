@@ -319,13 +319,13 @@ void VisualScene::updateControls()
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RETURN) && player == false)
 	{
 		audio.play("../Assets/Audio/scifi.flac");
-		player == true;
+		player = true;
 	}
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE) && player == true)
 	{
 		audio.stop();
-		player == false;
+		player = false;
 	}
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
