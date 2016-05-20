@@ -52,10 +52,11 @@ namespace sge
 		*/
 		void setTypename(const std::string& typeName);
 
+        int getFormat();
 	private:
 		int width;				/**<  Width of the texture. */
 		int height;				/**<  Height of the texture. */
-		int comp;				/**<  Number of components in texture. */
+		int format;	            /**<  Number of components in texture. */
 		std::string typeName;	/**<  Type of the texture. */
 		unsigned char* data;	/**<  Texture data pointer. */
 		Texture texture;		/**<  Texture class. */

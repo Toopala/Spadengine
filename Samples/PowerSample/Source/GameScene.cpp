@@ -38,16 +38,22 @@ GameScene::GameScene(sge::Spade* engine) :
 
     cameraEntity = createCamera(0, 0, 1280, 720);
     earthEntity = createEarth();
+    sunEntity = createSun();
+    skyBoxEntity = createSkyBox();
 }
 
 GameScene::~GameScene()
 {
     sge::ResourceManager::getMgr().release(earthResource);
+    sge::ResourceManager::getMgr().release(skyBoxResource);
 
     device->deleteShader(vertexShader);
     device->deleteShader(pixelShader);
+    device->deleteShader(skyBoxPixelShader);
+    device->deleteShader(skyBoxVertexShader);
 
     device->deletePipeline(pipeline);
+    device->deletePipeline(skyBoxPipeline);
 }
 
 void GameScene::update(float step)
@@ -57,6 +63,8 @@ void GameScene::update(float step)
         engine->stop();
     }
 
+    earthEntity->getComponent<sge::TransformComponent>()->addPosition({ 0.010f, 0.0f, 0.0f });
+    earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
     cameraEntity->getComponent<sge::CameraComponent>()->update();
 }
 
@@ -65,7 +73,11 @@ void GameScene::draw()
     renderer->addCameras(1, &cameraEntity);
 
     renderer->begin();
+
+    renderer->renderLights(1, &sunEntity);
     renderer->renderModels(1, &earthEntity);
+    renderer->renderModels(1, &skyBoxEntity);
+
     renderer->end();
 
     renderer->render();
@@ -75,15 +87,21 @@ void GameScene::draw()
 
 sge::Entity* GameScene::createEarth()
 {
+    device->bindPipeline(pipeline);
+
     sge::Entity* entity = entityManager.createEntity();
 
     auto transform = transformFactory.create(entity);
     auto model = modelFactory.create(entity);
 
+    transform->setPosition({ 0.0f, 0.0f, 25.0f });
+
     model->setPipeline(pipeline);
-    model->setShininess(15.0f);
+    model->setShininess(256.0f);
     model->setRenderer(renderer);
     model->setModelResource(&earthResource);
+
+    device->debindPipeline(pipeline);
 
     return entity;
 }
@@ -93,14 +111,72 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     sge::Entity* entity = entityManager.createEntity();
 
     auto transform = transformFactory.create(entity);
-    auto cameracomponent = cameraFactory.create(entity);
+    auto camera = cameraFactory.create(entity);
 
-    transform->setPosition({ 5.0f, 0.0f, 48.0f });
+    transform->setPosition({ 0.0f, 0.0f, 45.0f });
     transform->setFront({ 0.0f, 0.0f, -1.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
+    transform->setRotationVector({ 0.0f, 1.0f, 0.0f });
 
-    cameracomponent->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-    cameracomponent->setViewport(x, y, width, height);
+    camera->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camera->setViewport(x, y, width, height);
+
+    return entity;
+}
+
+sge::Entity* GameScene::createSun()
+{
+    sge::Entity* entity = entityManager.createEntity();
+
+    auto transform = transformFactory.create(entity);
+    auto light = dirLightFactory.create(entity);
+
+    transform->setPosition({ 0.0f, 0.0f, 0.0f });
+    transform->setFront({ 0.0f, 0.0f, 0.0f });
+    transform->setUp({ 0.0f, 0.0f, 0.0f });
+
+    sge::DirLight lightData;
+
+    lightData.direction = sge::math::vec4(0.0, 0.0, -1.0, 1.0);
+    lightData.ambient = sge::math::vec4(0.05, 0.05, 0.05, 1.0);
+    lightData.diffuse = sge::math::vec4(0.8, 0.8, 0.8, 1.0);
+    lightData.specular = sge::math::vec4(0.5, 0.5, 0.5, 1.0);
+
+    light->setLightData(lightData);
+
+    return entity;
+}
+
+sge::Entity* GameScene::createSkyBox()
+{
+    sge::Handle<sge::TextureResource> texture;
+
+    texture = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/space.png");
+
+    sge::TextureResource* source[6];
+
+    for (size_t i = 0; i < 6; i++)
+    {
+        source[i] = texture.getResource<sge::TextureResource>();
+    }
+
+    device->bindPipeline(skyBoxPipeline);
+
+    sge::Entity* entity = entityManager.createEntity();
+
+    auto transform = transformFactory.create(entity);
+    auto model = modelFactory.create(entity);
+
+    transform->setPosition({ 0.0f, 0.0f, 0.0f });
+    transform->setFront({ 0.0f, 0.0f, 0.0f });
+    transform->setUp({ 0.0f, 0.0f, 0.0f });
+
+    model->setPipeline(skyBoxPipeline);
+    model->setRenderer(renderer);
+    model->setModelResource(&skyBoxResource);
+    model->setCubeMap(device->createCubeMap(source));
+
+    device->debindPipeline(skyBoxPipeline);
 
     return entity;
 }
@@ -110,19 +186,32 @@ void GameScene::initPipelines()
     sge::Handle<sge::ShaderResource> pixelShaderHandle;
     sge::Handle<sge::ShaderResource> vertexShaderHandle;
 
+    sge::Handle<sge::ShaderResource> skyBoxPixelShaderHandle;
+    sge::Handle<sge::ShaderResource> skyBoxVertexShaderHandle;
+
 #ifdef DIRECTX11
     vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderLights.cso");
     pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderLights.cso");
+    skyBoxVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexSkyBox.cso");
+    skyBoxPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelSkyBox.cso");
 #elif OPENGL4
     vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderLights.glsl");
     pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderLights.glsl");
+    skyBoxVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexSkyBox.glsl");
+    skyBoxPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelSkyBox.glsl");
 #endif
 
     const std::vector<char>& vertexShaderData = vertexShaderHandle.getResource<sge::ShaderResource>()->loadShader();
     const std::vector<char>& pixelShaderData = pixelShaderHandle.getResource<sge::ShaderResource>()->loadShader();
 
+    const std::vector<char>& vertexShaderData2 = skyBoxVertexShaderHandle.getResource<sge::ShaderResource>()->loadShader();
+    const std::vector<char>& pixelShaderData2 = skyBoxPixelShaderHandle.getResource<sge::ShaderResource>()->loadShader();
+
     vertexShader = device->createShader(sge::ShaderType::VERTEX, vertexShaderData.data(), vertexShaderData.size());
     pixelShader = device->createShader(sge::ShaderType::PIXEL, pixelShaderData.data(), pixelShaderData.size());
+
+    skyBoxVertexShader = device->createShader(sge::ShaderType::VERTEX, vertexShaderData2.data(), vertexShaderData2.size());
+    skyBoxPixelShader = device->createShader(sge::ShaderType::PIXEL, pixelShaderData2.data(), pixelShaderData2.size());
 
     sge::VertexLayoutDescription vertexLayoutDescription = { 5,
     {
@@ -134,15 +223,22 @@ void GameScene::initPipelines()
     } };
 
     pipeline = device->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
-
-    device->bindPipeline(pipeline);
+    skyBoxPipeline = device->createPipeline(&vertexLayoutDescription, skyBoxVertexShader, skyBoxPixelShader);
 }
 
 void GameScene::initResources()
 {
-    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/Models/earth.obj");
+    device->bindPipeline(pipeline);
+    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
     earthResource.getResource<sge::ModelResource>()->setDevice(device);
     earthResource.getResource<sge::ModelResource>()->createBuffers();
+    device->debindPipeline(pipeline);
+
+    device->bindPipeline(skyBoxPipeline);
+    skyBoxResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+    skyBoxResource.getResource<sge::ModelResource>()->setDevice(device);
+    skyBoxResource.getResource<sge::ModelResource>()->createBuffers();
+    device->debindPipeline(skyBoxPipeline);
 }
 
 void GameScene::interpolate(float alpha)

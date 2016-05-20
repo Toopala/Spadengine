@@ -6,7 +6,9 @@
 
 namespace sge
 {
+    class TextureResource;
 	class Window;
+
 	struct CubeMap;
 	struct Buffer;
 	struct Pipeline;
@@ -25,8 +27,6 @@ namespace sge
 		void init();
 		void deinit();
 
-        // TODO this clears color, depth and stencil buffers.
-        // Should we separate them?
 		void clear(float r, float g, float b, float a);
 
 		void swap();
@@ -43,11 +43,15 @@ namespace sge
 		Shader* createShader(ShaderType type, const char* source, size_t size);
 		void deleteShader(Shader* shader);
 
-		Texture* createTexture(size_t width, size_t height, unsigned char* source = 0);
-		Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
+		Texture* createTexture(TextureResource* source);
+        Texture* createTextTexture(TextureResource* source);
+
+        Texture* createTexture(size_t width, size_t height, unsigned char* source = 0);
+        Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
+
 		void deleteTexture(Texture* texture);
 
-		CubeMap* createCubeMap(size_t width, size_t height, unsigned char* source[]);
+        CubeMap* createCubeMap(TextureResource* source[]);
 		void deleteCubeMap(CubeMap* cubeMap);
 
 		void bindPipeline(Pipeline* pipeline);

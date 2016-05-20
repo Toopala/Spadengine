@@ -7,7 +7,7 @@
 namespace sge
 {
 	ModelComponent::ModelComponent(Entity* entity) :
-		RenderComponent(entity), shininess(2.0f), glossyness(0.0f)
+        RenderComponent(entity), shininess(2.0f), glossyness(0.0f), myCube(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
 

@@ -41,20 +41,29 @@ private:
 
     sge::Entity* createEarth();
     sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
+    sge::Entity* createSun();
+    sge::Entity* createSkyBox();
 
     sge::Entity* earthEntity;
     sge::Entity* cameraEntity;
+    sge::Entity* sunEntity;
+    sge::Entity* skyBoxEntity;
 
     sge::Spade* engine;
     sge::RenderSystem* renderer;
     sge::GraphicsDevice* device;
 
     sge::Handle<sge::ModelResource> earthResource;
+    sge::Handle<sge::ModelResource> skyBoxResource;
 
     sge::Pipeline* pipeline;
+    sge::Pipeline* skyBoxPipeline;
 
     sge::Shader* vertexShader;
     sge::Shader* pixelShader;
+
+    sge::Shader* skyBoxVertexShader;
+    sge::Shader* skyBoxPixelShader;
 
     sge::ComponentFactory<sge::TransformComponent> transformFactory;
     sge::ComponentFactory<sge::ModelComponent> modelFactory;
