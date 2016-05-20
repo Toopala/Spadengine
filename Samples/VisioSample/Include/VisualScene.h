@@ -14,6 +14,7 @@
 #include "Game/ModelComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/ComponentFactory.h"
+#include "Audio/Audio.h"
 
 // FORWARD DECLARE
 struct sge::Pipeline;
@@ -43,10 +44,12 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 	void mouseLook(int mouseX, int mouseY);
+	void updateControls();
 private:
 	sge::Spade *engine;
 	sge::RenderSystem *renderer;
-	
+	sge::Audio audio;
+
 	// For 3d object
 	sge::math::mat4 V;
 	sge::math::mat4 P;
@@ -91,7 +94,7 @@ private:
 	glm::vec3 cameraUp;
 
 	// Mouse look
-	bool useMouse;
+	bool useMouse, player;
 	float lastX, lastY;
 	float yaw, pitch;
 	int mouseXpos, mouseYpos;
