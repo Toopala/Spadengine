@@ -174,8 +174,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	engine->getRenderer()->getDevice()->bindPipeline(pipelineNormals);
 	//--------------
 
-	//Assimp test
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
+	// Loading models
+	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleIcoSphere.dae");
     modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandle2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
@@ -193,6 +193,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
+	// Model
 	EManager = new sge::EntityManager();
 
 	modentity = EManager->createEntity();
@@ -207,9 +208,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent->setModelResource(&modelHandle);
 	modcomponent->setRenderer(engine->getRenderer());
 
-	modentity->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
+	// Model 2
 	modentity2 = EManager->createEntity();
 
 	modtransform2 = new sge::TransformComponent(modentity2);
@@ -222,9 +223,9 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modcomponent2->setModelResource(&modelHandle2);
     modcomponent2->setRenderer(engine->getRenderer());
 
-	modentity2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(5.0f, 23.0f, 0.0f));
 	modentity2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
+	// Floor
 	modentityFloor = EManager->createEntity();
 
 	modtransformFloor = new sge::TransformComponent(modentityFloor);
@@ -383,6 +384,28 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	modentityLight3->getComponent<sge::PointLightComponent>()->setLightData(pointLight3);
 
+	//
+	modentityLight4 = EManager->createEntity();
+
+	modtransformLight4 = new sge::TransformComponent(modentityLight4);
+	modentityLight4->setComponent(modtransformLight3);
+
+	modentityLight4->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(3.0f, 4.0f, 0.0f));
+	plcompo4 = new sge::PointLightComponent(modentityLight4);
+	modentityLight4->setComponent(plcompo4);
+
+	sge::PointLight pointLight4;
+	pointLight4.position = sge::math::vec4(0.0f, 40.0f, 0.0f, 1.0f);
+	pointLight4.constant = float(1.0);
+	pointLight4.mylinear = float(0.0022);
+	pointLight4.quadratic = float(0.0007);
+	pointLight4.pad = 0.0f;
+	pointLight4.ambient = sge::math::vec4(0.05, 0.05, 0.05, 1.0);
+	pointLight4.diffuse = sge::math::vec4(0.8, 0.8, 0.8, 1.0);
+	pointLight4.specular = sge::math::vec4(0.5, 0.5, 0.5, 1.0);
+
+	modentityLight4->getComponent<sge::PointLightComponent>()->setLightData(pointLight4);
+
    // dlcompo = new sge::DirLightComponent(modentityLight);
    // modentityLight->setComponent(dlcompo);
 
@@ -523,7 +546,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 
 	// falling object
 	btDefaultMotionState* fallMotionState =
-		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 23, 0)));
+		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-2, 23, 0)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
 	simplifiedConvexShape->calculateLocalInertia(mass, fallInertia);
@@ -844,6 +867,7 @@ void BulletTestScene::draw()
     renderer->renderLights(1, &modentityLight);
 	renderer->renderLights(1, &modentityLight2);
 	renderer->renderLights(1, &modentityLight3);
+	renderer->renderLights(1, &modentityLight4);
 
     renderer->end();
     renderer->render();

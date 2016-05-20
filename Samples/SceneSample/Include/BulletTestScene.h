@@ -134,6 +134,7 @@ private:
     sge::Entity* modentityLight;
 	sge::Entity* modentityLight2;
 	sge::Entity* modentityLight3;
+	sge::Entity* modentityLight4;
 
 	sge::TransformComponent* modtransform;
 	sge::TransformComponent* modtransform2;
@@ -145,6 +146,7 @@ private:
     sge::TransformComponent* modtransformLight;
 	sge::TransformComponent* modtransformLight2;
 	sge::TransformComponent* modtransformLight3;
+	sge::TransformComponent* modtransformLight4;
 
 	sge::ModelComponent* modcomponent;
 	sge::ModelComponent* modcomponent2;
@@ -156,6 +158,7 @@ private:
     sge::PointLightComponent* plcompo;
 	sge::PointLightComponent* plcompo2;
 	sge::PointLightComponent* plcompo3;
+	sge::PointLightComponent* plcompo4;
     sge::DirLightComponent* dlcompo;
 
 	std::vector<sge::Entity*> GameObjects;
