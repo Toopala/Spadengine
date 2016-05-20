@@ -283,14 +283,14 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/back.jpg");
 	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/front.jpg");
 	
-	unsigned char* source[6];
-	source[0] = tex2.getResource<sge::TextureResource>()->getData();
-	source[1] = tex1.getResource<sge::TextureResource>()->getData();
-	source[2] = tex4.getResource<sge::TextureResource>()->getData();
-	source[3] = tex3.getResource<sge::TextureResource>()->getData();
-	source[4] = tex6.getResource<sge::TextureResource>()->getData();
-	source[5] = tex5.getResource<sge::TextureResource>()->getData();
-	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(2048, 2048, source));
+    sge::TextureResource* source[6];
+	source[0] = tex2.getResource<sge::TextureResource>();
+	source[1] = tex1.getResource<sge::TextureResource>();
+	source[2] = tex4.getResource<sge::TextureResource>();
+	source[3] = tex3.getResource<sge::TextureResource>();
+	source[4] = tex6.getResource<sge::TextureResource>();
+	source[5] = tex5.getResource<sge::TextureResource>();
+	modcomponentEarth->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(source));
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
@@ -839,11 +839,8 @@ void BulletTestScene::draw()
     renderer->addCameras(1, &cameras.back());
     renderer->begin();
     
-	for (int i = 0; i < GameObjects.size(); i++)
-	{
-		renderer->renderModels(1, &GameObjects[i]);
-	}
-
+	renderer->renderModels(GameObjects.size(), GameObjects.data());
+	
     renderer->renderLights(1, &modentityLight);
 	renderer->renderLights(1, &modentityLight2);
 	renderer->renderLights(1, &modentityLight3);

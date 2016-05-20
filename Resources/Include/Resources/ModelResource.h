@@ -70,15 +70,15 @@ namespace sge
 			{
 				if (texture.getTypeName() == "texture_diffuse")
 				{
-					diffuseTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+					diffuseTexture = device->createTexture(&texture);
 				}
 				else if (texture.getTypeName() == "texture_normal")
 				{
-					normalTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+                    normalTexture = device->createTexture(&texture);
 				}
 				else if (texture.getTypeName() == "texture_specular")
 				{
-					specularTexture = device->createTexture(texture.getSize().x, texture.getSize().y, texture.getData());
+                    specularTexture = device->createTexture(&texture);
 				}
 			}
 			//plaa

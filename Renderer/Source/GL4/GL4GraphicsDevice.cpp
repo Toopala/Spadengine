@@ -18,6 +18,8 @@
 #include "Renderer/Viewport.h"
 #include "Renderer/Window.h"
 
+#include "Resources/TextureResource.h"
+
 #include "Core/Assert.h"
 
 namespace sge
@@ -326,97 +328,107 @@ namespace sge
 	}
 
 	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
-	{
-		GL4Texture* gl4Texture = new GL4Texture();
+    {
+        GL4Texture* gl4Texture = new GL4Texture();
 
-   		glGenTextures(1, &gl4Texture->id);
-		checkError();
+        glGenTextures(1, &gl4Texture->id);
+        checkError();
 
-		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
+        glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
 
-		checkError();
+        checkError();
 
-		float maxValue;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
+        float maxValue;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
 
-		checkError();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        checkError();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-		checkError();
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
+        checkError();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
 
-		checkError();
-		glGenerateMipmap(GL_TEXTURE_2D);
+        checkError();
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-		checkError();
-		glBindTexture(GL_TEXTURE_2D, 0);
+        checkError();
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-		checkError();
+        checkError();
 
-		return &gl4Texture->header;
-	}
+        return &gl4Texture->header;
+    }
 
-	Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
-	{
-		GL4Texture* gl4Texture = new GL4Texture();
+    Texture* GraphicsDevice::createTextTexture(size_t width, size_t height, unsigned char* source)
+    {
+        GL4Texture* gl4Texture = new GL4Texture();
 
-		glGenTextures(1, &gl4Texture->id);
-		checkError();
+        glGenTextures(1, &gl4Texture->id);
+        checkError();
 
-		glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
-		checkError();
+        glBindTexture(GL_TEXTURE_2D, gl4Texture->id);
+        checkError();
 
-		float maxValue;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
+        float maxValue;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
 
-		checkError();
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        checkError();
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-		checkError();
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, source);
+        checkError();
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, source);
 
-		checkError();
-		glGenerateMipmap(GL_TEXTURE_2D);
+        checkError();
+        glGenerateMipmap(GL_TEXTURE_2D);
 
-		checkError();
-		glBindTexture(GL_TEXTURE_2D, 0);
+        checkError();
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-		checkError();
+        checkError();
 
-		return &gl4Texture->header;
-	}
+        return &gl4Texture->header;
+    }
 
-	void GraphicsDevice::deleteTexture(Texture* texture)
-	{
-		GL4Texture* gl4Texture = reinterpret_cast<GL4Texture*>(texture);
-		glDeleteTextures(1, &gl4Texture->id);
+    Texture* GraphicsDevice::createTexture(TextureResource* source)
+    {
+        return createTexture(source->getSize().x, source->getSize().y, source->getData());
+    }
 
-		checkError();
+    Texture* GraphicsDevice::createTextTexture(TextureResource* source)
+    {
+        return createTextTexture(source->getSize().x, source->getSize().y, source->getData());
+    }
 
-		delete gl4Texture;
-		texture = nullptr;
-	}
+    void GraphicsDevice::deleteTexture(Texture* texture)
+    {
+        GL4Texture* gl4Texture = reinterpret_cast<GL4Texture*>(texture);
+        glDeleteTextures(1, &gl4Texture->id);
 
-	CubeMap* GraphicsDevice::createCubeMap(size_t width, size_t height, unsigned char* source[])
-	{
-		GL4CubeMap* gl4CubeMap = new GL4CubeMap();
+        checkError();
 
-		glGenTextures(1, &gl4CubeMap->id);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, gl4CubeMap->id);
+        delete gl4Texture;
+        texture = nullptr;
+    }
+
+    CubeMap* GraphicsDevice::createCubeMap(TextureResource* source[])
+    {
+        GL4CubeMap* gl4CubeMap = new GL4CubeMap();
+
+        glGenTextures(1, &gl4CubeMap->id);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, gl4CubeMap->id);
 
 		for (size_t i = 0; i < 6; i++)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source[i]
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGBA, source[i]->getSize().x, source[i]->getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, source[i]->getData()
 			);
 		}
 
