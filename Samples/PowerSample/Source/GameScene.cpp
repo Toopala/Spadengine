@@ -20,6 +20,7 @@ Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
 SpotLightComponent do!
 Instanced rendering do!
 Deferred rendering do!
+Kameralle lookAt!
 Render targeteille depth-puskuri!
 Optimoi bulletscenea (nykii ihan vitusti)
     - Esim valojen dataa ei tarvii viedä joka objektille erikseen
@@ -45,7 +46,10 @@ GameScene::GameScene(sge::Spade* engine) :
 GameScene::~GameScene()
 {
     sge::ResourceManager::getMgr().release(earthResource);
+    sge::ResourceManager::getMgr().release(sunResource);
     sge::ResourceManager::getMgr().release(skyBoxResource);
+
+    device->deleteCubeMap(skyBoxCubeMap);
 
     device->deleteShader(vertexShader);
     device->deleteShader(pixelShader);
@@ -58,13 +62,18 @@ GameScene::~GameScene()
 
 void GameScene::update(float step)
 {
+    static float alpha = 0.0f;
+
+    alpha += 0.025f;
+
     if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
     {
         engine->stop();
     }
 
-    earthEntity->getComponent<sge::TransformComponent>()->addPosition({ 0.010f, 0.0f, 0.0f });
-    earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
+    earthEntity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
+    earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.025f);
+    sunEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
     cameraEntity->getComponent<sge::CameraComponent>()->update();
 }
 
@@ -76,6 +85,7 @@ void GameScene::draw()
 
     renderer->renderLights(1, &sunEntity);
     renderer->renderModels(1, &earthEntity);
+    renderer->renderModels(1, &sunEntity);
     renderer->renderModels(1, &skyBoxEntity);
 
     renderer->end();
@@ -94,10 +104,11 @@ sge::Entity* GameScene::createEarth()
     auto transform = transformFactory.create(entity);
     auto model = modelFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 0.0f, 25.0f });
+    transform->setPosition({ 0.0f, 0.0f, 5.0f });
+    transform->setScale({ 0.5f, 0.5f, 0.5f });
 
     model->setPipeline(pipeline);
-    model->setShininess(256.0f);
+    model->setShininess(2.0f);
     model->setRenderer(renderer);
     model->setModelResource(&earthResource);
 
@@ -113,10 +124,10 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     auto transform = transformFactory.create(entity);
     auto camera = cameraFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 0.0f, 45.0f });
+    transform->setPosition({ 0.0f, 3.0f, 15.0f });
     transform->setFront({ 0.0f, 0.0f, -1.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
-    transform->setRotationVector({ 0.0f, 1.0f, 0.0f });
+    transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
     camera->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
     camera->setViewport(x, y, width, height);
@@ -128,21 +139,37 @@ sge::Entity* GameScene::createSun()
 {
     sge::Entity* entity = entityManager.createEntity();
 
+    device->bindPipeline(pipeline);
+
     auto transform = transformFactory.create(entity);
-    auto light = dirLightFactory.create(entity);
+    auto light = pointLightFactory.create(entity);
+    auto model = modelFactory.create(entity);
 
     transform->setPosition({ 0.0f, 0.0f, 0.0f });
     transform->setFront({ 0.0f, 0.0f, 0.0f });
-    transform->setUp({ 0.0f, 0.0f, 0.0f });
+    transform->setUp({ 0.0f, 1.0f, 0.0f });
+    transform->setRotationVector({ 0.0f, 1.0f, 0.0f });
+    transform->setScale({ 2.0f, 2.0f, 2.0f });
 
-    sge::DirLight lightData;
+    sge::PointLight lightData;
 
-    lightData.direction = sge::math::vec4(0.0, 0.0, -1.0, 1.0);
-    lightData.ambient = sge::math::vec4(0.05, 0.05, 0.05, 1.0);
-    lightData.diffuse = sge::math::vec4(0.8, 0.8, 0.8, 1.0);
-    lightData.specular = sge::math::vec4(0.5, 0.5, 0.5, 1.0);
+    lightData.position = sge::math::vec4(0.0f);
+    lightData.constant = 1.0f;
+    lightData.mylinear = 0.022f;
+    lightData.quadratic = 0.0019f;
+    lightData.pad = 0.0f;
+    lightData.ambient = sge::math::vec4(0.0125f, 0.0125f, 0.05f, 1.0f);
+    lightData.diffuse = sge::math::vec4(0.8f, 0.8f, 0.0f, 1.0f);
+    lightData.specular = sge::math::vec4(0.25f, 0.25f, 1.0f, 1.0f);
 
     light->setLightData(lightData);
+
+    model->setPipeline(pipeline);
+    model->setShininess(256.0f);
+    model->setRenderer(renderer);
+    model->setModelResource(&sunResource);
+
+    device->debindPipeline(pipeline);
 
     return entity;
 }
@@ -164,6 +191,8 @@ sge::Entity* GameScene::createSkyBox()
 
     sge::Entity* entity = entityManager.createEntity();
 
+    skyBoxCubeMap = device->createCubeMap(source);
+
     auto transform = transformFactory.create(entity);
     auto model = modelFactory.create(entity);
 
@@ -174,7 +203,7 @@ sge::Entity* GameScene::createSkyBox()
     model->setPipeline(skyBoxPipeline);
     model->setRenderer(renderer);
     model->setModelResource(&skyBoxResource);
-    model->setCubeMap(device->createCubeMap(source));
+    model->setCubeMap(skyBoxCubeMap);
 
     device->debindPipeline(skyBoxPipeline);
 
@@ -229,9 +258,13 @@ void GameScene::initPipelines()
 void GameScene::initResources()
 {
     device->bindPipeline(pipeline);
-    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleIcoSphere.dae");
     earthResource.getResource<sge::ModelResource>()->setDevice(device);
     earthResource.getResource<sge::ModelResource>()->createBuffers();
+
+    sunResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/sunSphere.dae");
+    sunResource.getResource<sge::ModelResource>()->setDevice(device);
+    sunResource.getResource<sge::ModelResource>()->createBuffers();
     device->debindPipeline(pipeline);
 
     device->bindPipeline(skyBoxPipeline);

@@ -359,14 +359,14 @@ void Scene::setCubeMap(sge::ModelComponent *component, sge::math::ivec2 size, st
 	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>(back);
 	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>(front);
 
-	unsigned char* source[6];
-	source[5] = tex1.getResource<sge::TextureResource>()->getData();
-	source[4] = tex2.getResource<sge::TextureResource>()->getData();
-	source[3] = tex3.getResource<sge::TextureResource>()->getData();
-	source[2] = tex4.getResource<sge::TextureResource>()->getData();
-	source[1] = tex5.getResource<sge::TextureResource>()->getData();
-	source[0] = tex6.getResource<sge::TextureResource>()->getData();
-	component->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(size.x, size.y, source));
+    sge::TextureResource* source[6];
+	source[5] = tex1.getResource<sge::TextureResource>();
+	source[4] = tex2.getResource<sge::TextureResource>();
+	source[3] = tex3.getResource<sge::TextureResource>();
+	source[2] = tex4.getResource<sge::TextureResource>();
+	source[1] = tex5.getResource<sge::TextureResource>();
+	source[0] = tex6.getResource<sge::TextureResource>();
+    component->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(source));
 }
 
 void Scene::loadTextShader(const std::string& path, std::vector<char>& data)

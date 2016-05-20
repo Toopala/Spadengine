@@ -13,6 +13,7 @@ namespace sge
     class RenderSystem;
     class Spade;
 
+    struct CubeMap;
     struct Pipeline;
     struct Shader;
     struct Texture;
@@ -54,6 +55,7 @@ private:
     sge::GraphicsDevice* device;
 
     sge::Handle<sge::ModelResource> earthResource;
+    sge::Handle<sge::ModelResource> sunResource;
     sge::Handle<sge::ModelResource> skyBoxResource;
 
     sge::Pipeline* pipeline;
@@ -61,9 +63,10 @@ private:
 
     sge::Shader* vertexShader;
     sge::Shader* pixelShader;
-
     sge::Shader* skyBoxVertexShader;
     sge::Shader* skyBoxPixelShader;
+
+    sge::CubeMap* skyBoxCubeMap;
 
     sge::ComponentFactory<sge::TransformComponent> transformFactory;
     sge::ComponentFactory<sge::ModelComponent> modelFactory;
