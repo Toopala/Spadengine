@@ -24,6 +24,16 @@
   <library_effects>
     <effect id="Floor-effect">
       <profile_COMMON>
+		<newparam sid="metaldiffuse_jpg-surface">
+          <surface type="2D">
+            <init_from>metaldiffuse_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="metaldiffuse_jpg-sampler">
+          <sampler2D>
+            <source>metaldiffuse_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <newparam sid="metalspecular_JPG-surface">
           <surface type="2D">
             <init_from>metalspecular_JPG</init_from>
@@ -53,7 +63,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="metalspecular_JPG-sampler" texcoord="UVMap"/>
+              <texture texture="metaldiffuse_jpg-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
               <texture texture="metalspecular_JPG-sampler" texcoord="UVMap"/>
