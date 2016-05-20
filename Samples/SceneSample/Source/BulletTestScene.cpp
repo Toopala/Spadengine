@@ -127,16 +127,17 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 		new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(pos.x, pos.y, pos.z)));
 	btScalar mass = 1;
 	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
-	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
-	fallRigidBodyCI.m_restitution = 1.0f;
+	btBoxShape* spawnShape = new btBoxShape(btVector3(1, 1, 1));
+	spawnShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, spawnShape, fallInertia);
+	fallRigidBodyCI.m_restitution = 0.6f;
 	fallRigidBodyCI.m_friction = 0.5f;
-	fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
-	dynamicsWorld->addRigidBody(fallRigidBody);
+	btRigidBody* spawnRigidBody = new btRigidBody(fallRigidBodyCI);
+	spawnRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	dynamicsWorld->addRigidBody(spawnRigidBody);
 
 	sge::MyPhysicsComponent* physcomponent = new sge::MyPhysicsComponent(modentity);
-	physcomponent->setRigidBody(fallRigidBody);
+	physcomponent->setRigidBody(spawnRigidBody);
 	modentity->setComponent(physcomponent);
 
 	// GameObject vector
@@ -528,13 +529,13 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	btSphereShape* sphereShape = new btSphereShape(btScalar(9.5f));
 	modentityEarth->getComponent<sge::TransformComponent>()->setScale(sge::math::vec3(10.0f));
 
-	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(20, 15, 0)));
+	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(2, 0, 0, 1), btVector3(20, 15, 0)));
 	btScalar massE = 10;
 	btVector3 fallInertiaE(0, 0, 0);
 	sphereShape->calculateLocalInertia(10.0f, fallInertiaE);
 	btRigidBody::btRigidBodyConstructionInfo
 		earthRigidBodyCI(massE, EarthMotionState, sphereShape, fallInertiaE);
-	earthRigidBodyCI.m_restitution = 1.0f;
+	earthRigidBodyCI.m_restitution = 0.6f;
 	earthRigidBodyCI.m_rollingFriction = 0.5f;
 	btRigidBody* earthRigidBody = new btRigidBody(earthRigidBodyCI);
 	earthRigidBody->setActivationState(DISABLE_DEACTIVATION);

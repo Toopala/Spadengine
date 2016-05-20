@@ -245,7 +245,7 @@ void VisualScene::update(float step)
 {
 	updateControls();
 
-	alpha += 0.01f;
+	alpha += 0.05f;
 	rotate += sge::math::radians(0.5f);
 
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -318,7 +318,7 @@ void VisualScene::updateControls()
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RETURN) && player == false)
 	{
-		audio.play("../Assets/Audio/scifi.flac");
+		audio.play("../Assets/Audio/person_cheering.wav");
 		player = true;
 	}
 
