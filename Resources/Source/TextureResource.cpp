@@ -8,13 +8,17 @@ namespace sge
         // Flips texture rows for opengl.
         stbi_set_flip_vertically_on_load(true);
 #endif
-		data = stbi_load(resourcePath.c_str(), &width, &height, &comp, STBI_rgb_alpha);
-		// TODO CREATE TEXTURE
+		data = stbi_load(resourcePath.c_str(), &width, &height, &format, STBI_rgb_alpha);
+
+        if (!data)
+        {
+            std::cout << "Error loading texture " << resourcePath << " : " << stbi_failure_reason() << std::endl;
+        }
 	}
 
 	TextureResource::~TextureResource()
 	{
-		//stbi_image_free(data); ?? Why you not free.
+		//stbi_image_free(data);
 	}
 
 	unsigned char* TextureResource::getData()
@@ -41,4 +45,9 @@ namespace sge
 	{
 		typeName = type;
 	}
+
+    int TextureResource::getFormat()
+    {
+        return format;
+    }
 }

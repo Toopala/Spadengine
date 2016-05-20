@@ -84,21 +84,21 @@ VisualScene::VisualScene(sge::Spade *engine)
 	sge::Handle<sge::TextureResource> tex4;
 	sge::Handle<sge::TextureResource> tex5;
 	sge::Handle<sge::TextureResource> tex6;
-	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_RT.png");
-	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_LF.png");
-	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_UP.png");
-	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_DN.png");
-	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_BK.png");
-	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_FR.png");
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/right.jpg");
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/left.jpg");
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/top.jpg");
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/bottom.jpg");
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/back.jpg");
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/front.jpg");
 
-	unsigned char* source[6];
-	source[5] = tex1.getResource<sge::TextureResource>()->getData();
-	source[4] = tex2.getResource<sge::TextureResource>()->getData();
-	source[3] = tex3.getResource<sge::TextureResource>()->getData();
-	source[2] = tex4.getResource<sge::TextureResource>()->getData();
-	source[1] = tex5.getResource<sge::TextureResource>()->getData();
-	source[0] = tex6.getResource<sge::TextureResource>()->getData();
-	modComponentCube->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(64, 64, source));
+    sge::TextureResource* source[6];
+	source[5] = tex1.getResource<sge::TextureResource>();
+	source[4] = tex2.getResource<sge::TextureResource>();
+	source[3] = tex3.getResource<sge::TextureResource>();
+	source[2] = tex4.getResource<sge::TextureResource>();
+	source[1] = tex5.getResource<sge::TextureResource>();
+	source[0] = tex6.getResource<sge::TextureResource>();
+	modComponentCube->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(source));
 	modentityCube->setComponent(modComponentCube);
 
 	modComponentCube->setModelResource(&modelHandleCube);
@@ -106,7 +106,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5.0f));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(2.0f));
 
 	modComponentCube->setPipeline(pipeline);
 
