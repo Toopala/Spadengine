@@ -12,13 +12,13 @@
   </asset>
   <library_images>
     <image id="diff_png" name="diff_png">
-      <init_from>metaldiffuse.png</init_from>
+      <init_from>metaldiffuse.jpg</init_from>
     </image>
     <image id="NormalMapTile_png" name="NormalMapTile_png">
-      <init_from>metalnormal.png</init_from>
+      <init_from>metalnormal.jpg</init_from>
     </image>
 	<image id="SpecularMapTile_png" name="SpecularMapTile_png">
-      <init_from>SpecularMapTile2.png</init_from>
+      <init_from>metalspecular.jpg</init_from>
     </image>
   </library_images>
   <library_effects>
