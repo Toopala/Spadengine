@@ -58,7 +58,10 @@ namespace sge
 		{
 			this->vertices = vertices;
 			this->indices = indices;
-			this->textures = textures;			
+			this->textures = textures;
+			diffuseTexture = nullptr;
+			normalTexture = nullptr;
+			specularTexture = nullptr;
 		}
 
 		void createBuffers(GraphicsDevice* device)
@@ -113,10 +116,6 @@ namespace sge
         void setDevice(GraphicsDevice* device) { this->device = device; }
 
 	private:
-		std::vector<sge::Texture*> diffuseTextures;
-		std::vector<sge::Texture*> specularTextures;
-		std::vector<sge::Texture*> normalTextures;
-
         GraphicsDevice* device;
 		/*  Model Data  */
 		std::vector<Mesh*> meshes;

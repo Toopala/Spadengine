@@ -15,8 +15,6 @@
 #include "Core/Random.h"
 #include "Game/TransformComponent.h"
 
-#include"Audio/Audio.h"
-
 VisualScene::VisualScene(sge::Spade *engine)
 	: engine(engine)
 	, renderer(engine->getRenderer())
@@ -54,7 +52,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	// ----------------------------------------------------
 
 	// Assimp models
-	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/carDIffuseSpecular.dae");
+	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/saber.dae");
 	modelHandleCube.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
@@ -63,7 +61,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modelHandleCube3 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
 	modelHandleCube3.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig2.dae");
 	modelHandleRoom.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	// Create new entity for models
@@ -86,12 +84,12 @@ VisualScene::VisualScene(sge::Spade *engine)
 	sge::Handle<sge::TextureResource> tex4;
 	sge::Handle<sge::TextureResource> tex5;
 	sge::Handle<sge::TextureResource> tex6;
-	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
-	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
-	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
-	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
-	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
-	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/room.jpg");
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_RT.png");
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_LF.png");
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_UP.png");
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_DN.png");
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_BK.png");
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>("../Assets/CubeMap/BedRoomCubeMap_FR.png");
 
     sge::TextureResource* source[6];
 	source[5] = tex1.getResource<sge::TextureResource>();
@@ -108,7 +106,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(2));
+	modentityCube->getComponent<sge::TransformComponent>()->setScale(glm::vec3(5.0f));
 
 	modComponentCube->setPipeline(pipeline);
 
@@ -245,6 +243,58 @@ VisualScene::VisualScene(sge::Spade *engine)
 
 void VisualScene::update(float step)
 {
+	updateControls();
+
+	alpha += 0.01f;
+	rotate += sge::math::radians(0.5f);
+
+	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+	modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
+	modentityCube2->getComponent<sge::TransformComponent>()->setAngle(-rotate);
+	modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
+
+	float lightX = -25.0f*cos(alpha);
+	float lightY = -25.0f*sin(alpha);
+	float lightZ = -25.0f*sin(alpha);
+
+	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
+	modentityLight->getComponent<sge::PointLightComponent>()->update();
+	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
+	modentityLight2->getComponent<sge::PointLightComponent>()->update();
+
+
+	for (auto camera : cameras)
+	{
+		camera->getComponent<sge::CameraComponent>()->update();
+	}
+}
+
+
+void VisualScene::draw()
+{
+	renderer->addCameras(1, &cameras.front());
+	renderer->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	renderer->clear(sge::COLOR);
+	renderer->begin();
+	
+	// Render all game objects
+	renderer->renderModels(gameObjects.size(), gameObjects.data());
+
+	// Render lights
+	renderer->renderLights(1, &modentityLight);
+	renderer->renderLights(1, &modentityLight2);
+
+	renderer->end();
+
+	renderer->render();
+
+	renderer->present();
+	renderer->clear();
+}
+
+void VisualScene::updateControls()
+{
+
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_1))
 	{
@@ -264,6 +314,18 @@ void VisualScene::update(float step)
 			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + cameraFront*camSpeed);
 		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RETURN) && player == false)
+	{
+		audio.play("../Assets/Audio/scifi.flac");
+		player == true;
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE) && player == true)
+	{
+		audio.stop();
+		player == false;
 	}
 
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
@@ -295,6 +357,10 @@ void VisualScene::update(float step)
 		}
 	}
 
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
+	{
+		engine->stop();
+	}
 
 	if (useMouse)
 	{
@@ -306,58 +372,8 @@ void VisualScene::update(float step)
 		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
 	}
 	
-	alpha += 0.01f;
-	rotate += sge::math::radians(0.5f);
 
-	modentityCube2->getComponent<sge::TransformComponent>()->setAngle(-rotate);
-	modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
-
-	float lightX = -25.0f*cos(alpha);
-	float lightY = -25.0f*sin(alpha);
-	float lightZ = -25.0f*sin(alpha);
-
-	modentityLight->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
-	modentityLight->getComponent<sge::PointLightComponent>()->update();
-	modentityLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
-	modentityLight2->getComponent<sge::PointLightComponent>()->update();
-
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
-	{
-		engine->stop();
 	}
-
-	for (auto camera : cameras)
-	{
-		camera->getComponent<sge::CameraComponent>()->update();
-	}
-}
-
-void VisualScene::interpolate(float alpha)
-{
-
-}
-
-void VisualScene::draw()
-{
-	renderer->addCameras(1, &cameras.front());
-	renderer->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	renderer->clear(sge::COLOR);
-	renderer->begin();
-	
-	// Render all game objects
-	renderer->renderModels(gameObjects.size(), gameObjects.data());
-
-	// Render lights
-	renderer->renderLights(1, &modentityLight);
-	renderer->renderLights(1, &modentityLight2);
-
-	renderer->end();
-
-	renderer->render();
-
-	renderer->present();
-	renderer->clear();
-}
 
 void VisualScene::loadTextShader(const std::string& path, std::vector<char>& data)
 {
@@ -433,6 +449,12 @@ void VisualScene::mouseLook(int mouseX, int mouseY)
 	front.y = sge::math::sin(sge::math::radians(pitch));
 	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
 	cameraFront = sge::math::normalize(front);
+}
+
+
+void VisualScene::interpolate(float alpha)
+{
+
 }
 
 VisualScene::~VisualScene()
