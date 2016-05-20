@@ -17,9 +17,8 @@
 
 #include"Audio/Audio.h"
 
-Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer())
+Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer()), fontResource(sge::ResourceManager::getMgr().load<sge::FontResource>("../Assets/verdana.ttf"))
 {
-
 	// Entity manager:
 	entityManager = new sge::EntityManager();
 	// ----------------------
@@ -59,8 +58,8 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	pointLight.mylinear = 0.09;
 	pointLight.quadratic = 0.0032;
 	pointLight.pad = 0.0;
-	pointLight.ambient = sge::math::vec4(1.0, 0.1, 0.1, 1);
-	pointLight.diffuse = sge::math::vec4(5.0, 1.0, 1.0, 1.0);
+	pointLight.ambient = sge::math::vec4(3.0, 0.1, 0.1, 1);
+	pointLight.diffuse = sge::math::vec4(10.0, 1.0, 1.0, 1.0);
 	pointLight.specular = sge::math::vec4(1.0, 1.0, 1.0, 1.0);
 
 	pointLightEntity = entityManager->createEntity();
@@ -79,8 +78,8 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	pointLight2.mylinear = 0.09;
 	pointLight2.quadratic = 0.0032;
 	pointLight2.pad = 0.0;
-	pointLight2.ambient = sge::math::vec4(0.1, 0.1, 1.0, 1);
-	pointLight2.diffuse = sge::math::vec4(1.0, 1.0, 5.0, 1.0);
+	pointLight2.ambient = sge::math::vec4(0.1, 0.1, 3.0, 1);
+	pointLight2.diffuse = sge::math::vec4(1.0, 1.0, 10.0, 1.0);
 	pointLight2.specular = sge::math::vec4(1.0, 1.0, 1.0, 1.0);
 
 	pointLightEntity2 = entityManager->createEntity();
@@ -94,8 +93,8 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	pointLights.push_back(pointLightEntity2);
 
 	sge::DirLight dirLight;
-	dirLight.ambient = sge::math::vec4(0.1, 0.5, 0.1, 1);
-	dirLight.diffuse = sge::math::vec4(0.1, 0.5, 0.1, 1.0);
+	dirLight.ambient = sge::math::vec4(0.5, 0.5, 0.5, 1);
+	dirLight.diffuse = sge::math::vec4(0.5, 0.5, 0.5, 1.0);
 	dirLight.specular = sge::math::vec4(1.0, 1.0, 1.0, 1.0);
 	dirLight.direction = sge::math::vec4(0.0,-1.0,0.0,0.0);
 
@@ -136,21 +135,46 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	cubeEntity = entityManager->createEntity();
 
 	cubeTransform = new sge::TransformComponent(cubeEntity);
-	cubeTransform->setPosition({ 0.0, -10.0, 0.0 });
+	cubeTransform->setPosition({ 0.0, -30.0, 0.0 });
 	cubeTransform->setRotationVector({ 1.0, 0.0, 0.0 });
-	cubeTransform->setScale({10.0, 10.0, 10.0});
-	cubeTransform->setAngle(-90);
+	cubeTransform->setScale({6.0, 20.0, 6.0});
 	cubeEntity->setComponent(cubeTransform);
 
 	cubeComponent = new sge::ModelComponent(cubeEntity);
 	cubeComponent->setShininess(10);
+	cubeComponent->setGlossyness(1.0f);
 	cubeComponent->setModelResource(&cubeHandle);
 	cubeComponent->setRenderer(engine->getRenderer());
 	cubeComponent->setPipeline(pipeline);
+
 	cubeEntity->setComponent(cubeComponent);
 
 	cubeHandle.getResource<sge::ModelResource>()->createBuffers();
 	gameObjects.push_back(cubeEntity);
+	// ----------------------
+
+	// Deer model
+	deerHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/Deer.obj");
+	deerHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+	deerEntity = entityManager->createEntity();
+
+	deerTransform = new sge::TransformComponent(deerEntity);
+	deerTransform->setPosition({ 0.0, -10, 0.0 });
+	deerTransform->setRotationVector({ 0.0, 0.0, 1.0 });
+	deerTransform->setScale({ 5.0, 5.0, 5.0 });
+	deerEntity->setComponent(deerTransform);
+
+	deerComponent = new sge::ModelComponent(deerEntity);
+	deerComponent->setShininess(10);
+	deerComponent->setGlossyness(1.0f);
+	deerComponent->setModelResource(&deerHandle);
+	deerComponent->setRenderer(engine->getRenderer());
+	deerComponent->setPipeline(pipeline);
+	setCubeMap(deerComponent, { 204, 204 }, "../Assets/CubeMap/BoxTop.png", "../Assets/CubeMap/BoxBottom.png", "../Assets/CubeMap/BoxLeft.png", "../Assets/CubeMap/BoxRight.png", "../Assets/CubeMap/BoxFront.png", "../Assets/CubeMap/BoxBack.png");
+	deerEntity->setComponent(deerComponent);
+
+	deerHandle.getResource<sge::ModelResource>()->createBuffers();
+	gameObjects.push_back(deerEntity);
 	// ----------------------
 
 	// Room model
@@ -161,7 +185,7 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	roomTransform = new sge::TransformComponent(roomEntity);
 	roomTransform->setPosition({ 0.0, 0.0, 0.0 });
 	roomTransform->setRotationVector({ 1.0, 0.0, 0.0 });
-	roomTransform->setScale({ 0.6, 0.6, 0.6 });
+	roomTransform->setScale({ 1, 1, 1 });
 	roomEntity->setComponent(roomTransform);
 
 	roomComponent = new sge::ModelComponent(roomEntity);
@@ -175,34 +199,39 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	gameObjects.push_back(roomEntity);
 	// ----------------------
 
-	/*
-	// Car model
-	carHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/carDiffuseSpecular.dae");
-	carHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
-	carEntity = entityManager->createEntity();
+	// Diamond model
+	diamondHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/diamondDiffuseSpecular.dae");
+	diamondHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+	diamondEntity = entityManager->createEntity();
 
-	carTransform = new sge::TransformComponent(carEntity);
-	carTransform->setPosition({ 10.0, 10.0, 0.0 });
-	carTransform->setRotationVector({ 0.0, 0.0, 1.0 });
-	carTransform->setScale({ 10.0, 10.0, 10.0 });
-	carEntity->setComponent(carTransform);
+	diamondTransform = new sge::TransformComponent(diamondEntity);
+	diamondTransform->setPosition({ 0.0, -20.0, 12.0 });
+	diamondTransform->setRotationVector({ 0.0, 0.0, 1.0 });
+	diamondTransform->setScale({ 10.0, 10.0, 10.0 });
+	diamondEntity->setComponent(diamondTransform);
 
-	carComponent = new sge::ModelComponent(carEntity);
-	carComponent->setShininess(100);
-	carComponent->setModelResource(&carHandle);
-	carComponent->setRenderer(engine->getRenderer());
-	carComponent->setPipeline(pipeline);
-	carEntity->setComponent(carComponent);
+	diamondComponent = new sge::ModelComponent(diamondEntity);
+	diamondComponent->setShininess(100);
+	diamondComponent->setModelResource(&diamondHandle);
+	diamondComponent->setRenderer(engine->getRenderer());
+	diamondComponent->setPipeline(pipeline);
+	diamondEntity->setComponent(diamondComponent);
 
-	carHandle.getResource<sge::ModelResource>()->createBuffers();
-	gameObjects.push_back(carEntity);
+	diamondHandle.getResource<sge::ModelResource>()->createBuffers();
+	gameObjects.push_back(diamondEntity);
 	// ----------------------
-	*/
+
+	// Text
+	fontResource.getResource<sge::FontResource>()->setCharacterSize(6);
+	texts.push_back(createText(200, 200, "Easter Egg"));
+	// ----------------------
 }
 
 Scene::~Scene()
 {
 	sge::ResourceManager::getMgr().release(cubeHandle);
+	sge::ResourceManager::getMgr().release(deerHandle);
+	sge::ResourceManager::getMgr().release(roomHandle);
 	engine->getRenderer()->getDevice()->debindPipeline(pipeline);
 }
 
@@ -273,6 +302,9 @@ void Scene::update(float dt)
 	float lightZ = -25.0f*sin(alpha);
 	pointLights[0]->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ));
 	pointLights[1]->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(lightX, lightY, lightZ) * glm::vec3(-1));
+	
+	diamondTransform->addAngle(0.01);
+
 	for (auto pointLights : pointLights)
 	{
 		pointLights->getComponent<sge::PointLightComponent>()->update();
@@ -300,6 +332,7 @@ void Scene::draw()
 	renderer->renderModels(gameObjects.size(), gameObjects.data());
 	renderer->renderLights(pointLights.size(), pointLights.data());
 	renderer->renderLights(dirLights.size(), dirLights.data());
+	renderer->renderTexts(texts.size(), texts.data());
 	renderer->end();
 	renderer->render();
 	renderer->present();
@@ -309,6 +342,31 @@ void Scene::draw()
 void Scene::interpolate(float alpha)
 {
 
+}
+
+void Scene::setCubeMap(sge::ModelComponent *component, sge::math::ivec2 size, std::string top, std::string bottom, std::string left, std::string right, std::string front, std::string back)
+{
+	sge::Handle<sge::TextureResource> tex1;
+	sge::Handle<sge::TextureResource> tex2;
+	sge::Handle<sge::TextureResource> tex3;
+	sge::Handle<sge::TextureResource> tex4;
+	sge::Handle<sge::TextureResource> tex5;
+	sge::Handle<sge::TextureResource> tex6;
+	tex1 = sge::ResourceManager::getMgr().load<sge::TextureResource>(right);
+	tex2 = sge::ResourceManager::getMgr().load<sge::TextureResource>(left);
+	tex3 = sge::ResourceManager::getMgr().load<sge::TextureResource>(top);
+	tex4 = sge::ResourceManager::getMgr().load<sge::TextureResource>(bottom);
+	tex5 = sge::ResourceManager::getMgr().load<sge::TextureResource>(back);
+	tex6 = sge::ResourceManager::getMgr().load<sge::TextureResource>(front);
+
+	unsigned char* source[6];
+	source[5] = tex1.getResource<sge::TextureResource>()->getData();
+	source[4] = tex2.getResource<sge::TextureResource>()->getData();
+	source[3] = tex3.getResource<sge::TextureResource>()->getData();
+	source[2] = tex4.getResource<sge::TextureResource>()->getData();
+	source[1] = tex5.getResource<sge::TextureResource>()->getData();
+	source[0] = tex6.getResource<sge::TextureResource>()->getData();
+	component->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(size.x, size.y, source));
 }
 
 void Scene::loadTextShader(const std::string& path, std::vector<char>& data)
@@ -380,4 +438,21 @@ void Scene::mouseLook()
 	front.y = sge::math::sin(sge::math::radians(pitch));
 	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
 	cameraFront = sge::math::normalize(front);
+}
+
+sge::Entity* Scene::createText(float x, float y, const std::string& text)
+{
+	sge::Entity* entity = entityManager->createEntity();
+
+	auto transform = transformFactory.create(entity);
+	auto textcomponent = textFactory.create(entity);
+
+	transform->setPosition({ x, y, 0.0f });
+	transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
+
+	textcomponent->setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+	textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
+	textcomponent->setText(text);
+
+	return entity;
 }

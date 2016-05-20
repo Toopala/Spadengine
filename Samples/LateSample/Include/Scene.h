@@ -16,20 +16,15 @@
 #include "Game/ComponentFactory.h"
 #include "Game/PhysicsComponent.h"
 
+#include "Resources/FontResource.h"
+#include "Game/TextComponent.h"
+
 // FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
 struct sge::Viewport;
 struct sge::Shader;
 struct sge::Texture;
-
-struct Vertex;
-
-struct UniformData2
-{
-	sge::math::mat4 PV;
-	sge::math::mat4 M;
-};
 
 class Scene : public sge::Scene
 {
@@ -41,9 +36,11 @@ public:
 	void draw();
 	void interpolate(float alpha);
 
+	void setCubeMap(sge::ModelComponent *component, sge::math::ivec2 size, std::string top, std::string bottom, std::string left, std::string right, std::string front, std::string back);
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 	void mouseLook();
+	sge::Entity* createText(float x, float y, const std::string& text);
 
 private:
 	// Engine:
@@ -96,6 +93,12 @@ private:
 	bool firstMouse = true;
 	bool useMouse = false;
 
+	// Text:
+	sge::Entity *textEntity;
+	sge::Handle<sge::FontResource> fontResource;
+	sge::ComponentFactory<sge::TransformComponent> transformFactory;
+	sge::ComponentFactory<sge::TextComponent> textFactory;
+
 	// Models:
 
 	// Cube:
@@ -103,13 +106,18 @@ private:
 	sge::Entity *cubeEntity;
 	sge::TransformComponent *cubeTransform;
 	sge::ModelComponent *cubeComponent;
-	sge::PhysicsComponent *cubePhysics;
 
-	// Car:
-	sge::Handle<sge::ModelResource> carHandle;
-	sge::Entity *carEntity;
-	sge::TransformComponent *carTransform;
-	sge::ModelComponent *carComponent;
+	// Deer:
+	sge::Handle<sge::ModelResource> deerHandle;
+	sge::Entity *deerEntity;
+	sge::TransformComponent *deerTransform;
+	sge::ModelComponent *deerComponent;
+
+	// Diamond:
+	sge::Handle<sge::ModelResource> diamondHandle;
+	sge::Entity *diamondEntity;
+	sge::TransformComponent *diamondTransform;
+	sge::ModelComponent *diamondComponent;
 
 	// Room:
 	sge::Handle<sge::ModelResource> roomHandle;
@@ -121,8 +129,9 @@ private:
 	std::vector<sge::Entity*> gameObjects;
 	std::vector<sge::Entity*> pointLights;
 	std::vector<sge::Entity*> dirLights;
+	std::vector<sge::Entity*> texts;
 
 	// Misc:
 	float alpha = 0;
-	float movementSpeed = 5;
+	float movementSpeed = 1;
 };
