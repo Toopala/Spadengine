@@ -57,22 +57,35 @@ public:
 	void loadTextShader(const std::string& path, std::vector<char>& data);
 	void loadBinaryShader(const std::string& path, std::vector<char>& data);
 	void  mouseLook(int mouseX, int mouseY);
-    sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
-    sge::Entity* createText(float x, float y, const std::string& text);
 
 private:
+
+	//// Systems & engine ////
     sge::Spade* engine;
     sge::RenderSystem* renderer;
 	sge::PhysicsSystem* physicsSystem;
+	sge::EntityManager entityManager;
+	////
+	//// Other values ////
+	float alpha;
+	float cubeX, cubeY, cubeZ;
+	////
 
+	//// Entities ////
     std::vector<sge::Entity*> cameras;
-
+	std::vector<sge::Entity*> modelEntities;
+	std::vector<sge::Entity*> pointLights;
     sge::Entity* camera;
-    sge::Entity* guiText;
-    sge::Entity* targetEntity;
 	sge::Entity* largeCube;
+	sge::Entity* room;
 
-	///MouseLook
+	// Point lights
+	sge::Entity* pointLight1;
+	sge::Entity* pointLight2;
+	sge::Entity* pointLight3;
+	////
+
+	//// MouseLook variables ////
 	bool useMouse;
 	float lastX, lastY;
 	float yaw, pitch;
@@ -80,9 +93,9 @@ private:
 	int mousseX, mousseY;
 	bool firstMouse = true;
 	float camSpeed;
-	///
+	////
 
-	
+	//// Rendering stuff ////
 	sge::math::mat4 V;
 	sge::math::mat4 P;
 
@@ -93,39 +106,34 @@ private:
 	sge::Shader* pixelShader2;
 	sge::Texture* texture;
 	sge::Texture* texture2;
-
-	glm::vec3 cameraFront;
-	glm::vec3 cameraPos;
-	glm::vec3 cameraUp;
-
 	std::vector<Vertex>* vertices;
 	std::vector<unsigned int>* indices;
 	UniformData2 uniformData2;
+	////
 
-	sge::Handle <sge::ModelResource> modelHandle;
+	//// Camera ////
+	glm::vec3 cameraFront;
+	glm::vec3 cameraPos;
+	glm::vec3 cameraUp;
+	////
+	
+	//// Model handles ////
+	sge::Handle<sge::ModelResource> cubeModelHandle;
+	sge::Handle<sge::ModelResource> roomModelHandle;
+	////
 
+	//// Collision shapes ////
 	btCollisionShape* boxShape;
+	////
 
-	/*float alpha;*/
-    /*sge::Handle<sge::TextureResource> textureResource;
-    sge::Handle<sge::FontResource> fontResource;
-    sge::Texture* texture;
-    sge::Texture** targetTextures;
-    sge::RenderTarget* renderTarget;
-    sge::math::mat4 VP;
-
-    size_t targetCount;*/
-
-    sge::EntityManager entityManager;
-    
-
-
-    // Component factories
-    // TODO maybe we should use one factory for all component types? Using it could be nicer.
-    sge::ComponentFactory<sge::TransformComponent> transformFactory;
-    sge::ComponentFactory<sge::SpriteComponent> spriteFactory;
-    sge::ComponentFactory<sge::CameraComponent> cameraFactory;
-    sge::ComponentFactory<sge::TextComponent> textFactory;
+	//// Component factories ////
+	sge::ComponentFactory<sge::TransformComponent> transformFactory;
+	sge::ComponentFactory<sge::SpriteComponent> spriteFactory;
+	sge::ComponentFactory<sge::CameraComponent> cameraFactory;
+	sge::ComponentFactory<sge::TextComponent> textFactory;
 	sge::ComponentFactory<sge::ModelComponent> modelFactory;
+	sge::ComponentFactory<sge::PointLightComponent> pLightFactory;
+	////
 
+	
 };

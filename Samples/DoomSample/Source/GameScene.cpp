@@ -23,8 +23,14 @@ Rendersystemille defaulttikamera!
 */
 
 GameScene::GameScene(sge::Spade* engine) :
-    engine(engine),
-    renderer(engine->getRenderer())
+	engine(engine),
+	renderer(engine->getRenderer()),
+	useMouse(false),
+	camSpeed(0.3f),
+	alpha(0.0f),
+	cubeX(0.5f),
+	cubeY(1.0f),
+	cubeZ(1.0f)
 {
 	sge::VertexLayoutDescription vertexLayoutDescription = { 5,
 	{
@@ -54,70 +60,158 @@ GameScene::GameScene(sge::Spade* engine) :
 
 	//// Systems ////
 	physicsSystem = new sge::PhysicsSystem();
-
+	
 	//// Entities //// Creating entities without difficult components
 
 	// Cube
 	largeCube = entityManager.createEntity();
-	largeCube->setComponent(transformFactory.create(largeCube));
-	largeCube->setComponent(physicsSystem->createPhysicsComponent(largeCube));
-	largeCube->setComponent(modelFactory.create(largeCube));
+	modelEntities.push_back(largeCube);
+	auto cubeTrans = transformFactory.create(largeCube);
+	auto cubePhys = physicsSystem->createPhysicsComponent(largeCube);
+	auto cubeModel = modelFactory.create(largeCube);
+
+	// Room
+	room = entityManager.createEntity();
+	modelEntities.push_back(room);
+	auto roomTrans = transformFactory.create(room);
+	auto roomModel = modelFactory.create(room);
 
 	// Camera
 	camera = entityManager.createEntity();
-	camera->setComponent(transformFactory.create(camera));
-	camera->setComponent(cameraFactory.create(camera));
-	cameraPos = glm::vec3(5.0f, 10.0f, 48.0f);
-	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	camera->getComponent<sge::CameraComponent>()->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-	camera->getComponent<sge::CameraComponent>()->setViewport(1280 - 420, 720 - 280, 320, 180);
-	camera->getComponent<sge::TransformComponent>()->setPosition(cameraPos);
-	camera->getComponent<sge::TransformComponent>()->setFront(cameraFront);
-	camera->getComponent<sge::TransformComponent>()->setUp(cameraUp);
+	auto cameraTrans = transformFactory.create(camera);
+	auto cameraComp = cameraFactory.create(camera);
+
+	
+	cameraPos = sge::math::vec3(0.0f, 0.0f, 5.0f);
+	cameraFront = sge::math::vec3(0.0f, 0.0f, -1.0f);
+	cameraUp = sge::math::vec3(0.0f, 1.0f, 0.0f);
+
+	cameraComp->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+	cameraComp->setViewport(0, 0, 1280, 720);
+	cameraTrans->setPosition(cameraPos);
+	cameraTrans->setFront(cameraFront);
+	cameraTrans->setUp(cameraUp);
 	cameras.push_back(camera);
 
-	// sge::TransformComponent* cubeTrans = largeCube->getComponent<sge::TransformComponent>();
+	//// Lights
+
+	// Light 1
+
+	pointLight1 = entityManager.createEntity();
+	auto lightTrans1 = transformFactory.create(pointLight1);
+	auto pLight1 = pLightFactory.create(pointLight1);
+
+	lightTrans1->setPosition(sge::math::vec3(3.0f, 4.0f, 0.0f));
+
+	sge::PointLight pointLightData1;
+	pointLightData1.position = sge::math::vec4(0.0f);
+	pointLightData1.constant = float(1.0);
+	pointLightData1.mylinear = float(0.022);
+	pointLightData1.quadratic = float(0.0019);
+	pointLightData1.pad = 0.0f;
+	pointLightData1.ambient = sge::math::vec4(0.0125, 0.05, 0.0125, 1.0);
+	pointLightData1.diffuse = sge::math::vec4(0.2, 0.8, 0.2, 1.0);
+	pointLightData1.specular = sge::math::vec4(0.25, 1.0, 0.25, 1.0);
+
+	pLight1->setLightData(pointLightData1);
+
+	pointLights.push_back(pointLight1);
+
+	// Light 2
+
+	pointLight2 = entityManager.createEntity();
+	auto lightTrans2 = transformFactory.create(pointLight2);
+	auto pLight2 = pLightFactory.create(pointLight2);
+
+	lightTrans2->setPosition(sge::math::vec3(3.0f, 4.0f, 0.0f));
+
+	sge::PointLight pointLightData2;
+	pointLightData2.position = sge::math::vec4(0.0f);
+	pointLightData2.constant = float(1.0);
+	pointLightData2.mylinear = float(0.022);
+	pointLightData2.quadratic = float(0.0019);
+	pointLightData2.pad = 0.0f;
+	pointLightData2.ambient = sge::math::vec4(0.05, 0.0125, 0.0125, 1.0);
+	pointLightData2.diffuse = sge::math::vec4(0.8, 0.2, 0.2, 1.0);
+	pointLightData2.specular = sge::math::vec4(1.0, 0.25, 0.25, 1.0);
+
+	pLight2->setLightData(pointLightData2);
+
+	// Light 3
+
+	pointLight3 = entityManager.createEntity();
+	auto lightTrans3 = transformFactory.create(pointLight3);
+	auto pLight3 = pLightFactory.create(pointLight3);
+
+	lightTrans3->setPosition(sge::math::vec3(3.0f, 4.0f, 0.0f));
+
+	sge::PointLight pointLightData3;
+	pointLightData3.position = sge::math::vec4(0.0f);
+	pointLightData3.constant = float(1.0);
+	pointLightData3.mylinear = float(0.022);
+	pointLightData3.quadratic = float(0.0019);
+	pointLightData3.pad = 0.0f;
+	pointLightData3.ambient = sge::math::vec4(0.0125, 0.0125, 0.05, 1.0);
+	pointLightData3.diffuse = sge::math::vec4(0.2, 0.2, 0.8, 1.0);
+	pointLightData3.specular = sge::math::vec4(0.25, 0.25, 1.0, 1.0);
+
+	pLight3->setLightData(pointLightData3);
+
+	pointLights.push_back(pointLight3);
 
 	//// Model handles ////
-	modelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
-	modelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	// Cube
+
+	cubeModelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
+	cubeModelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
+
+	// Room
+
+	roomModelHandle = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+	roomModelHandle.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	//// Free-for-all //// getters setters
 
-	largeCube->getComponent<sge::ModelComponent>()->setShininess(15.0f);
-	largeCube->getComponent<sge::ModelComponent>()->setModelResource(&modelHandle);
-	largeCube->getComponent<sge::ModelComponent>()->setRenderer(engine->getRenderer());
-	largeCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 23.0f, 0.0f));
-	largeCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
-	largeCube->getComponent<sge::ModelComponent>()->setPipeline(pipelineNormals);
-	modelHandle.getResource<sge::ModelResource>()->createBuffers();
+
+	// Cube
 	
+	cubeModel->setShininess(15.0f);
+	cubeModel->setModelResource(&cubeModelHandle);
+	cubeModel->setRenderer(engine->getRenderer());
+	cubeTrans->setPosition(sge::math::vec3(0.0f, 0.0f, 0.0f));
+	cubeTrans->setRotationVector(sge::math::vec3(0.0f, 0.0f, 1.0f));
+	cubeModel->setPipeline(pipelineNormals);
+	cubeModelHandle.getResource<sge::ModelResource>()->createBuffers();
+	
+	// Room
 
-
-
+	roomModel->setShininess(250.0f);
+	roomModel->setModelResource(&roomModelHandle);
+	roomModel->setRenderer(engine->getRenderer());
+	roomTrans->setPosition(sge::math::vec3(5.0f, 0.0f, 0.0f));
+	roomTrans->setRotationVector(sge::math::vec3(1.0f, 0.0f, 0.0f));
+	roomTrans->setAngle(sge::math::radians(-90.0f));
+	roomTrans->setScale(sge::math::vec3(0.6f));
+	roomModel->setPipeline(pipelineNormals);
+	roomModelHandle.getResource<sge::ModelResource>()->createBuffers();
 
 	//// Bullet ////
+
+	physicsSystem->getWorld()->setGravity(btVector3(0, 0, 0)); // No gravity
+
 	btScalar mass = 1;
 	boxShape = new btBoxShape(btVector3(1, 1, 1));
-	largeCube->getComponent<sge::PhysicsComponent>()->createBody(boxShape, btQuaternion(0, 0, 0, 1), btVector3(5, 20, 0), mass, btVector3(0, 0, 0));
-	physicsSystem->addBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
+	cubePhys->createBody(boxShape, btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0), mass, btVector3(0, 0, 0));
+	physicsSystem->addBody(cubePhys->getBody<btRigidBody>());
 }
 
 GameScene::~GameScene()
-{ // DEBUG ASSERTION FAILURE
-	/*physicsSystem->getWorld()->removeRigidBody(largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>());
-	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>()->getMotionState();
-	delete largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>();
-	sge::ResourceManager::getMgr().release(modelHandle);
+{
+	sge::ResourceManager::getMgr().release(cubeModelHandle);
+	sge::ResourceManager::getMgr().release(roomModelHandle);
 	engine->getRenderer()->getDevice()->debindPipeline(pipelineNormals);
-	delete physicsSystem;
-
-	for (auto &camera : cameras)
-	{
-		delete camera;
-	}
-	cameras.clear();*/
+	delete physicsSystem; // Destructor of physicsSystem handles deletion of rigidbodies
 }
 
 void GameScene::loadTextShader(const std::string& path, std::vector<char>& data)
@@ -163,9 +257,125 @@ void GameScene::loadBinaryShader(const std::string& path, std::vector<char>& dat
 
 void GameScene::update(float step)
 {
-	physicsSystem->stepWorld(step);
+	//// Camera Controls ////
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_1))
+	{
+		useMouse = true;
+		if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
 
-	// Inputs and stuffs
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_2))
+	{
+		useMouse = false;
+		if (!useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + cameraFront*camSpeed);
+		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - cameraFront*camSpeed);
+		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + sge::math::cross(frontTemp, upTemp)*camSpeed);
+		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_SPACE))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + upTemp*camSpeed);
+		}
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LCTRL))
+	{
+		if (useMouse == true)
+		{
+			sge::math::vec3 temp = cameras[0]->getComponent<sge::TransformComponent>()->getPosition();
+			sge::math::vec3 frontTemp = cameras[0]->getComponent<sge::TransformComponent>()->getFront();
+			sge::math::vec3 upTemp = cameras[0]->getComponent<sge::TransformComponent>()->getUp();
+			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - upTemp*camSpeed);
+		}
+	}
+
+	if (useMouse)
+	{
+#ifdef _WIN32
+		engine->mouseInput->getRelativeMouseState(&mouseXpos, &mouseYpos);
+
+		mouseLook(mouseXpos, mouseYpos);
+#endif
+		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+	}
+
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_ESCAPE))
+	{
+		engine->stop();
+	}
+
+	///////////////
+
+	alpha += 0.01f;
+	float x = 15.0f*cos(alpha);
+	float z = 15.0f*sin(alpha);
+	
+	
+	largeCube->getComponent<sge::PhysicsComponent>()->getBody<btRigidBody>()->setAngularVelocity(
+		btVector3(cubeX, cubeY, cubeZ));
+
+
+	physicsSystem->stepWorld(step);
+	physicsSystem->update();
+
+	pointLight1->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(x, 4.0f, z));
+	pointLight1->getComponent<sge::PointLightComponent>()->update();
+
+	pointLight2->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(z, 5.0f, x));
+	pointLight2->getComponent<sge::PointLightComponent>()->update();
+
+	pointLight3->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(-z, 6.0f, -x));
+	pointLight3->getComponent<sge::PointLightComponent>()->update();
+
+	
+
+	for (auto &camera : cameras)
+	{
+		camera->getComponent<sge::CameraComponent>()->update();
+	}
 }
 
 void GameScene::interpolate(float alpha)
@@ -177,13 +387,17 @@ void GameScene::draw()
 {
     // Note that we need to set render targets and cameras before we begin.
     // First pass
-	// renderer->addCameras(1, &cameras.front());
+	renderer->addCameras(1, &cameras.front());
 
     renderer->begin();
     
-	// !!!!! Fix this !!!!!
-	//renderer->renderModel(largeCube->getComponent<sge::ModelComponent>());
 
+	renderer->renderModels(modelEntities.size(), modelEntities.data());
+
+	renderer->renderLights(1, &pointLight1);
+	renderer->renderLights(1, &pointLight2);
+	renderer->renderLights(1, &pointLight3);
+	
     renderer->end();
 
     renderer->render();
@@ -235,41 +449,3 @@ void GameScene::mouseLook(int mouseX, int mouseY)
 	front.z = sge::math::cos(sge::math::radians(pitch)) * sge::math::sin(sge::math::radians(yaw));
 	cameraFront = sge::math::normalize(front);
 }
-
-
-
-//sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
-//{
-//    // TODO cameracomponent doesn't use transform component and directly
-//    // requests input from (old design) spade singleton. These should be fixed.
-//    // Input system needs more planning to do.
-//    sge::Entity* entity = entityManager.createEntity();
-//
-//    auto transform = transformFactory.create(entity);
-//    auto cameracomponent = cameraFactory.create(entity);
-//
-//    transform->setPosition({ 0.0f, 0.0f, 10.0f });
-//    transform->setFront({ 0.0f, 0.0f, -1.0f });
-//    transform->setUp({ 0.0f, 1.0f, 0.0f });
-//
-//    cameracomponent->setOrtho(0.0f, (float)width, (float)height, 0.0f, 0.1f, 1000.0f);
-//    cameracomponent->setViewport(x, y, width, height);
-//
-//    return entity;
-//}
-
-//sge::Entity* GameScene::createText(float x, float y, const std::string& text)
-//{
-//    sge::Entity* entity = entityManager.createEntity();
-//
-//    auto transform = transformFactory.create(entity);
-//    auto textcomponent = textFactory.create(entity);
-//    
-//    transform->setPosition({ x, y, 0.0f });
-//
-//    textcomponent->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-//    textcomponent->setFont(fontResource.getResource<sge::FontResource>()->getFont());
-//    textcomponent->setText(text);
-//
-//    return entity;
-//}
