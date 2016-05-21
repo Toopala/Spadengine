@@ -9,7 +9,8 @@ namespace sge
     SpriteComponent::SpriteComponent(Entity* ent) :
         RenderComponent(ent),
         color(1.0f),
-        texture(nullptr)
+        texture(nullptr),
+        pipeline(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
         key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
@@ -20,7 +21,8 @@ namespace sge
 	SpriteComponent::SpriteComponent(Entity* ent, sge::Texture* texture, const sge::math::vec4& col) : 
 		RenderComponent(ent),
 		color(col),
-		texture(texture)
+		texture(texture),
+        pipeline(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
         key.fields.translucent = (color.a < 1.0f) ? 1 : 0;

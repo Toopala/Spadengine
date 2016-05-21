@@ -12,7 +12,6 @@ namespace sge
     {
         RenderTarget header;
 
-        size_t count;
         ID3D11RenderTargetView** views;
     };
 }

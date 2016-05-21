@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 
 #include "Renderer/RenderTarget.h"
+#include "Renderer/Texture.h"
 
 namespace sge
 {
@@ -14,7 +15,6 @@ namespace sge
 
         GLuint id;
         GLenum* buffers;
-        size_t count;
     };
 }
 

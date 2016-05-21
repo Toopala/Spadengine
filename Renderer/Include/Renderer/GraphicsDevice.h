@@ -37,7 +37,7 @@ namespace sge
 		Pipeline* createPipeline(VertexLayoutDescription* vertexLayoutDescription, Shader* vertexShader, Shader* pixelShader);
 		void deletePipeline(Pipeline* pipeline);
 
-        RenderTarget* createRenderTarget(size_t count, Texture** textures);
+        RenderTarget* createRenderTarget(size_t count, size_t width, size_t height, bool depth = true);
         void deleteRenderTarget(RenderTarget* renderTarget);
 
 		Shader* createShader(ShaderType type, const char* source, size_t size);

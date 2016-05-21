@@ -238,7 +238,7 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, Texture** textures)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, size_t width, size_t height, bool depth)
     {
         GLint maxColorAttachments = 0;
         GLint maxDrawBuf = 0;
@@ -249,7 +249,8 @@ namespace sge
 
         GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
 
-        gl4RenderTarget->count = count;
+        gl4RenderTarget->header.count = count;
+        gl4RenderTarget->header.textures = new Texture*[count];
         gl4RenderTarget->buffers = new GLenum[count];
 
         glGenFramebuffers(1, &gl4RenderTarget->id);
@@ -257,7 +258,8 @@ namespace sge
 
         for (size_t i = 0; i < count; i++)
         {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(textures[i])->id, 0);
+            gl4RenderTarget->header.textures[i] = createTexture(width, height);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[i])->id, 0);
             gl4RenderTarget->buffers[i] = GL_COLOR_ATTACHMENT0 + i;
         }
 
@@ -284,6 +286,7 @@ namespace sge
         checkError();
 
         delete[] gl4RenderTarget->buffers;
+        delete[] gl4RenderTarget->header.textures;
         delete gl4RenderTarget;
         renderTarget = nullptr;
     }
@@ -479,7 +482,7 @@ namespace sge
         GL4RenderTarget* gl4RenderTarget = reinterpret_cast<GL4RenderTarget*>(renderTarget);
 
         glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
-        glDrawBuffers(gl4RenderTarget->count, gl4RenderTarget->buffers);
+        glDrawBuffers(gl4RenderTarget->header.count, gl4RenderTarget->buffers);
     }
 
     void GraphicsDevice::debindRenderTarget()
