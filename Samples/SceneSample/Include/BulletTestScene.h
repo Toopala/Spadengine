@@ -176,6 +176,7 @@ private:
 	void spawnObject(sge::math::vec3 pos);
 
 	bool played;
+	bool coop;
 };
 
 namespace sge
