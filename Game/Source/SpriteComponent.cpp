@@ -14,7 +14,6 @@ namespace sge
 		transform = getParent()->getComponent<TransformComponent>();
         key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
-		// We need transform!
 		SGE_ASSERT(transform);
 	}
 
@@ -26,7 +25,6 @@ namespace sge
 		transform = getParent()->getComponent<TransformComponent>();
         key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
-		// We need transform!
 		SGE_ASSERT(transform);
 	}
 
@@ -55,6 +53,11 @@ namespace sge
         this->texture = texture;
     }
 
+    void SpriteComponent::setPipeline(Pipeline* pipeline)
+    {
+        this->pipeline = pipeline;
+    }
+
     const math::vec4& SpriteComponent::getColor()
     {
         return color;
@@ -63,5 +66,10 @@ namespace sge
     Texture* SpriteComponent::getTexture()
     {
         return texture;
+    }
+
+    Pipeline* SpriteComponent::getPipeline()
+    {
+        return pipeline;
     }
 }

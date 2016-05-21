@@ -8,6 +8,7 @@ namespace sge
 {
 	class TransformComponent;
     class RenderSystem;
+    struct Pipeline;
 
 	class SpriteComponent : public RenderComponent
 	{
@@ -20,13 +21,16 @@ namespace sge
 
 		void setTexture(Texture* texture);
 		void setColor(const math::vec4& color);
+        void setPipeline(Pipeline* pipeline);
 
         const math::vec4& getColor();
         Texture* getTexture();
+        Pipeline* getPipeline();
 		
         TransformComponent* transform;
 	private:
         Texture* texture;
 		math::vec4 color;
+        Pipeline* pipeline;
 	};
 }

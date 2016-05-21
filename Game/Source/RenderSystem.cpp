@@ -275,13 +275,21 @@ namespace sge
 
         SGE_ASSERT(cameras.size() > pass);
 
-        device->bindPipeline(sprPipeline);
-
-        sge::Texture* texture = sprite->getTexture();
+        Pipeline* pipeline = sprite->getPipeline();
+        Texture* texture = sprite->getTexture();
 
         if (texture)
         {
             device->bindTexture(texture, 0);
+        }
+
+        if (pipeline)
+        {
+            device->bindPipeline(pipeline);
+        }
+        else
+        {
+            device->bindPipeline(sprPipeline);
         }
 
         device->bindViewport(cameras[pass]->getViewport());
@@ -302,7 +310,14 @@ namespace sge
             device->debindTexture(texture, 0);
         }
 
-        device->debindPipeline(sprPipeline);
+        if (pipeline)
+        {
+            device->debindPipeline(pipeline);
+        }
+        else
+        {
+            device->debindPipeline(sprPipeline);
+        }
 
         if (++pass >= cameras.size())
             pass = 0;
