@@ -55,10 +55,10 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modelHandleCube = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/saber.dae");
 	modelHandleCube.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandleCube2 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cubeSpecularNormal.dae");
 	modelHandleCube2.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleCube3 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/cube.dae");
+	modelHandleCube3 = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleCube.dae");
 	modelHandleCube3.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig2.dae");
@@ -76,7 +76,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modComponentCube = new sge::ModelComponent(modentityCube);
 	modComponentCube->setShininess(50.0f);
 	modComponentCube->setGlossyness(1.0f);
-	//modentityCube->setComponent(modComponentCube);
 
 	sge::Handle<sge::TextureResource> tex1;
 	sge::Handle<sge::TextureResource> tex2;
@@ -140,7 +139,17 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityCube3->setComponent(modtransformCube3);
 
 	modComponentCube3 = new sge::ModelComponent(modentityCube3);
-	modComponentCube3->setShininess(15.0f);
+	modComponentCube3->setShininess(50.0f);
+	modComponentCube3->setGlossyness(1.0f);
+
+	sge::TextureResource* source2[6];
+	source2[5] = tex1.getResource<sge::TextureResource>();
+	source2[4] = tex2.getResource<sge::TextureResource>();
+	source2[3] = tex3.getResource<sge::TextureResource>();
+	source2[2] = tex4.getResource<sge::TextureResource>();
+	source2[1] = tex5.getResource<sge::TextureResource>();
+	source2[0] = tex6.getResource<sge::TextureResource>();
+	modComponentCube3->setCubeMap(engine->getRenderer()->getDevice()->createCubeMap(source2));
 	modentityCube3->setComponent(modComponentCube3);
 
 	modComponentCube3->setModelResource(&modelHandleCube3);
@@ -196,7 +205,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	pointLight.quadratic = float(0.0032);
 	pointLight.pad = 0.0f;
 	pointLight.ambient = sge::math::vec4(0.1f, 0.1f, 0.1f, 1.0);
-	pointLight.diffuse = sge::math::vec4(5.0f, 5.0f, 0.0f, 1.0);
+	pointLight.diffuse = sge::math::vec4(5.0f, 5.0f, 5.0f, 1.0);
 	pointLight.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight->getComponent<sge::PointLightComponent>()->setLightData(pointLight);
@@ -215,7 +224,7 @@ VisualScene::VisualScene(sge::Spade *engine)
 	pointLight2.quadratic = float(0.0032);
 	pointLight2.pad = 0.0f;
 	pointLight2.ambient = sge::math::vec4(0.1f, 0.1f, 0.1f, 1.0);
-	pointLight2.diffuse = sge::math::vec4(0.0f, 5.0f, 5.0f, 1.0);
+	pointLight2.diffuse = sge::math::vec4(5.0f, 5.0f, 5.0f, 1.0);
 	pointLight2.specular = sge::math::vec4(1.0f, 1.0, 1.0f, 1.0);
 
 	modentityLight2->getComponent<sge::PointLightComponent>()->setLightData(pointLight2);
@@ -245,13 +254,14 @@ void VisualScene::update(float step)
 {
 	updateControls();
 
-	alpha += 0.05f;
+	alpha += 0.02f;
 	rotate += sge::math::radians(0.5f);
 
-	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));
+	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 1.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setAngle(rotate);
+	modentityCube2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 1.0f));
 	modentityCube2->getComponent<sge::TransformComponent>()->setAngle(-rotate);
-	modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
+	//modentityCube3->getComponent<sge::TransformComponent>()->setAngle(rotate);
 
 	float lightX = -25.0f*cos(alpha);
 	float lightY = -25.0f*sin(alpha);
