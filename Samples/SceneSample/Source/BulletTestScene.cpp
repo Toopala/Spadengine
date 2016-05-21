@@ -139,7 +139,7 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 	GameObjects.push_back(modentity);
 }
 
-BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f), played(false)
+BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(engine->getRenderer()), alpha(0.0f), useMouse(false), camSpeed(0.5f), played(false), coop(false)
 {
 	//-------------------------
 	// Creating pipeline
@@ -617,6 +617,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	camtransform->setFront(cameraFront);
 	camtransform->setUp(cameraUp);
 
+	//
 	camtransform2 = new sge::TransformComponent(camentity2);
 	camentity2->setComponent(camtransform2);
 
@@ -627,8 +628,8 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	sge::math::vec3 cameraFront2 = glm::vec3(0.0f, 0.0f, -1.0f);
 	sge::math::vec3 cameraUp2 = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	camcomponent2->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-	camcomponent2->setViewport(1280 - 420, 720 - 280, 320, 180);
+	camcomponent2->setPerspective(60.0f, (16.0f/2) / 9.0f, 0.1f, 1000.0f);
+	camcomponent2->setViewport(1280 / 2, 0, 1280 / 2, 720);
 	camtransform2->setPosition(cameraPos2);
 	camtransform2->setFront(cameraFront2);
 	camtransform2->setUp(cameraUp2);
@@ -715,26 +716,33 @@ void BulletTestScene::update(float step)
 	// CameraControls
 	if (!useMouse)
 	{
-		float camX = 48.0f*cos(alpha);
-		float camZ = 48.0f*sin(alpha);
+		float alphaCam = alpha / 2.0f;
+		float camX = 48.0f*cos(alphaCam);
+		float camZ = 48.0f*sin(alphaCam);
 
-		float lookAtY = 10.0f * sin(alpha) + 15.0f;
+		float lookAtY = 8.0f * cos(alphaCam / 2.0f) + 11.0f;
 
 		cameras[0]->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(camX, 5.0f, camZ));
-		cameras[0]->getComponent<sge::TransformComponent>()->lookAt(sge::math::vec3(0.0f, lookAtY, 0.0f));
+		
+		cameraFront = sge::math::normalize(sge::math::vec3(-camX, lookAtY, -camZ));
+		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
+	if (engine->keyboardInput->keyWasPressed(sge::KEYBOARD_F1))
 	{
-		useMouse = true;
-		if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
+		if (useMouse == false)
+		{
+			useMouse = true;
+			if (useMouse) SDL_SetRelativeMouseMode(SDL_TRUE);
+		}
+		else
+		{
+			useMouse = false;
+			if (!useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
+		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F2))
-	{
-		useMouse = false;
-		if (!useMouse) SDL_SetRelativeMouseMode(SDL_FALSE);
-	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
+	
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
 	{
 		if (useMouse == true)
 		{
@@ -742,7 +750,7 @@ void BulletTestScene::update(float step)
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp + cameraFront*camSpeed);
 		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
 	{
 		if (useMouse == true)
 		{
@@ -750,7 +758,7 @@ void BulletTestScene::update(float step)
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - cameraFront*camSpeed);
 		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
 	{
 		if (useMouse == true)
 		{
@@ -760,7 +768,7 @@ void BulletTestScene::update(float step)
 			cameras[0]->getComponent<sge::TransformComponent>()->setPosition(temp - sge::math::cross(frontTemp, upTemp)*camSpeed);
 		}
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
 	{
 		if (useMouse == true)
 		{
@@ -780,6 +788,22 @@ void BulletTestScene::update(float step)
 		mouseLook(mouseXpos, mouseYpos);
 #endif
 		cameras[0]->getComponent<sge::TransformComponent>()->setFront(cameraFront);
+	}
+
+	if (engine->keyboardInput->keyWasPressed(sge::KEYBOARD_F3))
+	{
+		if (coop == false)
+		{
+			coop = true;
+			cameras[0]->getComponent<sge::CameraComponent>()->setPerspective(60.0f, (16.0f/2) / 9.0f, 0.1f, 1000.0f);
+			cameras[0]->getComponent<sge::CameraComponent>()->setViewport(0, 0, (1280/2), 720);
+		}
+		else
+		{
+			coop = false;
+			cameras[0]->getComponent<sge::CameraComponent>()->setPerspective(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+			cameras[0]->getComponent<sge::CameraComponent>()->setViewport(0, 0, 1280, 720);
+		}		
 	}
 	//------------------------------------------------
 
@@ -827,27 +851,27 @@ void BulletTestScene::update(float step)
 	}
 
 	// Physics test with second object
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_A))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_LEFT))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(-2, 0, 0));
 
 
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_D))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_RIGHT))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(2, 0, 0));
 
 
 	}
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_W))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_UP))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(0, -0, -2));
 
 
 	}
 
-	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_S))
+	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_DOWN))
 	{
 		fallRigidBody2->applyCentralImpulse(btVector3(0, 0, 2));
 
@@ -888,7 +912,11 @@ void BulletTestScene::update(float step)
 void BulletTestScene::draw()
 {
 	renderer->addCameras(1, &cameras.front());
-	renderer->addCameras(1, &cameras.back());
+	if (coop)
+	{
+		renderer->addCameras(1, &cameras.back());
+	}
+	
 	renderer->begin();
 
 	renderer->renderModels(GameObjects.size(), GameObjects.data());
