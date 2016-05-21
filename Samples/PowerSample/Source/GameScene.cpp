@@ -3,6 +3,7 @@
 #include "Game/Entity.h"
 #include "Game/CameraComponent.h"
 #include "Game/ModelComponent.h"
+#include "Game/SpriteComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/RenderSystem.h"
 
@@ -38,10 +39,12 @@ GameScene::GameScene(sge::Spade* engine) :
     initPipelines();
     initResources();
 
-    cameraEntity = createCamera(0, 0, 1280, 720);
-    earthEntity = createEarth();
-    sunEntity = createSun();
-    skyBoxEntity = createSkyBox();
+    defaultCamera = createPerspectiveCamera(0, 0, 1280, 720);
+    fullscreenCamera = createOrthoCamera(0, 0, 1280, 720);
+    earth = createEarth();
+    sun = createSun();
+    skybox = createSkyBox();
+    screen1 = createSprite(0, 0, 1280, 720, renderTarget->textures[0]);
 }
 
 GameScene::~GameScene()
@@ -74,38 +77,32 @@ void GameScene::update(float step)
         engine->stop();
     }
 
-    earthEntity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
-    earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.025f);
-    sunEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
-    cameraEntity->getComponent<sge::TransformComponent>()->lookAt(earthEntity->getComponent<sge::TransformComponent>()->getPosition());
-    cameraEntity->getComponent<sge::CameraComponent>()->update();
+    earth->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
+    earth->getComponent<sge::TransformComponent>()->addAngle(0.025f);
+    sun->getComponent<sge::TransformComponent>()->addAngle(0.01f);
+    defaultCamera->getComponent<sge::TransformComponent>()->lookAt(earth->getComponent<sge::TransformComponent>()->getPosition());
+    defaultCamera->getComponent<sge::CameraComponent>()->update();
+    fullscreenCamera->getComponent<sge::CameraComponent>()->update();
 }
 
 void GameScene::draw()
 {
-    renderer->addCameras(1, &cameraEntity);
+    renderer->addCameras(1, &defaultCamera);
     renderer->setRenderTarget(renderTarget);
 
     renderer->begin();
-
-    renderer->renderLights(1, &sunEntity);
-    renderer->renderModels(1, &earthEntity);
-    renderer->renderModels(1, &sunEntity);
-    renderer->renderModels(1, &skyBoxEntity);
-
+    renderer->renderLights(1, &sun);
+    renderer->renderModels(1, &earth);
+    renderer->renderModels(1, &sun);
+    renderer->renderModels(1, &skybox);
     renderer->end();
 
     renderer->render();
-
-    renderer->clear(sge::Clear::RENDERTARGET || sge::Clear::QUEUE || sge::Clear::CAMERAS);
+    renderer->clear();
+    renderer->addCameras(1, &fullscreenCamera);
 
     renderer->begin();
-
-    renderer->renderLights(1, &sunEntity);
-    renderer->renderModels(1, &earthEntity);
-    renderer->renderModels(1, &sunEntity);
-    renderer->renderModels(1, &skyBoxEntity);
-
+    renderer->renderSprites(1, &screen1);
     renderer->end();
 
     renderer->render();
@@ -135,7 +132,7 @@ sge::Entity* GameScene::createEarth()
     return entity;
 }
 
-sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned int height)
+sge::Entity* GameScene::createPerspectiveCamera(int x, int y, unsigned int width, unsigned int height)
 {
     sge::Entity* entity = entityManager.createEntity();
 
@@ -148,6 +145,23 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
 
     camera->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
     camera->setViewport(x, y, width, height);
+
+    return entity;
+}
+
+sge::Entity* GameScene::createOrthoCamera(int x, int y, unsigned int width, unsigned int height)
+{
+    sge::Entity* entity = entityManager.createEntity();
+
+    auto transform = transformFactory.create(entity);
+    auto cameracomponent = cameraFactory.create(entity);
+
+    transform->setPosition({ 0.0f, 0.0f, 10.0f });
+    transform->setFront({ 0.0f, 0.0f, -1.0f });
+    transform->setUp({ 0.0f, 1.0f, 0.0f });
+
+    cameracomponent->setOrtho(0.0f, (float)width, 0.0f, (float)height, 0.1f, 1000.0f);
+    cameracomponent->setViewport(x, y, width, height);
 
     return entity;
 }
@@ -227,6 +241,23 @@ sge::Entity* GameScene::createSkyBox()
     return entity;
 }
 
+sge::Entity* GameScene::createSprite(int x, int y, unsigned int width, unsigned int height, sge::Texture* texture)
+{
+    sge::Entity* entity = entityManager.createEntity();
+
+    auto transform = transformFactory.create(entity);
+    auto sprite = spriteFactory.create(entity);
+
+    transform->setPosition({ x, y, 1.0f });
+    transform->setScale({ width, height, 1.0f });
+    transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
+
+    sprite->setTexture(texture);
+    sprite->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+    return entity;
+}
+
 void GameScene::initPipelines()
 {
     sge::Handle<sge::ShaderResource> pixelShaderHandle;
@@ -301,12 +332,12 @@ void GameScene::initResources()
     device->debindPipeline(noLightsPipeline);
 
     device->bindPipeline(skyBoxPipeline);
-    skyBoxResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
+    skyBoxResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/SkyBox.dae");
     skyBoxResource.getResource<sge::ModelResource>()->setDevice(device);
     skyBoxResource.getResource<sge::ModelResource>()->createBuffers();
     device->debindPipeline(skyBoxPipeline);
 
-    renderTarget = device->createRenderTarget(4, 1280, 720);
+    renderTarget = device->createRenderTarget(1, 1280, 720, true);
 }
 
 void GameScene::interpolate(float alpha)

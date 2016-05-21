@@ -25,6 +25,7 @@ namespace sge
     class ModelComponent;
     class TransformComponent;
     class CameraComponent;
+    class SpriteComponent;
 }
 
 class GameScene : public sge::Scene
@@ -42,16 +43,18 @@ private:
     void initResources();
 
     sge::Entity* createEarth();
-    sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
+    sge::Entity* createPerspectiveCamera(int x, int y, unsigned int width, unsigned int height);
+    sge::Entity* createOrthoCamera(int x, int y, unsigned int width, unsigned int height);
     sge::Entity* createSun();
     sge::Entity* createSkyBox();
     sge::Entity* createSprite(int x, int y, unsigned int width, unsigned int height, sge::Texture* texture);
 
-    sge::Entity* earthEntity;
-    sge::Entity* cameraEntity;
-    sge::Entity* sunEntity;
-    sge::Entity* skyBoxEntity;
-    sge::Entity* screen1Entity;
+    sge::Entity* earth;
+    sge::Entity* defaultCamera;
+    sge::Entity* fullscreenCamera;
+    sge::Entity* sun;
+    sge::Entity* skybox;
+    sge::Entity* screen1;
 
     sge::RenderTarget* renderTarget;
 
@@ -81,6 +84,7 @@ private:
     sge::ComponentFactory<sge::CameraComponent> cameraFactory;
     sge::ComponentFactory<sge::DirLightComponent> dirLightFactory;
     sge::ComponentFactory<sge::PointLightComponent> pointLightFactory;
+    sge::ComponentFactory<sge::SpriteComponent> spriteFactory;
 
     sge::EntityManager entityManager;
 };

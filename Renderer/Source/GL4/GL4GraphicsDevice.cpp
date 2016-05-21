@@ -238,7 +238,7 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, size_t width, size_t height, bool depth)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, size_t width, size_t height, bool depth, bool stencil)
     {
         GLint maxColorAttachments = 0;
         GLint maxDrawBuf = 0;
@@ -263,6 +263,16 @@ namespace sge
             gl4RenderTarget->buffers[i] = GL_COLOR_ATTACHMENT0 + i;
         }
 
+        if (depth)
+        {
+            glGenRenderbuffers(1, &gl4RenderTarget->depth);
+            glBindRenderbuffer(GL_RENDERBUFFER, gl4RenderTarget->depth);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, gl4RenderTarget->depth);
+        }
+
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
             checkError();
@@ -282,6 +292,7 @@ namespace sge
         GL4RenderTarget* gl4RenderTarget = reinterpret_cast<GL4RenderTarget*>(renderTarget);
 
         glDeleteFramebuffers(1, &gl4RenderTarget->id);
+        glDeleteRenderbuffers(1, &gl4RenderTarget->depth);
 
         checkError();
 

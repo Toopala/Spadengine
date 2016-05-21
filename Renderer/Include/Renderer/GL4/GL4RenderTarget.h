@@ -14,6 +14,7 @@ namespace sge
         RenderTarget header;
 
         GLuint id;
+        GLuint depth;
         GLenum* buffers;
     };
 }
