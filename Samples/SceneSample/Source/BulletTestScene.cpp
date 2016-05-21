@@ -15,7 +15,6 @@
 #include "Renderer/VertexLayout.h"
 
 #include "Core/Random.h"
-#include "Game/TransformComponent.h"
 
 #include"Audio/Audio.h"
 
@@ -714,6 +713,17 @@ void BulletTestScene::update(float step)
 
 	//------------------------------------------------
 	// CameraControls
+	if (!useMouse)
+	{
+		float camX = 48.0f*cos(alpha);
+		float camZ = 48.0f*sin(alpha);
+
+		float lookAtY = 10.0f * sin(alpha) + 15.0f;
+
+		cameras[0]->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(camX, 5.0f, camZ));
+		cameras[0]->getComponent<sge::TransformComponent>()->lookAt(sge::math::vec3(0.0f, lookAtY, 0.0f));
+	}
+
 	if (engine->keyboardInput->keyIsPressed(sge::KEYBOARD_F1))
 	{
 		useMouse = true;
