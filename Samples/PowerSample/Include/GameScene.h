@@ -60,11 +60,14 @@ private:
 
     sge::Pipeline* pipeline;
     sge::Pipeline* skyBoxPipeline;
+    sge::Pipeline* noLightsPipeline;
 
     sge::Shader* vertexShader;
     sge::Shader* pixelShader;
     sge::Shader* skyBoxVertexShader;
     sge::Shader* skyBoxPixelShader;
+    sge::Shader* noLightsVertexShader;
+    sge::Shader* noLightsPixelShader;
 
     sge::CubeMap* skyBoxCubeMap;
 
