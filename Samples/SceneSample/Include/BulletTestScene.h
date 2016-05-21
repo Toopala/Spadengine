@@ -17,6 +17,8 @@
 #include "Game/Component.h"
 #include "Audio/Audio.h"
 
+#include "Bullet/BulletCollision/CollisionShapes/btShapeHull.h"
+
 // FORWARD DECLARE
 struct sge::Pipeline;
 struct sge::Buffer;
@@ -73,6 +75,8 @@ private:
 	btRigidBody* wall3RigidBody;
 	btRigidBody* wall4RigidBody;
 	btRigidBody* topRigidBody;
+	btRigidBody* treeRigidBody;
+	btRigidBody* earthRigidBody;
 
 	btCollisionShape* groundShape;
 	btCollisionShape* topShape;
@@ -83,6 +87,10 @@ private:
 	btCollisionShape* wall4Shape;
 
 	btCollisionShape* fallShape;
+	btCollisionShape* spawnShape;
+
+	btConvexHullShape* simplifiedConvexShape;
+	btConvexHullShape* fallShapeSuzanne;
 
 	btSequentialImpulseConstraintSolver* solver;
 	btDefaultCollisionConfiguration* collisionConfiguration;
@@ -165,7 +173,6 @@ private:
 
 	float alpha;
 
-	btConvexHullShape* simplifiedConvexShape;
 	void spawnObject(sge::math::vec3 pos);
 
 	bool played;
