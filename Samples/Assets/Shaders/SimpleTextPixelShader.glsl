@@ -1,8 +1,6 @@
 #version 440 core
-
 in vec2 outTexCoords;
-
-layout(location = 0) out vec4 finalColor;
+out vec4 finalColor;
 
 layout(binding = 0) uniform sampler2D texture;
 
@@ -13,5 +11,5 @@ layout (std140, binding = 1) uniform pixelUniform
 
 void main()
 {
-	finalColor = texture2D(texture, outTexCoords) * color;
+	finalColor = texture2D(texture, outTexCoords).r * color;
 }

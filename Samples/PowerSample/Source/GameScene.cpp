@@ -74,6 +74,7 @@ void GameScene::update(float step)
     earthEntity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
     earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.025f);
     sunEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
+    cameraEntity->getComponent<sge::TransformComponent>()->lookAt(earthEntity->getComponent<sge::TransformComponent>()->getPosition());
     cameraEntity->getComponent<sge::CameraComponent>()->update();
 }
 
@@ -124,8 +125,7 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     auto transform = transformFactory.create(entity);
     auto camera = cameraFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 3.0f, 15.0f });
-    transform->setFront({ 0.0f, 0.0f, -1.0f });
+    transform->setPosition({ 0.0f, 3.0f, -15.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
@@ -139,7 +139,7 @@ sge::Entity* GameScene::createSun()
 {
     sge::Entity* entity = entityManager.createEntity();
 
-    device->bindPipeline(pipeline);
+    device->bindPipeline(noLightsPipeline);
 
     auto transform = transformFactory.create(entity);
     auto light = pointLightFactory.create(entity);
@@ -164,12 +164,12 @@ sge::Entity* GameScene::createSun()
 
     light->setLightData(lightData);
 
-    model->setPipeline(pipeline);
+    model->setPipeline(noLightsPipeline);
     model->setShininess(256.0f);
     model->setRenderer(renderer);
     model->setModelResource(&sunResource);
 
-    device->debindPipeline(pipeline);
+    device->debindPipeline(noLightsPipeline);
 
     return entity;
 }
@@ -218,16 +218,23 @@ void GameScene::initPipelines()
     sge::Handle<sge::ShaderResource> skyBoxPixelShaderHandle;
     sge::Handle<sge::ShaderResource> skyBoxVertexShaderHandle;
 
+    sge::Handle<sge::ShaderResource> noLightsVertexShaderHandle;
+    sge::Handle<sge::ShaderResource> noLightsPixelShaderHandle;
+
 #ifdef DIRECTX11
     vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderLights.cso");
     pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderLights.cso");
     skyBoxVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexSkyBox.cso");
     skyBoxPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelSkyBox.cso");
+    noLightsVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderNoLights.cso");
+    noLightsPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderNoLights.cso");
 #elif OPENGL4
     vertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderLights.glsl");
     pixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderLights.glsl");
     skyBoxVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexSkyBox.glsl");
     skyBoxPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelSkyBox.glsl");
+    noLightsVertexShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/VertexShaderNoLights.glsl");
+    noLightsPixelShaderHandle = sge::ResourceManager::getMgr().load<sge::ShaderResource>("../Assets/Shaders/PixelShaderNoLights.glsl");
 #endif
 
     const std::vector<char>& vertexShaderData = vertexShaderHandle.getResource<sge::ShaderResource>()->loadShader();
@@ -236,11 +243,17 @@ void GameScene::initPipelines()
     const std::vector<char>& vertexShaderData2 = skyBoxVertexShaderHandle.getResource<sge::ShaderResource>()->loadShader();
     const std::vector<char>& pixelShaderData2 = skyBoxPixelShaderHandle.getResource<sge::ShaderResource>()->loadShader();
 
+    const std::vector<char>& vertexShaderData3 = noLightsVertexShaderHandle.getResource<sge::ShaderResource>()->loadShader();
+    const std::vector<char>& pixelShaderData3 = noLightsPixelShaderHandle.getResource<sge::ShaderResource>()->loadShader();
+
     vertexShader = device->createShader(sge::ShaderType::VERTEX, vertexShaderData.data(), vertexShaderData.size());
     pixelShader = device->createShader(sge::ShaderType::PIXEL, pixelShaderData.data(), pixelShaderData.size());
 
     skyBoxVertexShader = device->createShader(sge::ShaderType::VERTEX, vertexShaderData2.data(), vertexShaderData2.size());
     skyBoxPixelShader = device->createShader(sge::ShaderType::PIXEL, pixelShaderData2.data(), pixelShaderData2.size());
+
+    noLightsVertexShader = device->createShader(sge::ShaderType::VERTEX, vertexShaderData3.data(), vertexShaderData3.size());
+    noLightsPixelShader = device->createShader(sge::ShaderType::PIXEL, pixelShaderData3.data(), pixelShaderData3.size());
 
     sge::VertexLayoutDescription vertexLayoutDescription = { 5,
     {
@@ -253,6 +266,7 @@ void GameScene::initPipelines()
 
     pipeline = device->createPipeline(&vertexLayoutDescription, vertexShader, pixelShader);
     skyBoxPipeline = device->createPipeline(&vertexLayoutDescription, skyBoxVertexShader, skyBoxPixelShader);
+    noLightsPipeline = device->createPipeline(&vertexLayoutDescription, noLightsVertexShader, noLightsPixelShader);
 }
 
 void GameScene::initResources()
@@ -261,11 +275,13 @@ void GameScene::initResources()
     earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleIcoSphere.dae");
     earthResource.getResource<sge::ModelResource>()->setDevice(device);
     earthResource.getResource<sge::ModelResource>()->createBuffers();
+    device->debindPipeline(pipeline);
 
+    device->bindPipeline(noLightsPipeline);
     sunResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/sunSphere.dae");
     sunResource.getResource<sge::ModelResource>()->setDevice(device);
     sunResource.getResource<sge::ModelResource>()->createBuffers();
-    device->debindPipeline(pipeline);
+    device->debindPipeline(noLightsPipeline);
 
     device->bindPipeline(skyBoxPipeline);
     skyBoxResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");

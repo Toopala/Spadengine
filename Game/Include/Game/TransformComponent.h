@@ -47,6 +47,11 @@ namespace sge
             up = u;
         }
 
+        void setLeft(const math::vec3& l)
+        {
+            left = l;
+        }
+
 		void setAngle(float a)
 		{
 			angle = a;
@@ -77,6 +82,11 @@ namespace sge
             return up;
         }
 
+        const math::vec3& getLeft()
+        {
+            return left;
+        }
+
 		float getAngle()
 		{
 			return angle;
@@ -90,15 +100,19 @@ namespace sge
 				math::scale(math::mat4(1.0f), scale);
 		}
 
+        void lookAt(const math::vec3& target)
+        {
+            front = math::normalize(target - position);
+            up = math::cross(front, left);
+        }
+
 	private:
-
-        // TODO rotationvector and front? Do we need them both?
-
 		math::vec3 position;
 		math::vec3 scale;
 		math::vec3 rotationVector;
         math::vec3 front;
         math::vec3 up;
+        math::vec3 left;
 
 		float angle;
 	};
