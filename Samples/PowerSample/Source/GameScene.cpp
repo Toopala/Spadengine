@@ -7,6 +7,7 @@
 #include "Game/RenderSystem.h"
 
 #include "Renderer/Pipeline.h"
+#include "Renderer/RenderTarget.h"
 #include "Renderer/VertexLayout.h"
 
 #include "Resources/ShaderResource.h"
@@ -58,6 +59,8 @@ GameScene::~GameScene()
 
     device->deletePipeline(pipeline);
     device->deletePipeline(skyBoxPipeline);
+
+    device->deleteRenderTarget(renderTarget);
 }
 
 void GameScene::update(float step)
@@ -81,6 +84,20 @@ void GameScene::update(float step)
 void GameScene::draw()
 {
     renderer->addCameras(1, &cameraEntity);
+    renderer->setRenderTarget(renderTarget);
+
+    renderer->begin();
+
+    renderer->renderLights(1, &sunEntity);
+    renderer->renderModels(1, &earthEntity);
+    renderer->renderModels(1, &sunEntity);
+    renderer->renderModels(1, &skyBoxEntity);
+
+    renderer->end();
+
+    renderer->render();
+
+    renderer->clear(sge::Clear::RENDERTARGET || sge::Clear::QUEUE || sge::Clear::CAMERAS);
 
     renderer->begin();
 
@@ -288,6 +305,8 @@ void GameScene::initResources()
     skyBoxResource.getResource<sge::ModelResource>()->setDevice(device);
     skyBoxResource.getResource<sge::ModelResource>()->createBuffers();
     device->debindPipeline(skyBoxPipeline);
+
+    renderTarget = device->createRenderTarget(4, 1280, 720);
 }
 
 void GameScene::interpolate(float alpha)

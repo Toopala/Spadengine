@@ -15,6 +15,7 @@ namespace sge
 
     struct CubeMap;
     struct Pipeline;
+    struct RenderTarget;
     struct Shader;
     struct Texture;
 
@@ -44,11 +45,15 @@ private:
     sge::Entity* createCamera(int x, int y, unsigned int width, unsigned int height);
     sge::Entity* createSun();
     sge::Entity* createSkyBox();
+    sge::Entity* createSprite(int x, int y, unsigned int width, unsigned int height, sge::Texture* texture);
 
     sge::Entity* earthEntity;
     sge::Entity* cameraEntity;
     sge::Entity* sunEntity;
     sge::Entity* skyBoxEntity;
+    sge::Entity* screen1Entity;
+
+    sge::RenderTarget* renderTarget;
 
     sge::Spade* engine;
     sge::RenderSystem* renderer;
