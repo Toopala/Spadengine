@@ -540,13 +540,13 @@ namespace sge
 
 
 #ifdef DIRECTX11
-        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.cso");
-        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.cso");
-        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.cso");
+        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimpleVertexShader.cso");
+        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimplePixelShader.cso");
+        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimpleTextPixelShader.cso");
 #elif OPENGL4
-        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleVertexShader.glsl");
-        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimplePixelShader.glsl");
-        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../../Shaders/Compiled/SimpleTextPixelShader.glsl");
+        sprVertexShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimpleVertexShader.glsl");
+        sprPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimplePixelShader.glsl");
+        textPixelShaderHandle = ResourceManager::getMgr().load<ShaderResource>("../Assets/Shaders/SimpleTextPixelShader.glsl");
 #endif
 
         const std::vector<char>& sprVertexShaderData = sprVertexShaderHandle.getResource<ShaderResource>()->loadShader();

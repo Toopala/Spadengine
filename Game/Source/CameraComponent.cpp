@@ -45,7 +45,6 @@ namespace sge
 
 	void CameraComponent::update()
 	{
-        // TODO we should only update view if the transform is changed.
         updateView();
 	}
 

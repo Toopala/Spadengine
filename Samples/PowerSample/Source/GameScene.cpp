@@ -74,6 +74,7 @@ void GameScene::update(float step)
     earthEntity->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
     earthEntity->getComponent<sge::TransformComponent>()->addAngle(0.025f);
     sunEntity->getComponent<sge::TransformComponent>()->addAngle(0.01f);
+    cameraEntity->getComponent<sge::TransformComponent>()->lookAt(earthEntity->getComponent<sge::TransformComponent>()->getPosition());
     cameraEntity->getComponent<sge::CameraComponent>()->update();
 }
 
@@ -124,8 +125,7 @@ sge::Entity* GameScene::createCamera(int x, int y, unsigned int width, unsigned 
     auto transform = transformFactory.create(entity);
     auto camera = cameraFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 3.0f, 15.0f });
-    transform->setFront({ 0.0f, 0.0f, -1.0f });
+    transform->setPosition({ 0.0f, 3.0f, -15.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
