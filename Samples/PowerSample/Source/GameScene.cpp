@@ -44,7 +44,7 @@ GameScene::GameScene(sge::Spade* engine) :
     earth = createEarth();
     sun = createSun();
     skybox = createSkyBox();
-    screen1 = createSprite(0, 0, 1280, 720, renderTarget->textures[0]);
+    screen1 = createSprite(640, 360, 640, 360, renderTarget->textures[0]);
 }
 
 GameScene::~GameScene()
@@ -89,6 +89,8 @@ void GameScene::draw()
 {
     renderer->addCameras(1, &defaultCamera);
     renderer->setRenderTarget(renderTarget);
+
+    renderer->clear(sge::COLOR);
 
     renderer->begin();
     renderer->renderLights(1, &sun);
