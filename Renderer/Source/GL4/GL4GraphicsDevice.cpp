@@ -258,7 +258,7 @@ namespace sge
 
         for (size_t i = 0; i < count; i++)
         {
-            gl4RenderTarget->header.textures[i] = createTexture(width, height);
+            gl4RenderTarget->header.textures[i] = createTexture(width, height, nullptr, Format::RGB);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[i])->id, 0);
             gl4RenderTarget->buffers[i] = GL_COLOR_ATTACHMENT0 + i;
         }
@@ -341,7 +341,7 @@ namespace sge
 		shader = nullptr;
 	}
 
-	Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source)
+    Texture* GraphicsDevice::createTexture(size_t width, size_t height, unsigned char* source, Format format)
     {
         GL4Texture* gl4Texture = new GL4Texture();
 
@@ -356,6 +356,15 @@ namespace sge
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxValue);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxValue);
 
+        GLenum f;
+
+        switch (format)
+        {
+        case Format::RGB: f = GL_RGB; break;
+        case Format::RGBA: f = GL_RGBA; break;
+        default: break;
+        }
+
         checkError();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -363,7 +372,7 @@ namespace sge
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
         checkError();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, source);
+        glTexImage2D(GL_TEXTURE_2D, 0, f, width, height, 0, f, GL_UNSIGNED_BYTE, source);
 
         checkError();
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -413,7 +422,7 @@ namespace sge
 
     Texture* GraphicsDevice::createTexture(TextureResource* source)
     {
-        return createTexture(source->getSize().x, source->getSize().y, source->getData());
+        return createTexture(source->getSize().x, source->getSize().y, source->getData(), (Format)source->getFormat());
     }
 
     Texture* GraphicsDevice::createTextTexture(TextureResource* source)

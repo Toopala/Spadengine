@@ -35,4 +35,10 @@ namespace sge
 	{
 		TRIANGLE
 	};
+
+    enum class Format
+    {
+        RGB = 3,
+        RGBA = 4
+    };
 }

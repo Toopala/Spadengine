@@ -43,10 +43,10 @@ namespace sge
 		Shader* createShader(ShaderType type, const char* source, size_t size);
 		void deleteShader(Shader* shader);
 
-		Texture* createTexture(TextureResource* source);
+        Texture* createTexture(TextureResource* source);
         Texture* createTextTexture(TextureResource* source);
 
-        Texture* createTexture(size_t width, size_t height, unsigned char* source = 0);
+        Texture* createTexture(size_t width, size_t height, unsigned char* source = 0, Format format = Format::RGBA);
         Texture* createTextTexture(size_t width, size_t height, unsigned char* source);
 
 		void deleteTexture(Texture* texture);
