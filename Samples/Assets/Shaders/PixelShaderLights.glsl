@@ -134,9 +134,12 @@ vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir)
 	}
 	// Diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
-	// Specular shading
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
+	
+	//Blinn phong specular shading
+	vec3 halfDir = normalize(lightDir + viewDir);
+	float specAngle = max(dot(halfDir, normal), 0.0);
+	float spec = pow(specAngle, shininessVout);
+	
 	// Combine results
 	vec3 ambient = light.ambient.xyz * texture(diffuseTex, texcoords).rgb;
 	vec3 diffuse = light.diffuse.xyz * diff * texture(diffuseTex, texcoords).rgb;
@@ -164,11 +167,14 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir)
 		lightDir = normalize(light.position.xyz - fragPosition);
 	}
 	
+	//Blinn phong specular shading
+	vec3 halfDir = normalize(lightDir + viewDir);
+	float specAngle = max(dot(halfDir, normal), 0.0);
+	float spec = pow(specAngle, shininessVout);
+	
 	// Diffuse shading
-	float diff = max(dot(normal, lightDir), 0.0);
-	// Specular shading
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininessVout);
+	float diff = max(dot(normal, lightDir), 0.0);	
+	
 	// Attenuation
 	float distance = length(light.position.xyz - fragPosition);
 	float attenuation = 1.0f / (light.constant + light.mylinear * distance + light.quadratic * (distance * distance));

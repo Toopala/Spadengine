@@ -420,7 +420,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityEarth->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityEarth->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
 
-	btSphereShape* sphereShape = new btSphereShape(btScalar(9.5f));
+	btSphereShape* sphereShape = new btSphereShape(btScalar(10.0f));
 	modentityEarth->getComponent<sge::TransformComponent>()->setScale(sge::math::vec3(10.0f));
 
 	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(20, 15, 0)));
