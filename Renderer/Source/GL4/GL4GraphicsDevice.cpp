@@ -422,7 +422,7 @@ namespace sge
 
     Texture* GraphicsDevice::createTexture(TextureResource* source)
     {
-        return createTexture(source->getSize().x, source->getSize().y, source->getData(), (Format)source->getFormat());
+        return createTexture(source->getSize().x, source->getSize().y, source->getData(), Format::RGBA);
     }
 
     Texture* GraphicsDevice::createTextTexture(TextureResource* source)

@@ -183,7 +183,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modelHandleTree = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/treeDiffuseSpecular.dae");
 	modelHandleTree.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
-	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/earthDiffuseSpecular.dae");
+	modelHandleEarth = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/liteEarthDiffuseSpecular.dae");
 	modelHandleEarth.getResource<sge::ModelResource>()->setDevice(engine->getRenderer()->getDevice());
 
 	modelHandleRoom = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/RoomBoxBig.dae");
@@ -423,7 +423,7 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	btSphereShape* sphereShape = new btSphereShape(btScalar(9.5f));
 	modentityEarth->getComponent<sge::TransformComponent>()->setScale(sge::math::vec3(10.0f));
 
-	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(2, 0, 0, 1), btVector3(20, 15, 0)));
+	btDefaultMotionState* EarthMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(20, 15, 0)));
 	btScalar massE = 10;
 	btVector3 fallInertiaE(0, 0, 0);
 	sphereShape->calculateLocalInertia(10.0f, fallInertiaE);
