@@ -49,6 +49,7 @@ private:
     sge::Entity* createSkyBox();
     sge::Entity* createSprite(int x, int y, unsigned int width, unsigned int height, sge::Texture* texture);
 	sge::Entity* createSpaceShip();
+	sge::Entity* createMoon();
 
     sge::Entity* earth;
     sge::Entity* overviewCamera;
@@ -58,9 +59,16 @@ private:
     sge::Entity* sun;
     sge::Entity* skybox;
 	sge::Entity* spaceShip;
-    sge::Entity* screen1;
+	sge::Entity* moon;
+	sge::Entity* fullScreen;
+	sge::Entity* overviewScreen;
+	sge::Entity* earthScreen;
+	sge::Entity* spaceShipScreen;
 
-    sge::RenderTarget* renderTarget;
+	sge::RenderTarget* fullScreenTarget;
+    sge::RenderTarget* overviewScreenTarget;
+	sge::RenderTarget* earthScreenTarget;
+	sge::RenderTarget* spaceShipScreenTarget;
 
     sge::Spade* engine;
     sge::RenderSystem* renderer;
@@ -70,6 +78,7 @@ private:
     sge::Handle<sge::ModelResource> sunResource;
     sge::Handle<sge::ModelResource> skyBoxResource;
 	sge::Handle<sge::ModelResource> spaceShipResource;
+	sge::Handle<sge::ModelResource> moonResource;
 
     sge::Pipeline* pipeline;
     sge::Pipeline* skyBoxPipeline;

@@ -38,15 +38,23 @@ GameScene::GameScene(sge::Spade* engine) :
     initPipelines();
     initResources();
 
-    overviewCamera = createPerspectiveCamera(0, 0, 1280, 720);
-	spaceShipCamera = createPerspectiveCamera(0, 0, 1280, 720);
+    overviewCamera = createPerspectiveCamera(0, 0, 620, 700);
+	spaceShipCamera = createPerspectiveCamera(0, 0, 620, 340);
+	earthCamera = createPerspectiveCamera(0, 0, 620, 340);
 
     fullscreenCamera = createOrthoCamera(0, 0, 1280, 720);
+
     earth = createEarth();
     sun = createSun();
     skybox = createSkyBox();
-    screen1 = createSprite(640, 360, 640, 360, renderTarget->textures[0]);
+
+    fullScreen = createSprite(0, 0, 1280, 720, fullScreenTarget->textures[0]);
+	overviewScreen = createSprite(0, 0, 620, 710, overviewScreenTarget->textures[0]);
+	earthScreen = createSprite(650, 0, 620, 340, earthScreenTarget->textures[0]);
+	spaceShipScreen = createSprite(650, 340, 620, 340, spaceShipScreenTarget->textures[0]);
+
 	spaceShip = createSpaceShip();
+	moon = createMoon();
 }
 
 GameScene::~GameScene()
@@ -54,6 +62,8 @@ GameScene::~GameScene()
     sge::ResourceManager::getMgr().release(earthResource);
     sge::ResourceManager::getMgr().release(sunResource);
     sge::ResourceManager::getMgr().release(skyBoxResource);
+	sge::ResourceManager::getMgr().release(spaceShipResource);
+	sge::ResourceManager::getMgr().release(moonResource);
 
     device->deleteCubeMap(skyBoxCubeMap);
 
@@ -65,7 +75,7 @@ GameScene::~GameScene()
     device->deletePipeline(pipeline);
     device->deletePipeline(skyBoxPipeline);
 
-    device->deleteRenderTarget(renderTarget);
+	device->deleteRenderTarget(fullScreenTarget);
 }
 
 void GameScene::update(float step)
@@ -87,7 +97,7 @@ void GameScene::update(float step)
 
     sun->getComponent<sge::TransformComponent>()->addAngle(0.01f);
 
-	overviewCamera->getComponent<sge::TransformComponent>()->lookAt(earth->getComponent<sge::TransformComponent>()->getPosition());
+	overviewCamera->getComponent<sge::TransformComponent>()->lookAt(sun->getComponent<sge::TransformComponent>()->getPosition());
 	overviewCamera->getComponent<sge::CameraComponent>()->update();
 
     fullscreenCamera->getComponent<sge::CameraComponent>()->update();
@@ -95,12 +105,20 @@ void GameScene::update(float step)
 	spaceShipCamera->getComponent<sge::TransformComponent>()->lookAt(spaceShip->getComponent<sge::TransformComponent>()->getPosition());
 	spaceShipCamera->getComponent<sge::TransformComponent>()->setPosition(spaceShip->getComponent<sge::TransformComponent>()->getPosition() - spaceShip->getComponent<sge::TransformComponent>()->getFront() * 0.5f);
 	spaceShipCamera->getComponent<sge::CameraComponent>()->update();
+
+	earthCamera->getComponent<sge::TransformComponent>()->lookAt(earth->getComponent<sge::TransformComponent>()->getPosition());
+	earthCamera->getComponent<sge::TransformComponent>()->setPosition(earth->getComponent<sge::TransformComponent>()->getPosition() - earth->getComponent<sge::TransformComponent>()->getFront() * 2.0f);
+	earthCamera->getComponent<sge::CameraComponent>()->update();
+
+	moon->getComponent<sge::TransformComponent>()->setPosition(earth->getComponent<sge::TransformComponent>()->getPosition() + sge::math::vec3(cos(alpha * 3.0f), 0.0f, sin(alpha * 3.0f)));
+	moon->getComponent<sge::TransformComponent>()->addAngle(0.05f);
 }
 
 void GameScene::draw()
 {
+	// Render overview camera.
 	renderer->addCameras(1, &overviewCamera);
-    renderer->setRenderTarget(renderTarget);
+	renderer->setRenderTarget(overviewScreenTarget);
 
     renderer->clear(sge::COLOR);
 
@@ -110,15 +128,47 @@ void GameScene::draw()
     renderer->renderModels(1, &sun);
     renderer->renderModels(1, &skybox);
 	renderer->renderModels(1, &spaceShip);
+	renderer->renderModels(1, &moon);
     renderer->end();
 
     renderer->render();
-    renderer->clear();
-    renderer->addCameras(1, &fullscreenCamera);
 
-    renderer->begin();
-    renderer->renderSprites(1, &screen1);
-    renderer->end();
+	// Render earth camera.
+	renderer->clear(sge::CAMERAS | sge::RENDERTARGET);
+	renderer->addCameras(1, &earthCamera);
+	renderer->setRenderTarget(earthScreenTarget);
+	renderer->clear(sge::COLOR);
+
+	renderer->render();
+
+	// Render spaceship camera.
+	renderer->clear(sge::CAMERAS | sge::RENDERTARGET);
+	renderer->addCameras(1, &spaceShipCamera);
+	renderer->setRenderTarget(spaceShipScreenTarget);
+	renderer->clear(sge::COLOR);
+
+	renderer->render();
+
+	// Render cameras.
+	renderer->clear();
+	renderer->addCameras(1, &fullscreenCamera);
+	//renderer->setRenderTarget(fullScreenTarget);
+
+	renderer->begin();
+	renderer->renderSprites(1, &overviewScreen);
+	renderer->renderSprites(1, &earthScreen);
+	renderer->renderSprites(1, &spaceShipScreen);
+	renderer->end();
+
+	//renderer->render();
+
+	//// Render fullscreen.
+	//renderer->clear();
+ //   renderer->addCameras(1, &fullscreenCamera);
+
+ //   renderer->begin();
+ //   renderer->renderSprites(1, &fullScreen);
+ //   renderer->end();
 
     renderer->render();
     renderer->present();
@@ -154,11 +204,11 @@ sge::Entity* GameScene::createPerspectiveCamera(int x, int y, unsigned int width
     auto transform = transformFactory.create(entity);
     auto camera = cameraFactory.create(entity);
 
-    transform->setPosition({ 0.0f, 3.0f, -15.0f });
+    transform->setPosition({ 0.0f, 5.0f, -15.0f });
     transform->setUp({ 0.0f, 1.0f, 0.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
-    camera->setPerspective(60.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+    camera->setPerspective(60.0f, (float)width / height, 0.1f, 1000.0f);
     camera->setViewport(x, y, width, height);
 
     return entity;
@@ -273,8 +323,8 @@ sge::Entity* GameScene::createSprite(int x, int y, unsigned int width, unsigned 
     auto transform = transformFactory.create(entity);
     auto sprite = spriteFactory.create(entity);
 
-    transform->setPosition({ x, y, 1.0f });
-    transform->setScale({ width, height, 1.0f });
+    transform->setPosition({ x + width / 2, y + height / 2, 1.0f });
+    transform->setScale({ width / 2, height / 2, 1.0f });
     transform->setRotationVector({ 0.0f, 0.0f, 1.0f });
 
     sprite->setTexture(texture);
@@ -300,6 +350,28 @@ sge::Entity* GameScene::createSpaceShip()
 	model->setShininess(128.0f);
 	model->setRenderer(renderer);
 	model->setModelResource(&spaceShipResource);
+
+	device->debindPipeline(pipeline);
+
+	return entity;
+}
+
+sge::Entity* GameScene::createMoon()
+{
+	device->bindPipeline(pipeline);
+
+	sge::Entity* entity = entityManager.createEntity();
+
+	auto transform = transformFactory.create(entity);
+	auto model = modelFactory.create(entity);
+
+	transform->setPosition({ 0.0f, 0.0f, 6.0f });
+	transform->setScale({ 0.1f, 0.1f, 0.1f });
+
+	model->setPipeline(pipeline);
+	model->setShininess(2.0f);
+	model->setRenderer(renderer);
+	model->setModelResource(&moonResource);
 
 	device->debindPipeline(pipeline);
 
@@ -376,6 +448,10 @@ void GameScene::initResources()
 	spaceShipResource.getResource<sge::ModelResource>()->setDevice(device);
 	spaceShipResource.getResource<sge::ModelResource>()->createBuffers();
 
+	moonResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/moonSphere.dae");
+	moonResource.getResource<sge::ModelResource>()->setDevice(device);
+	moonResource.getResource<sge::ModelResource>()->createBuffers();
+
     device->debindPipeline(pipeline);
 
     device->bindPipeline(noLightsPipeline);
@@ -390,7 +466,10 @@ void GameScene::initResources()
     skyBoxResource.getResource<sge::ModelResource>()->createBuffers();
     device->debindPipeline(skyBoxPipeline);
 
-    renderTarget = device->createRenderTarget(1, 1280, 720, true);
+    fullScreenTarget = device->createRenderTarget(1, 1280, 720, true);
+	overviewScreenTarget = device->createRenderTarget(1, 640, 720, true);
+	earthScreenTarget = device->createRenderTarget(1, 640, 360, true);
+	spaceShipScreenTarget = device->createRenderTarget(1, 640, 360, true);
 }
 
 void GameScene::interpolate(float alpha)

@@ -99,7 +99,20 @@ namespace sge
 			return indexBuffer;
 		}
 
+		void setDiffuseTexture(sge::Texture* texture)
+		{
+			diffuseTexture = texture;
+		}
 
+		void setSpecularTexture(sge::Texture* texture)
+		{
+			specularTexture = texture;
+		}
+
+		void setNormalTexture(sge::Texture* texture)
+		{
+			normalTexture = texture;
+		}
 	};
 
 	class ModelResource : public sge::Resource

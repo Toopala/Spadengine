@@ -11,21 +11,21 @@
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_images>
-    <image id="Sun_diffuse_png" name="Sun_diffuse_png">
-      <init_from>sun_diffuse.png</init_from>
+    <image id="moon_diffuse_png" name="moon_diffuse_png">
+      <init_from>moon_diffuse.png</init_from>
     </image>
   </library_images>
   <library_effects>
     <effect id="Material-effect">
       <profile_COMMON>
-        <newparam sid="Sun_diffuse_png-surface">
+        <newparam sid="moon_diffuse_png-surface">
           <surface type="2D">
-            <init_from>Sun_diffuse_png</init_from>
+            <init_from>moon_diffuse_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="Sun_diffuse_png-sampler">
+        <newparam sid="moon_diffuse_png-sampler">
           <sampler2D>
-            <source>Sun_diffuse_png-surface</source>
+            <source>moon_diffuse_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -37,7 +37,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="Sun_diffuse_png-sampler" texcoord="UVMap"/>
+              <texture texture="moon_diffuse_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
