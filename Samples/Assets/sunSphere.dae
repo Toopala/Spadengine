@@ -12,7 +12,7 @@
   </asset>
   <library_images>
     <image id="Sun_diffuse_png" name="Sun_diffuse_png">
-      <init_from>Sun_diffuse.png</init_from>
+      <init_from>moon.png</init_from>
     </image>
   </library_images>
   <library_effects>

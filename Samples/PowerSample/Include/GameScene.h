@@ -48,12 +48,16 @@ private:
     sge::Entity* createSun();
     sge::Entity* createSkyBox();
     sge::Entity* createSprite(int x, int y, unsigned int width, unsigned int height, sge::Texture* texture);
+	sge::Entity* createSpaceShip();
 
     sge::Entity* earth;
-    sge::Entity* defaultCamera;
+    sge::Entity* overviewCamera;
     sge::Entity* fullscreenCamera;
+	sge::Entity* spaceShipCamera;
+	sge::Entity* earthCamera;
     sge::Entity* sun;
     sge::Entity* skybox;
+	sge::Entity* spaceShip;
     sge::Entity* screen1;
 
     sge::RenderTarget* renderTarget;
@@ -65,6 +69,7 @@ private:
     sge::Handle<sge::ModelResource> earthResource;
     sge::Handle<sge::ModelResource> sunResource;
     sge::Handle<sge::ModelResource> skyBoxResource;
+	sge::Handle<sge::ModelResource> spaceShipResource;
 
     sge::Pipeline* pipeline;
     sge::Pipeline* skyBoxPipeline;

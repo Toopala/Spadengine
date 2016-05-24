@@ -23,12 +23,11 @@ SpotLightComponent do!
 Instanced rendering do!
 Deferred rendering do!
 Kameralle lookAt!
-Render targeteille depth-puskuri!
 Optimoi bulletscenea (nykii ihan vitusti)
     - Esim valojen dataa ei tarvii viedä joka objektille erikseen
     - Sorttaus takasin kuntoon jos tarviijaksaahaluaa
 Tee se demo ja siihen kaikkea hauskaa (blur, hdr voe pojat efektejä)
-DX11-shaderit!
+DX11 fixes go!
 */
 
 GameScene::GameScene(sge::Spade* engine) :
@@ -39,12 +38,15 @@ GameScene::GameScene(sge::Spade* engine) :
     initPipelines();
     initResources();
 
-    defaultCamera = createPerspectiveCamera(0, 0, 1280, 720);
+    overviewCamera = createPerspectiveCamera(0, 0, 1280, 720);
+	spaceShipCamera = createPerspectiveCamera(0, 0, 1280, 720);
+
     fullscreenCamera = createOrthoCamera(0, 0, 1280, 720);
     earth = createEarth();
     sun = createSun();
     skybox = createSkyBox();
     screen1 = createSprite(640, 360, 640, 360, renderTarget->textures[0]);
+	spaceShip = createSpaceShip();
 }
 
 GameScene::~GameScene()
@@ -79,15 +81,25 @@ void GameScene::update(float step)
 
     earth->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(5.0f*cos(alpha), 0.0f, 5.0f*sin(alpha)));
     earth->getComponent<sge::TransformComponent>()->addAngle(0.025f);
+
+	spaceShip->getComponent<sge::TransformComponent>()->setPosition(sge::math::vec3(7.5f*cos(-alpha), 1.5f * sin(alpha), 7.5f*sin(-alpha)));
+	//spaceShip->getComponent<sge::TransformComponent>()->addAngle(0.015f);
+
     sun->getComponent<sge::TransformComponent>()->addAngle(0.01f);
-    defaultCamera->getComponent<sge::TransformComponent>()->lookAt(earth->getComponent<sge::TransformComponent>()->getPosition());
-    defaultCamera->getComponent<sge::CameraComponent>()->update();
+
+	overviewCamera->getComponent<sge::TransformComponent>()->lookAt(earth->getComponent<sge::TransformComponent>()->getPosition());
+	overviewCamera->getComponent<sge::CameraComponent>()->update();
+
     fullscreenCamera->getComponent<sge::CameraComponent>()->update();
+
+	spaceShipCamera->getComponent<sge::TransformComponent>()->lookAt(spaceShip->getComponent<sge::TransformComponent>()->getPosition());
+	spaceShipCamera->getComponent<sge::TransformComponent>()->setPosition(spaceShip->getComponent<sge::TransformComponent>()->getPosition() - spaceShip->getComponent<sge::TransformComponent>()->getFront() * 0.5f);
+	spaceShipCamera->getComponent<sge::CameraComponent>()->update();
 }
 
 void GameScene::draw()
 {
-    renderer->addCameras(1, &defaultCamera);
+	renderer->addCameras(1, &overviewCamera);
     renderer->setRenderTarget(renderTarget);
 
     renderer->clear(sge::COLOR);
@@ -97,6 +109,7 @@ void GameScene::draw()
     renderer->renderModels(1, &earth);
     renderer->renderModels(1, &sun);
     renderer->renderModels(1, &skybox);
+	renderer->renderModels(1, &spaceShip);
     renderer->end();
 
     renderer->render();
@@ -176,6 +189,7 @@ sge::Entity* GameScene::createSun()
 
     auto transform = transformFactory.create(entity);
     auto light = pointLightFactory.create(entity);
+	auto dirlight = dirLightFactory.create(entity);
     auto model = modelFactory.create(entity);
 
     transform->setPosition({ 0.0f, 0.0f, 0.0f });
@@ -196,6 +210,15 @@ sge::Entity* GameScene::createSun()
     lightData.specular = sge::math::vec4(0.25f, 0.25f, 1.0f, 1.0f);
 
     light->setLightData(lightData);
+
+	sge::DirLight dirlightData;
+
+	dirlightData.direction = sge::math::vec4(0.0f, 0.0f, 1.0f, 1.0);
+	dirlightData.ambient = sge::math::vec4(0.05, 0.05, 0.05, 1.0);
+	dirlightData.diffuse = sge::math::vec4(0.1, 0.1, 0.1, 1.0);
+	dirlightData.specular = sge::math::vec4(0.2, 0.2, 0.2, 1.0);
+
+	dirlight->setLightData(dirlightData);
 
     model->setPipeline(noLightsPipeline);
     model->setShininess(256.0f);
@@ -260,6 +283,29 @@ sge::Entity* GameScene::createSprite(int x, int y, unsigned int width, unsigned 
     return entity;
 }
 
+sge::Entity* GameScene::createSpaceShip()
+{
+	device->bindPipeline(pipeline);
+
+	sge::Entity* entity = entityManager.createEntity();
+
+	auto transform = transformFactory.create(entity);
+	auto model = modelFactory.create(entity);
+
+	transform->setPosition({ 3.0f, 0.0f, -5.0f });
+	transform->setScale({ 0.0125f, 0.0125f, 0.0125f });
+	transform->setRotationVector({ 1.0f, 0.8f, 0.5f });
+
+	model->setPipeline(pipeline);
+	model->setShininess(128.0f);
+	model->setRenderer(renderer);
+	model->setModelResource(&spaceShipResource);
+
+	device->debindPipeline(pipeline);
+
+	return entity;
+}
+
 void GameScene::initPipelines()
 {
     sge::Handle<sge::ShaderResource> pixelShaderHandle;
@@ -322,9 +368,14 @@ void GameScene::initPipelines()
 void GameScene::initResources()
 {
     device->bindPipeline(pipeline);
-    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/simpleIcoSphere.dae");
+    earthResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/liteEarthDiffuseSpecular.dae");
     earthResource.getResource<sge::ModelResource>()->setDevice(device);
     earthResource.getResource<sge::ModelResource>()->createBuffers();
+
+	spaceShipResource = sge::ResourceManager::getMgr().load<sge::ModelResource>("../Assets/SpaceShip.dae");
+	spaceShipResource.getResource<sge::ModelResource>()->setDevice(device);
+	spaceShipResource.getResource<sge::ModelResource>()->createBuffers();
+
     device->debindPipeline(pipeline);
 
     device->bindPipeline(noLightsPipeline);
