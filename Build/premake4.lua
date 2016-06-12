@@ -48,6 +48,8 @@ solution {"Spadengine"}
 		files { "../Renderer/**.cpp" }
 		includedirs { "../Renderer/Include/",	
 				"../Core/Include/",
+                "../Resources/Include",
+                "../ThirdParty/stb_image/Include",
 				"../ThirdParty/glm/include/", 
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/SDL/include/"}
@@ -170,8 +172,11 @@ solution {"Spadengine"}
 		location "../Samples/RenderSample/"
 		files {"../Samples/RenderSample/**.cpp"}
 		includedirs {"../Core/Include/",
+                "../Samples/RenderSample/Include",
 				"../Renderer/Include/",
+                "../HID/Include",
 				"../Game/Include/",
+                "../Spade/Include",
 				"../Resources/Include/",
 				"../ThirdParty/freetype/include/",
 				"../ThirdParty/SDL/include/",
@@ -179,7 +184,7 @@ solution {"Spadengine"}
 				"../ThirdParty/glad/Include/",
 				"../ThirdParty/stb_image/Include/",
 				"../ThirdParty/assimp/include/"}
-		links {"Core", "Game" ,"Resources","Renderer", "SDL2","glad","dl","assimp","freetype"}
+		links {"Spade", "Core", "Game" ,"Resources","Renderer", "HID", "SDL2","glad","dl","assimp","freetype"}
 
 	project "PowerSample"
 		kind "ConsoleApp"
@@ -221,6 +226,6 @@ solution {"Spadengine"}
 				"../ThirdParty/glm/include/",
 				"../ThirdParty/SDL/include/",
 				"../ThirdParty/stb_image/Include/"}
-		links {"Spade","Game","Audio","Renderer","HID","Resources","Core","assimp","glad", "dl", "SDL2","Bullet","portaudio","freetype"}
+		links {"Spade","Game","Audio","Renderer","HID","Resources","Core","assimp","glad", "dl", "SDL2","Bullet","sndfile", "portaudio","freetype"}
 	 
 	
