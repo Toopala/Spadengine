@@ -53,7 +53,7 @@ namespace sge
 				std::stringstream err;
 				err << "Unable to open audio file '"
 					<< fileName << "'";
-				throw err.str();
+				//throw err.str();
 			}
 			sounds[fileName] = sound;
 		}

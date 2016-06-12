@@ -1,6 +1,7 @@
 #include "Audio/AudioStreamHandler.h"
 #include <iostream>
-
+#include <string.h> //memset
+#include <Core/Assert.h> // assert
 namespace sge
 {
 	AudioStreamHandler::AudioStreamHandler()
@@ -32,7 +33,9 @@ namespace sge
 
 			std::stringstream error;
 			error << "Unable to open stream for output. Portaudio error code: " << err;
-			throw error.str();
+            //std::abort();
+            SGE_ASSERT(0 );
+            //assert(0);
 		}
 	}
 

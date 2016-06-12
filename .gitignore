@@ -191,3 +191,5 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 *.a
+
+*.make
