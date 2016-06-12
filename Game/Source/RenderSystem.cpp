@@ -441,7 +441,6 @@ namespace sge
 
 			device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
 			device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
-
 			
 			modelPixelUniformData.hasDiffuseTex = 0;		
 			modelPixelUniformData.hasNormalTex = 0;	
@@ -452,6 +451,7 @@ namespace sge
 			Texture* norm = model->getModelResource()->getMeshes()[i]->normalTexture;
 			Texture* spec = model->getModelResource()->getMeshes()[i]->specularTexture;
 			CubeMap* cube = model->getCubeMap();
+
 			if (diff)
 			{
 				device->bindTexture(diff, 0);
@@ -582,13 +582,13 @@ namespace sge
         } };
 
         float vertexData[] = {
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
         };
 
         sprPipeline = device->createPipeline(&vertexLayoutDescription, sprVertexShader, sprPixelShader);

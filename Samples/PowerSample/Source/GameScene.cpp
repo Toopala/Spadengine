@@ -15,21 +15,6 @@
 
 #include "Spade/Spade.h"
 
-/*
-TODO enko
-
-Tekstuuriresurssille tekstuurien generointi GPU:n muistiin
-SpotLightComponent do!
-Instanced rendering do!
-Deferred rendering do!
-Kameralle lookAt!
-Optimoi bulletscenea (nykii ihan vitusti)
-    - Esim valojen dataa ei tarvii viedä joka objektille erikseen
-    - Sorttaus takasin kuntoon jos tarviijaksaahaluaa
-Tee se demo ja siihen kaikkea hauskaa (blur, hdr voe pojat efektejä)
-DX11 fixes go!
-*/
-
 GameScene::GameScene(sge::Spade* engine) :
     engine(engine),
     renderer(engine->getRenderer()),
@@ -38,9 +23,9 @@ GameScene::GameScene(sge::Spade* engine) :
     initPipelines();
     initResources();
 
-    overviewCamera = createPerspectiveCamera(0, 0, 620, 700);
-	spaceShipCamera = createPerspectiveCamera(0, 0, 620, 340);
-	earthCamera = createPerspectiveCamera(0, 0, 620, 340);
+    overviewCamera = createPerspectiveCamera(0, 0, 628, 704);
+	spaceShipCamera = createPerspectiveCamera(0, 0, 628, 348);
+	earthCamera = createPerspectiveCamera(0, 0, 628, 348);
 
     fullscreenCamera = createOrthoCamera(0, 0, 1280, 720);
 
@@ -49,9 +34,9 @@ GameScene::GameScene(sge::Spade* engine) :
     skybox = createSkyBox();
 
     fullScreen = createSprite(0, 0, 1280, 720, fullScreenTarget->textures[0]);
-	overviewScreen = createSprite(0, 0, 620, 710, overviewScreenTarget->textures[0]);
-	earthScreen = createSprite(650, 0, 620, 340, earthScreenTarget->textures[0]);
-	spaceShipScreen = createSprite(650, 340, 620, 340, spaceShipScreenTarget->textures[0]);
+	overviewScreen = createSprite(8, 8, 628, 704, overviewScreenTarget->textures[0]);
+	earthScreen = createSprite(644, 8, 628, 348, earthScreenTarget->textures[0]);
+	spaceShipScreen = createSprite(644, 364, 628, 348, spaceShipScreenTarget->textures[0]);
 
 	spaceShip = createSpaceShip();
 	moon = createMoon();
@@ -172,6 +157,7 @@ void GameScene::draw()
 
     renderer->render();
     renderer->present();
+    renderer->setClearColor(sge::math::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     renderer->clear();
 }
 
@@ -467,9 +453,9 @@ void GameScene::initResources()
     device->debindPipeline(skyBoxPipeline);
 
     fullScreenTarget = device->createRenderTarget(1, 1280, 720, true);
-	overviewScreenTarget = device->createRenderTarget(1, 640, 720, true);
-	earthScreenTarget = device->createRenderTarget(1, 640, 360, true);
-	spaceShipScreenTarget = device->createRenderTarget(1, 640, 360, true);
+	overviewScreenTarget = device->createRenderTarget(1, 628, 704, true);
+	earthScreenTarget = device->createRenderTarget(1, 628, 348, true);
+	spaceShipScreenTarget = device->createRenderTarget(1, 628, 348, true);
 }
 
 void GameScene::interpolate(float alpha)
