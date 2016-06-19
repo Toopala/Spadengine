@@ -46,6 +46,8 @@ namespace sge
         initTextRendering();
         initModelRendering();
 
+        initLights();
+
         device->clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
         initialized = true;
@@ -170,7 +172,7 @@ namespace sge
 	{
         SGE_ASSERT(acceptingCommands);
 
-        calculateLightData();
+        updateLightData();
 
         acceptingCommands = false;
 	}
@@ -189,6 +191,10 @@ namespace sge
     {
         for (auto camera : cameras)
         {
+            // TODO here we could have some culling.
+            // No need to render EVERY model/sprite/text for EVERY camera.
+            // There is a good chance that the cameras will look to opposite directions.
+
             for (auto model : modelsToRender)
             {
                 renderModel(model, camera);
@@ -394,22 +400,18 @@ namespace sge
         modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
         modelVertexUniformData.PV = camera->getViewProj();
 		modelVertexUniformData.shininess = model->getComponent<ModelComponent>()->getShininess();
-        modelPixelUniformData.CamPos = math::vec4(camera->getComponent<TransformComponent>()->getPosition(), 1.0f);
+
+        modelPixelUniformData.cameraPosition = math::vec4(camera->getComponent<TransformComponent>()->getPosition(), 1.0f);
+        modelPixelUniformData.glossyness = model->getGlossyness();
 
         device->bindPipeline(model->getPipeline());
 
 		for (size_t i = 0; i < model->getModelResource()->getMeshes().size(); i++)
 		{
-			device->bindIndexBuffer(model->getModelResource()->getMeshes()[i]->getIndexBuffer());
 			device->bindVertexBuffer(model->getModelResource()->getMeshes()[i]->getVertexBuffer());
 
-			device->bindVertexUniformBuffer(modelVertexUniformBuffer, 0);
+			device->bindVertexUniformBuffer(modelVertexUniformBuffer, UniformBufferSlots::VERTEX);
 			device->copyData(modelVertexUniformBuffer, sizeof(modelVertexUniformData), &modelVertexUniformData);
-			
-			modelPixelUniformData.hasDiffuseTex = 0;		
-			modelPixelUniformData.hasNormalTex = 0;	
-			modelPixelUniformData.hasSpecularTex = 0;	
-			modelPixelUniformData.hasCubeTex = 0;
 
 			Texture* diff = model->getModelResource()->getMeshes()[i]->diffuseTexture;
 			Texture* norm = model->getModelResource()->getMeshes()[i]->normalTexture;
@@ -433,17 +435,15 @@ namespace sge
 				device->bindTexture(spec, 2);
 				modelPixelUniformData.hasSpecularTex = 1;
 			}			
-			
-			modelPixelUniformData.glossyness = model->getGlossyness();
 
-			if (cube)
-			{
-				device->bindCubeMap(cube, 3);
-				modelPixelUniformData.hasCubeTex = 1;
-			}			
+            if (cube)
+            {
+                device->bindCubeMap(cube, 3);
+                modelPixelUniformData.hasCubeTex = 1;
+            }
 
-			device->bindPixelUniformBuffer(modelPixelUniformBuffer, 1);
-			device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
+            device->bindPixelUniformBuffer(modelPixelUniformBuffer, UniformBufferSlots::PIXEL);
+            device->copyData(modelPixelUniformBuffer, sizeof(modelPixelUniformData), &modelPixelUniformData);
 
 			device->draw(model->getModelResource()->getMeshes()[i]->vertices.size());
 
@@ -490,22 +490,24 @@ namespace sge
         clearColor = color;
     }
 
-    void RenderSystem::calculateLightData()
+    void RenderSystem::updateLightData()
     {
-        modelPixelUniformData.numofpl = (float)pointLights.size();
-        modelPixelUniformData.numofdl = (float)dirLights.size();
-		modelPixelUniformData.numofsl = 0.0f;
-		modelPixelUniformData.pad = 0.0f;
+        pixelLightData.numofpl = (float)pointLights.size();
+        pixelLightData.numofdl = (float)dirLights.size();
+        pixelLightData.numofsl = 0.0f;
+        pixelLightData.pad = 0.0f;
 
         for (size_t i = 0; i < dirLights.size(); i++)
         {
-            modelPixelUniformData.dirLights[i] = dirLights[i]->getLightData();
+            pixelLightData.dirLights[i] = dirLights[i]->getLightData();
         }
 
         for (size_t i = 0; i < pointLights.size(); i++)
         {
-            modelPixelUniformData.pointLights[i] = pointLights[i]->getLightData();
+            pixelLightData.pointLights[i] = pointLights[i]->getLightData();
         }
+
+        device->copyData(pixelLightBuffer, sizeof(pixelLightData), &pixelLightData);
     }
 
     void RenderSystem::initShaders()
@@ -594,5 +596,24 @@ namespace sge
     {
         modelVertexUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelVertexUniformData));
         modelPixelUniformBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(modelPixelUniformData));
+
+        modelVertexUniformData.PV = sge::math::mat4(0.0f);
+        modelVertexUniformData.M = sge::math::mat4(0.0f);
+        modelVertexUniformData.shininess = 0.0f;
+
+        modelPixelUniformData.cameraPosition = sge::math::vec4(0.0f);
+        modelPixelUniformData.hasDiffuseTex = 0;
+        modelPixelUniformData.hasNormalTex = 0;
+        modelPixelUniformData.hasSpecularTex = 0;
+        modelPixelUniformData.hasCubeTex = 0;
+        modelPixelUniformData.glossyness = 0.0f;
+    }
+
+    void RenderSystem::initLights()
+    {
+        pixelLightBuffer = device->createBuffer(BufferType::UNIFORM, BufferUsage::DYNAMIC, sizeof(pixelLightData));
+
+        // We keep lights buffer bound.
+        device->bindPixelUniformBuffer(pixelLightBuffer, UniformBufferSlots::LIGHTS);
     }
 }

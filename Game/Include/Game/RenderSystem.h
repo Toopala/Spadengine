@@ -95,11 +95,12 @@ namespace sge
         void initSpriteRendering();
         void initTextRendering();
         void initModelRendering();
+        void initLights();
 
         void renderForward();
         void renderDeferred();
 
-        void calculateLightData();
+        void updateLightData();
 		
         GraphicsDevice* device;
         math::vec4 clearColor;
@@ -152,24 +153,36 @@ namespace sge
 			float shininess;
         } modelVertexUniformData;
 
+        struct ModelPixelUniformData
+        {
+            sge::math::vec4 cameraPosition;
+            int hasDiffuseTex;
+            int hasNormalTex;
+            int hasSpecularTex;
+            int hasCubeTex;
+            float glossyness;
+            float pad[3]; // TODO do we even need this?
+        } modelPixelUniformData;
+
+        // Light rendering data.
+        Buffer* pixelLightBuffer;
+
 #ifdef DIRECTX11
         __declspec(align(16))
 #endif
-        struct ModelPixelUniformData
+        struct PixelLightData
         {
             DirLight dirLights[MAX_DIR_LIGHTS];
             PointLight pointLights[MAX_POINT_LIGHTS];
-            sge::math::vec4 CamPos;
             float numofpl;
-			float numofdl;
-			float numofsl;
-			float glossyness;
-			int hasDiffuseTex;
-			int hasNormalTex;
-			int hasSpecularTex;
-			int hasCubeTex;
-			float pad;
-        } modelPixelUniformData;
+            float numofdl;
+            float numofsl;
+            float pad;
+        } pixelLightData;
+
+#ifdef DIRECTX11
+        __declspec(align(16))
+#endif
 
         // Text rendering data.
         std::vector<sge::Texture*> charTextures; // TODO who deletes these?
@@ -184,5 +197,12 @@ namespace sge
 
         bool initialized;
         bool acceptingCommands;
+
+        enum UniformBufferSlots
+        {
+            VERTEX = 0,
+            PIXEL = 1,
+            LIGHTS = 2
+        };
 	};
 }

@@ -42,18 +42,23 @@ struct PointLight
 
 layout(binding = 1, std140) uniform pixelUniform
 {
-	DirLight dirLight[NUM_DIR_LIGHTS];
-	PointLight pointLights[NUM_POINT_LIGHTS];
 	vec4 viewPos;
-	float numofpl;
-	float numofdl;
-	float numofsl;
-	float glossyness;
 	int hasDiffuseTex;
 	int hasNormalTex;
 	int hasSpecularTex;
 	int hasCubeTex;
-	float pad;
+	float glossyness;
+	float pad[3];
+};
+
+layout(binding = 2, std140) uniform lightUniform
+{
+	DirLight dirLight[NUM_DIR_LIGHTS];
+	PointLight pointLights[NUM_POINT_LIGHTS];
+	float numofpl;
+	float numofdl;
+	float numofsl;
+	float pad2;
 };
 
 vec3 CalculateDirectionLight(DirLight light, vec3 normal, vec3 viewDir);
