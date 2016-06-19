@@ -13,6 +13,7 @@
 #include "Game/LightComponent.h"
 #include "Game/PointLightComponent.h"
 #include "Game/SpotLightComponent.h"
+#include "Game/RenderSystem.h"
 
 #include "Resources/ResourceManager.h"
 #include "Resources/TextureResource.h"

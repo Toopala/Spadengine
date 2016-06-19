@@ -1,22 +1,22 @@
 #pragma once
-#include "Game/RenderComponent.h"
+
 #include "Core/Math.h"
+#include "Game/Component.h"
 
 #include <string>
 
 namespace sge
 {
 	class TransformComponent;
-    class RenderSystem;
     struct Pipeline;
+    struct Texture;
 
-	class SpriteComponent : public RenderComponent
+	class SpriteComponent : public Component
 	{
 	public:
 		SpriteComponent(Entity* ent);
 		SpriteComponent(Entity* ent, sge::Texture* texture, const sge::math::vec4& col);
 		~SpriteComponent();
-		void render(GraphicsDevice* device);
 		void update();
 
 		void setTexture(Texture* texture);

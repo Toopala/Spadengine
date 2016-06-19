@@ -4,6 +4,7 @@
 #include "Game/EntityManager.h"
 #include "Game/ComponentFactory.h"
 #include "Game/TransformComponent.h"
+#include "Game/RenderSystem.h"
 #include "Game/SpriteComponent.h"
 #include "Game/CameraComponent.h"
 #include "Game/TextComponent.h"

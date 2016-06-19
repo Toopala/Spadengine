@@ -6,7 +6,6 @@
 
 #include "Core/Math.h"
 #include "Renderer/GraphicsDevice.h"
-#include "Renderer/RenderQueue.h"
 
 #include "Game/LightComponent.h"
 #include "Game/PointLightComponent.h"
@@ -17,7 +16,7 @@ namespace sge
 {
     const int MAX_DIR_LIGHTS = 10;
     const int MAX_POINT_LIGHTS = 40;
-	class Window;
+    class Window;
     class RenderComponent;
     class SpriteComponent;
     class ModelComponent;
@@ -34,19 +33,25 @@ namespace sge
         sge::math::vec2 horiBearing;
         sge::math::vec2 vertBearing;
         sge::math::vec2 metrics;
-		sge::math::vec2 advance;
+        sge::math::vec2 advance;
     };
 
     enum Clear
     {
-        QUEUE           = 0x01,
-        COLOR           = 0x02,
-        DEPTH           = 0x04,
-        STENCIL         = 0x08,
-        LIGHTS          = 0x10,
-        CAMERAS         = 0x20,
-        RENDERTARGET    = 0x40,
-        ALL             = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
+        QUEUE = 0x01,
+        COLOR = 0x02,
+        DEPTH = 0x04,
+        STENCIL = 0x08,
+        LIGHTS = 0x10,
+        CAMERAS = 0x20,
+        RENDERTARGET = 0x40,
+        ALL = QUEUE | COLOR | DEPTH | STENCIL | LIGHTS | CAMERAS | RENDERTARGET
+    };
+
+    enum RenderMode
+    {
+        FORWARD,
+        DEFERRED
     };
 
 #ifdef DIRECTX11
@@ -74,30 +79,35 @@ namespace sge
 
 		void begin();
 		void end();
-        void render();
+        void render(RenderMode renderMode = FORWARD);
         void present();
         void clear(int flags = ALL);
-
-        // TODO one should not directly use these methods!
-        void renderSprite(SpriteComponent* sprite);
-        void renderText(TextComponent* text);
-        void renderModel(ModelComponent* model);
 
         void setClearColor(float r, float g, float b, float a);
         void setClearColor(const math::vec4& color);
 
 	private:
+        void renderSprite(SpriteComponent* sprite, CameraComponent* camera);
+        void renderText(TextComponent* text, CameraComponent* camera);
+        void renderModel(ModelComponent* model, CameraComponent* camera);
         
         void initShaders();
         void initSpriteRendering();
         void initTextRendering();
         void initModelRendering();
 
+        void renderForward();
+        void renderDeferred();
+
         void calculateLightData();
 		
-		RenderQueue queue;
         GraphicsDevice* device;
         math::vec4 clearColor;
+
+        // Vectors for different render components.
+        std::vector<SpriteComponent*> spritesToRender;
+        std::vector<ModelComponent*> modelsToRender;
+        std::vector<TextComponent*> textsToRender;
 
         // Sprite rendering data.
         Pipeline* sprPipeline;

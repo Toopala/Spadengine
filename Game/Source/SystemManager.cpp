@@ -1,8 +1,6 @@
 #include "Game/SystemManager.h"
-#include "Game/TestSystem.h"
 #include "Game/PhysicsSystem.h"
 #include "Game/TransformSystem.h"
-#include "Game/TestComponent.h"
 #include "Game/PhysicsComponent.h"
 #include "Game/TransformComponent.h"
 #include "Game/SpriteComponent.h"

@@ -1,7 +1,5 @@
 #include "Game/EntityManager.h"
 #include "Game/TransformComponent.h"
-#include "Game/InputComponent.h"
-#include "Game/TestComponent.h"
 #include "Game/SystemManager.h"
 #include "Game/ComponentFactory.h"
 #include "SDL2/SDL.h"

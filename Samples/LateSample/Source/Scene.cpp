@@ -144,7 +144,6 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	cubeComponent->setShininess(10);
 	cubeComponent->setGlossyness(1.0f);
 	cubeComponent->setModelResource(&cubeHandle);
-	cubeComponent->setRenderer(engine->getRenderer());
 	cubeComponent->setPipeline(pipeline);
 
 	cubeEntity->setComponent(cubeComponent);
@@ -168,7 +167,6 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	deerComponent->setShininess(10);
 	deerComponent->setGlossyness(1.0f);
 	deerComponent->setModelResource(&deerHandle);
-	deerComponent->setRenderer(engine->getRenderer());
 	deerComponent->setPipeline(pipeline);
 	setCubeMap(deerComponent, { 204, 204 }, "../Assets/CubeMap/BoxTop.png", "../Assets/CubeMap/BoxBottom.png", "../Assets/CubeMap/BoxLeft.png", "../Assets/CubeMap/BoxRight.png", "../Assets/CubeMap/BoxFront.png", "../Assets/CubeMap/BoxBack.png");
 	deerEntity->setComponent(deerComponent);
@@ -191,7 +189,6 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	roomComponent = new sge::ModelComponent(roomEntity);
 	roomComponent->setShininess(250);
 	roomComponent->setModelResource(&roomHandle);
-	roomComponent->setRenderer(engine->getRenderer());
 	roomComponent->setPipeline(pipeline);
 	roomEntity->setComponent(roomComponent);
 
@@ -213,7 +210,6 @@ Scene::Scene(sge::Spade *engine) : engine(engine), renderer(engine->getRenderer(
 	diamondComponent = new sge::ModelComponent(diamondEntity);
 	diamondComponent->setShininess(100);
 	diamondComponent->setModelResource(&diamondHandle);
-	diamondComponent->setRenderer(engine->getRenderer());
 	diamondComponent->setPipeline(pipeline);
 	diamondEntity->setComponent(diamondComponent);
 

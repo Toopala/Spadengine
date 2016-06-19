@@ -14,7 +14,6 @@
 #include "Game/CameraComponent.h"
 
 #include "Game/ModelComponent.h"
-#include "Game/RenderComponent.h"
 #include "Game/SpriteComponent.h"
 #include "Game/TextComponent.h"
 #include "Game/TransformComponent.h"
@@ -25,7 +24,6 @@
 namespace sge
 {
     RenderSystem::RenderSystem(Window& window) :
-		queue(1000),
         initialized(false),
         acceptingCommands(false),
         clearColor(0.5f, 0.6f, 0.2f, 1.0f)
@@ -79,21 +77,7 @@ namespace sge
 
             SGE_ASSERT(sprite);
 
-            sprite->setRenderer(this);
-
-            for (auto camera : cameras)
-            {
-                uint32 distance = static_cast<uint32>(math::dot(sprite->transform->getPosition(),
-                    camera->getComponent<TransformComponent>()->getPosition() +
-                    camera->getComponent<TransformComponent>()->getFront()));
-
-                if (sprite->getColor().a < 1.0f)
-                    sprite->key.fields.depth = UINT32_MAX - distance;
-                else
-                    sprite->key.fields.depth = distance;
-
-                queue.push(sprite->key, std::bind(&SpriteComponent::render, sprite, std::placeholders::_1));
-            }
+            spritesToRender.push_back(sprite);
         }
     }
 
@@ -107,21 +91,7 @@ namespace sge
 
             SGE_ASSERT(text);
 
-            text->setRenderer(this);
-
-            for (auto camera : cameras)
-            {
-                uint32 distance = static_cast<uint32>(math::dot(text->transform->getPosition(),
-                    camera->getComponent<TransformComponent>()->getPosition() +
-                    camera->getComponent<TransformComponent>()->getFront()));
-
-                if (text->getColor().a < 1.0f)
-                    text->key.fields.depth = UINT32_MAX - distance;
-                else
-                    text->key.fields.depth = distance;
-
-                queue.push(text->key, std::bind(&TextComponent::render, text, std::placeholders::_1));
-            }
+            textsToRender.push_back(text);
         }
     }
 
@@ -135,18 +105,7 @@ namespace sge
 
             SGE_ASSERT(model);
 
-            model->setRenderer(this);
-
-            for (auto camera : cameras)
-            {
-                //uint32 distance = static_cast<uint32>(math::dot(model->transform->getPosition(),
-                //    camera->getComponent<TransformComponent>()->getPosition() +
-                //    camera->getComponent<TransformComponent>()->getFront()));
-
-                //model->key.fields.depth = distance;
-
-                queue.push(model->key, std::bind(&ModelComponent::render, model, std::placeholders::_1));
-            }
+            modelsToRender.push_back(model);
         }
     }
 
@@ -160,21 +119,21 @@ namespace sge
 
             if (dirLight)
             { 
-                this->dirLights.push_back(dirLight);
+                dirLights.push_back(dirLight);
             }
              
             SpotLightComponent* spotLight = lights[i]->getComponent<SpotLightComponent>();
 
             if (spotLight)
             {
-                this->spotLights.push_back(spotLight);
+                spotLights.push_back(spotLight);
             }
 
             PointLightComponent* pointLight = lights[i]->getComponent<PointLightComponent>();
 
             if (pointLight)
             {
-                this->pointLights.push_back(pointLight);
+                pointLights.push_back(pointLight);
             }
         }
     }
@@ -204,8 +163,6 @@ namespace sge
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
-        queue.begin();
-
         acceptingCommands = true;
     }
 
@@ -215,19 +172,43 @@ namespace sge
 
         calculateLightData();
 
-		queue.end();
-
         acceptingCommands = false;
 	}
 
-    void RenderSystem::render()
+    void RenderSystem::render(RenderMode renderMode)
     {
         SGE_ASSERT(initialized && !acceptingCommands);
 
-        for (auto& command : queue.getQueue())
+        if (renderMode == FORWARD)
+            renderForward();
+        else if (renderMode == DEFERRED)
+            renderDeferred();
+    }
+
+    void RenderSystem::renderForward()
+    {
+        for (auto camera : cameras)
         {
-            command.second(device);
+            for (auto model : modelsToRender)
+            {
+                renderModel(model, camera);
+            }
+
+            for (auto sprite : spritesToRender)
+            {
+                renderSprite(sprite, camera);
+            }
+
+            for (auto text : textsToRender)
+            {
+                renderText(text, camera);
+            }
         }
+    }
+
+    void RenderSystem::renderDeferred()
+    {
+        // TODO DEFERRED
     }
 
     void RenderSystem::present()
@@ -248,7 +229,9 @@ namespace sge
 
         if (flags & QUEUE)
         {
-            queue.clear();
+            modelsToRender.clear();
+            spritesToRender.clear();
+            textsToRender.clear();
         }
 
         if (flags & COLOR || flags & DEPTH || flags & STENCIL)
@@ -269,12 +252,8 @@ namespace sge
         }
     }
 
-    void RenderSystem::renderSprite(SpriteComponent* sprite)
+    void RenderSystem::renderSprite(SpriteComponent* sprite, CameraComponent* camera)
     {
-        static size_t pass = 0;
-
-        SGE_ASSERT(cameras.size() > pass);
-
         Pipeline* pipeline = sprite->getPipeline();
         Texture* texture = sprite->getTexture();
 
@@ -292,9 +271,9 @@ namespace sge
             device->bindPipeline(sprPipeline);
         }
 
-        device->bindViewport(cameras[pass]->getViewport());
+        device->bindViewport(camera->getViewport());
 
-        sprVertexUniformData.MVP = cameras[pass]->getViewProj() * sprite->getComponent<TransformComponent>()->getMatrix();
+        sprVertexUniformData.MVP = camera->getViewProj() * sprite->getComponent<TransformComponent>()->getMatrix();
         sprPixelUniformData.color = sprite->getColor();
 
         device->bindVertexUniformBuffer(sprVertexUniformBuffer, 0);
@@ -318,12 +297,9 @@ namespace sge
         {
             device->debindPipeline(sprPipeline);
         }
-
-        if (++pass >= cameras.size())
-            pass = 0;
     }
 
-    void RenderSystem::renderText(TextComponent* text)
+    void RenderSystem::renderText(TextComponent* text, CameraComponent* camera)
     {
         device->bindPipeline(textPipeline);
 
@@ -360,11 +336,6 @@ namespace sge
             previousText = text->getText();
         }
 
-        // TODO added support for multiple cameras.
-        static size_t pass = 0;
-
-        SGE_ASSERT(cameras.size() > pass);
-
         // Render text
         sge::math::vec2 pen = { 0, 0 }; // The position where the character is drawn.
         sge::math::vec3 originalPosition = text->getParent()->getComponent<TransformComponent>()->getPosition();
@@ -389,9 +360,9 @@ namespace sge
             text->getComponent<TransformComponent>()->setPosition(originalPosition + glm::vec3(pen.x, pen.y, 0));
             text->getComponent<TransformComponent>()->setScale(originalScale * sge::math::vec3(characters[i].size.x, characters[i].size.y, 1));
 
-            device->bindViewport(cameras[pass]->getViewport());
+            device->bindViewport(camera->getViewport());
 
-            sprVertexUniformData.MVP = cameras[pass]->getViewProj() * text->getComponent<TransformComponent>()->getMatrix();
+            sprVertexUniformData.MVP = camera->getViewProj() * text->getComponent<TransformComponent>()->getMatrix();
 			sge::math::mat4 testi = text->getComponent<TransformComponent>()->getMatrix();
             sprPixelUniformData.color = text->getColor();
 
@@ -414,23 +385,16 @@ namespace sge
         text->getComponent<TransformComponent>()->setPosition(originalPosition);
         text->getComponent<TransformComponent>()->setScale(originalScale);
         device->debindPipeline(textPipeline);
-
-        if (++pass >= cameras.size())
-            pass = 0;
     }
 
-    void RenderSystem::renderModel(ModelComponent* model)
+    void RenderSystem::renderModel(ModelComponent* model, CameraComponent* camera)
     {
-        static size_t pass = 0;
-
-        SGE_ASSERT(cameras.size() > pass);
-
-        device->bindViewport(cameras[pass]->getViewport());
+        device->bindViewport(camera->getViewport());
 
         modelVertexUniformData.M = model->getComponent<TransformComponent>()->getMatrix();
-        modelVertexUniformData.PV = cameras[pass]->getViewProj();
+        modelVertexUniformData.PV = camera->getViewProj();
 		modelVertexUniformData.shininess = model->getComponent<ModelComponent>()->getShininess();
-        modelPixelUniformData.CamPos = math::vec4(cameras[pass]->getComponent<TransformComponent>()->getPosition(), 1.0f);
+        modelPixelUniformData.CamPos = math::vec4(camera->getComponent<TransformComponent>()->getPosition(), 1.0f);
 
         device->bindPipeline(model->getPipeline());
 
@@ -511,9 +475,6 @@ namespace sge
 		}        
 
         device->debindPipeline(model->getPipeline());
-
-        if (++pass >= cameras.size())
-            pass = 0;
     }
 
     void RenderSystem::setClearColor(float r, float g, float b, float a)

@@ -101,7 +101,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityCube->setComponent(modComponentCube);
 
 	modComponentCube->setModelResource(&modelHandleCube);
-	modComponentCube->setRenderer(engine->getRenderer());
 
 	modentityCube->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityCube->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -122,7 +121,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityCube2->setComponent(modComponentCube2);
 
 	modComponentCube2->setModelResource(&modelHandleCube2);
-	modComponentCube2->setRenderer(engine->getRenderer());
 
 	modentityCube2->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(20.0f, 0.0f, 0.0f));
 	modentityCube2->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -147,7 +145,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityCube3->setComponent(modComponentCube3);
 
 	modComponentCube3->setModelResource(&modelHandleCube3);
-	modComponentCube3->setRenderer(engine->getRenderer());
 
 	modentityCube3->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(-20.0f, 0.0f, 0.0f));
 	modentityCube3->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -168,7 +165,6 @@ VisualScene::VisualScene(sge::Spade *engine)
 	modentityRoom->setComponent(modComponentRoom);
 
 	modComponentRoom->setModelResource(&modelHandleRoom);
-	modComponentRoom->setRenderer(engine->getRenderer());
 
 	modentityRoom->getComponent<sge::TransformComponent>()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	modentityRoom->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(1.0f, 0.0f, 0.0f));

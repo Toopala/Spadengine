@@ -7,7 +7,7 @@
 namespace sge
 {
 	TextComponent::TextComponent(Entity* ent) :
-		RenderComponent(ent),
+        Component(ent),
 		color(1.0f),
 		font(nullptr)
 	{
@@ -18,7 +18,7 @@ namespace sge
 	}
 
 	TextComponent::TextComponent(Entity* ent, sge::Font* font, const sge::math::vec4& col) :
-		RenderComponent(ent),
+        Component(ent),
 		color(col),
 		font(font)
 	{
@@ -30,11 +30,6 @@ namespace sge
 
 	TextComponent::~TextComponent()
 	{
-	}
-
-	void TextComponent::render(GraphicsDevice* device)
-	{
-        renderer->renderText(this);
 	}
 
 	void TextComponent::update()

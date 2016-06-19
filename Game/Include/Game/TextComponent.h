@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/RenderComponent.h"
+#include "Game/Component.h"
 #include "Core/Math.h"
 #include "Resources/FontResource.h"
 
@@ -9,14 +9,13 @@ namespace sge
 {
 	class TransformComponent;
 
-	class TextComponent : public RenderComponent
+    class TextComponent : public Component
 	{
 	public:
 		TextComponent(Entity* ent);
 		TextComponent(Entity* ent, sge::Font* font, const sge::math::vec4& col);
 		~TextComponent();
 
-		void render(GraphicsDevice* device);
 		void update();
 
 		void setFont(sge::Font* font);

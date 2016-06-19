@@ -1,23 +1,23 @@
 #pragma once
 
-#include "Game/RenderComponent.h"
+#include "Game/Component.h"
 #include "Core/Math.h"
 #include "Resources/ResourceManager.h"
 #include "Resources/ModelResource.h"
-#include "Renderer/Pipeline.h"
-#include "Renderer/Texture.h"
-#include "Renderer/CubeMap.h"
 
 namespace sge
 {
+    struct Texture;
+    struct Pipeline;
+    struct CubeMap;
+
 	class TransformComponent;
-	class ModelComponent : public RenderComponent
+	class ModelComponent : public Component
 	{
 	public:
 		ModelComponent(Entity* entity);
 
 		void update();
-		void render(GraphicsDevice* device);
 
 		void setModelResource(sge::Handle <sge::ModelResource>* modelHandle);
 

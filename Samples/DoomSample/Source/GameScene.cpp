@@ -178,7 +178,6 @@ GameScene::GameScene(sge::Spade* engine) :
 	
 	cubeModel->setShininess(15.0f);
 	cubeModel->setModelResource(&cubeModelHandle);
-	cubeModel->setRenderer(engine->getRenderer());
 	cubeTrans->setPosition(sge::math::vec3(0.0f, 0.0f, 0.0f));
 	cubeTrans->setRotationVector(sge::math::vec3(0.0f, 0.0f, 1.0f));
 	cubeModel->setPipeline(pipelineNormals);
@@ -188,7 +187,6 @@ GameScene::GameScene(sge::Spade* engine) :
 
 	roomModel->setShininess(250.0f);
 	roomModel->setModelResource(&roomModelHandle);
-	roomModel->setRenderer(engine->getRenderer());
 	roomTrans->setPosition(sge::math::vec3(5.0f, 0.0f, 0.0f));
 	roomTrans->setRotationVector(sge::math::vec3(1.0f, 0.0f, 0.0f));
 	roomTrans->setAngle(sge::math::radians(-90.0f));

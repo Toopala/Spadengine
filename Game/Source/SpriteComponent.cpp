@@ -7,38 +7,29 @@
 namespace sge
 {
     SpriteComponent::SpriteComponent(Entity* ent) :
-        RenderComponent(ent),
+        Component(ent),
         color(1.0f),
         texture(nullptr),
         pipeline(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
-        key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
 		SGE_ASSERT(transform);
 	}
 
 	SpriteComponent::SpriteComponent(Entity* ent, sge::Texture* texture, const sge::math::vec4& col) : 
-		RenderComponent(ent),
+        Component(ent),
 		color(col),
 		texture(texture),
         pipeline(nullptr)
 	{
 		transform = getParent()->getComponent<TransformComponent>();
-        key.fields.translucent = (color.a < 1.0f) ? 1 : 0;
 
 		SGE_ASSERT(transform);
 	}
 
 	SpriteComponent::~SpriteComponent()
 	{
-	}
-
-	void SpriteComponent::render(GraphicsDevice* device)
-	{
-        SGE_ASSERT(renderer);
-
-        renderer->renderSprite(this);
 	}
 
 	void SpriteComponent::update()

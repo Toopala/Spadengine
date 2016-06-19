@@ -4,12 +4,6 @@
     <ClCompile Include="Source\Component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\InputComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TestComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\TransformComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -20,9 +14,6 @@
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="Source\SystemManager.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TestSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneManager.cpp">
@@ -52,9 +43,6 @@
     <ClCompile Include="Source\TextComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RenderComponent.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\RenderSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
@@ -75,17 +63,8 @@
     <ClInclude Include="Include\Game\Component.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Game\InputComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Game\TransformComponent.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\TestComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\TestSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\SystemManager.h">
       <Filter>Header Files\Systems</Filter>
@@ -130,9 +109,6 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\TextComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Game\RenderComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Include\Game\RenderSystem.h">

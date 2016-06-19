@@ -112,7 +112,6 @@ void BulletTestScene::spawnObject(sge::math::vec3 pos)
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle2);
-	modcomponent->setRenderer(engine->getRenderer());
 
 	modentity->getComponent<sge::TransformComponent>()->setPosition(pos);
 	modentity->getComponent<sge::TransformComponent>()->setRotationVector(glm::vec3(0.0f, 0.0f, 1.0f));
@@ -247,7 +246,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity->setComponent(modcomponent);
 
 	modcomponent->setModelResource(&modelHandle);
-	modcomponent->setRenderer(engine->getRenderer());
 
 	modcomponent->setPipeline(pipelineNormals);
 	modelHandle.getResource<sge::ModelResource>()->createBuffers();
@@ -283,7 +281,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentity2->setComponent(modcomponent2);
 
 	modcomponent2->setModelResource(&modelHandle2);
-	modcomponent2->setRenderer(engine->getRenderer());
 
 	modcomponent2->setPipeline(pipelineNormals);
 	modelHandle2.getResource<sge::ModelResource>()->createBuffers();
@@ -321,7 +318,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityFloor->setComponent(modcomponentFloor);
 
 	modcomponentFloor->setModelResource(&modelHandleFloor);
-	modcomponentFloor->setRenderer(engine->getRenderer());
 
 	modcomponentFloor->setPipeline(pipelineNormals);
 	modelHandleFloor.getResource<sge::ModelResource>()->createBuffers();
@@ -353,7 +349,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityTree->setComponent(modcomponentTree);
 
 	modcomponentTree->setModelResource(&modelHandleTree);
-	modcomponentTree->setRenderer(engine->getRenderer());
 
 	modcomponentTree->setPipeline(pipelineNormals);
 	modelHandleTree.getResource<sge::ModelResource>()->createBuffers();
@@ -412,7 +407,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityEarth->setComponent(modcomponentEarth);
 
 	modcomponentEarth->setModelResource(&modelHandleEarth);
-	modcomponentEarth->setRenderer(engine->getRenderer());
 
 	modcomponentEarth->setPipeline(pipelineNormals);
 	modelHandleEarth.getResource<sge::ModelResource>()->createBuffers();
@@ -453,7 +447,6 @@ BulletTestScene::BulletTestScene(sge::Spade* engine) : engine(engine), renderer(
 	modentityRoom->setComponent(modcomponentRoom);
 
 	modcomponentRoom->setModelResource(&modelHandleRoom);
-	modcomponentRoom->setRenderer(engine->getRenderer());
 
 	modcomponentRoom->setPipeline(pipelineNormals);
 	modelHandleRoom.getResource<sge::ModelResource>()->createBuffers();

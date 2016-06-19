@@ -175,7 +175,6 @@ sge::Entity* GameScene::createEarth()
 
     model->setPipeline(pipeline);
     model->setShininess(2.0f);
-    model->setRenderer(renderer);
     model->setModelResource(&earthResource);
 
     device->debindPipeline(pipeline);
@@ -258,7 +257,6 @@ sge::Entity* GameScene::createSun()
 
     model->setPipeline(noLightsPipeline);
     model->setShininess(256.0f);
-    model->setRenderer(renderer);
     model->setModelResource(&sunResource);
 
     device->debindPipeline(noLightsPipeline);
@@ -293,7 +291,6 @@ sge::Entity* GameScene::createSkyBox()
     transform->setUp({ 0.0f, 0.0f, 0.0f });
 
     model->setPipeline(skyBoxPipeline);
-    model->setRenderer(renderer);
     model->setModelResource(&skyBoxResource);
     model->setCubeMap(skyBoxCubeMap);
 
@@ -334,7 +331,6 @@ sge::Entity* GameScene::createSpaceShip()
 
 	model->setPipeline(pipeline);
 	model->setShininess(128.0f);
-	model->setRenderer(renderer);
 	model->setModelResource(&spaceShipResource);
 
 	device->debindPipeline(pipeline);
@@ -356,7 +352,6 @@ sge::Entity* GameScene::createMoon()
 
 	model->setPipeline(pipeline);
 	model->setShininess(2.0f);
-	model->setRenderer(renderer);
 	model->setModelResource(&moonResource);
 
 	device->debindPipeline(pipeline);

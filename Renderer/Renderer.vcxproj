@@ -89,7 +89,6 @@
     <ClCompile Include="Source\DX11\DX11GraphicsDevice.cpp" />
     <ClCompile Include="Source\GL4\GL4GraphicsDevice.cpp" />
     <ClCompile Include="Source\MouseLookCamera.cpp" />
-    <ClCompile Include="Source\RenderQueue.cpp" />
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -112,7 +111,6 @@
     <ClInclude Include="Include\Renderer\Pipeline.h" />
     <ClInclude Include="Include\Renderer\RenderCommand.h" />
     <ClInclude Include="Include\Renderer\RenderData.h" />
-    <ClInclude Include="Include\Renderer\RenderQueue.h" />
     <ClInclude Include="Include\Renderer\RenderTarget.h" />
     <ClInclude Include="Include\Renderer\Shader.h" />
     <ClInclude Include="Include\Renderer\Texture.h" />
