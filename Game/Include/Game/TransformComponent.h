@@ -10,7 +10,10 @@ namespace sge
 	public:
 		TransformComponent(Entity* ent);
 
-        void update() {};
+        void update() 
+        {
+
+        };
 
 		void setPosition(const math::vec3& p)
 		{
@@ -96,14 +99,13 @@ namespace sge
 		{
 			return
 				math::translate(math::mat4(1.0f), position) *
-				math::rotate(math::mat4(1.0f), angle, rotationVector) *
+				math::rotate(math::mat4(1.0f), angle, rotationVector) * // TODO lis‰‰ semmone et saa rotaation front/up/left-vektoreista!
 				math::scale(math::mat4(1.0f), scale);
 		}
 
         void lookAt(const math::vec3& target)
         {
             front = math::normalize(target - position);
-            up = math::cross(front, left);
         }
 
 	private:

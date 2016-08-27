@@ -42,6 +42,9 @@ private:
     void initPipelines();
     void initResources();
 
+    void renderScene();
+    void renderFullscreen();
+
     sge::Entity* createEarth();
     sge::Entity* createPerspectiveCamera(int x, int y, unsigned int width, unsigned int height);
     sge::Entity* createOrthoCamera(int x, int y, unsigned int width, unsigned int height);
@@ -83,6 +86,7 @@ private:
     sge::Pipeline* pipeline;
     sge::Pipeline* skyBoxPipeline;
     sge::Pipeline* noLightsPipeline;
+    sge::Pipeline* bloomPipeline;
 
     sge::Shader* vertexShader;
     sge::Shader* pixelShader;
@@ -90,6 +94,8 @@ private:
     sge::Shader* skyBoxPixelShader;
     sge::Shader* noLightsVertexShader;
     sge::Shader* noLightsPixelShader;
+    sge::Shader* bloomVertexShader;
+    sge::Shader* bloomPixelShader;
 
     sge::CubeMap* skyBoxCubeMap;
 

@@ -26,7 +26,8 @@ namespace sge
     RenderSystem::RenderSystem(Window& window) :
         initialized(false),
         acceptingCommands(false),
-        clearColor(0.5f, 0.6f, 0.2f, 1.0f)
+        clearColor(0.5f, 0.6f, 0.2f, 1.0f),
+        activePipeline(nullptr)
 	{
 		device = new GraphicsDevice(window);
 	}
@@ -147,6 +148,27 @@ namespace sge
         device->bindRenderTarget(renderTarget);
     }
 
+    void RenderSystem::setPipeline(Pipeline* pipeline)
+    {
+        SGE_ASSERT(!acceptingCommands);
+
+        activePipeline = (pipeline) ? pipeline : nullptr;
+    }
+
+    void RenderSystem::setDefaultSpritePipeline()
+    {
+        SGE_ASSERT(!acceptingCommands);
+        
+        activePipeline = sprPipeline;
+    }
+
+    void RenderSystem::setDefaultTextPipeline()
+    {
+        SGE_ASSERT(!acceptingCommands);
+
+        activePipeline = textPipeline;
+    }
+
     void RenderSystem::addCameras(size_t count, Entity** cameras)
     {
         SGE_ASSERT(!acceptingCommands);
@@ -179,7 +201,7 @@ namespace sge
 
     void RenderSystem::render(RenderMode renderMode)
     {
-        SGE_ASSERT(initialized && !acceptingCommands);
+        SGE_ASSERT(initialized && !acceptingCommands && activePipeline);
 
         if (renderMode == FORWARD)
             renderForward();
@@ -189,6 +211,8 @@ namespace sge
 
     void RenderSystem::renderForward()
     {
+        device->bindPipeline(activePipeline);
+
         for (auto camera : cameras)
         {
             // TODO here we could have some culling.
@@ -210,6 +234,8 @@ namespace sge
                 renderText(text, camera);
             }
         }
+
+        device->debindPipeline(activePipeline);
     }
 
     void RenderSystem::renderDeferred()
@@ -260,21 +286,11 @@ namespace sge
 
     void RenderSystem::renderSprite(SpriteComponent* sprite, CameraComponent* camera)
     {
-        Pipeline* pipeline = sprite->getPipeline();
         Texture* texture = sprite->getTexture();
 
         if (texture)
         {
             device->bindTexture(texture, 0);
-        }
-
-        if (pipeline)
-        {
-            device->bindPipeline(pipeline);
-        }
-        else
-        {
-            device->bindPipeline(sprPipeline);
         }
 
         device->bindViewport(camera->getViewport());
@@ -294,21 +310,10 @@ namespace sge
         {
             device->debindTexture(texture, 0);
         }
-
-        if (pipeline)
-        {
-            device->debindPipeline(pipeline);
-        }
-        else
-        {
-            device->debindPipeline(sprPipeline);
-        }
     }
 
     void RenderSystem::renderText(TextComponent* text, CameraComponent* camera)
     {
-        device->bindPipeline(textPipeline);
-
         sge::Font* font = text->getFont();
         FT_GlyphSlot slot = font->face->glyph;
 
@@ -390,7 +395,6 @@ namespace sge
 
         text->getComponent<TransformComponent>()->setPosition(originalPosition);
         text->getComponent<TransformComponent>()->setScale(originalScale);
-        device->debindPipeline(textPipeline);
     }
 
     void RenderSystem::renderModel(ModelComponent* model, CameraComponent* camera)
@@ -403,8 +407,6 @@ namespace sge
 
         modelPixelUniformData.cameraPosition = math::vec4(camera->getComponent<TransformComponent>()->getPosition(), 1.0f);
         modelPixelUniformData.glossyness = model->getGlossyness();
-
-        device->bindPipeline(model->getPipeline());
 
 		for (size_t i = 0; i < model->getModelResource()->getMeshes().size(); i++)
 		{
@@ -473,8 +475,6 @@ namespace sge
 				modelPixelUniformData.hasCubeTex = 0;
 			}
 		}        
-
-        device->debindPipeline(model->getPipeline());
     }
 
     void RenderSystem::setClearColor(float r, float g, float b, float a)

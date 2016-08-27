@@ -238,7 +238,7 @@ namespace sge
 		pipeline = nullptr;
 	}
 
-    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, size_t width, size_t height, bool depth, bool stencil)
+    RenderTarget* GraphicsDevice::createRenderTarget(size_t count, size_t width, size_t height, bool depth)
     {
         GLint maxColorAttachments = 0;
         GLint maxDrawBuf = 0;
@@ -271,6 +271,63 @@ namespace sge
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, gl4RenderTarget->depth);
+        }
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            checkError();
+
+            SGE_ASSERT(false);
+        }
+
+        checkError();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        return &gl4RenderTarget->header;
+    }
+
+    RenderTarget* GraphicsDevice::createDeferredRenderTarget(size_t width, size_t height, bool depth)
+    {
+        GL4RenderTarget* gl4RenderTarget = new GL4RenderTarget();
+
+        size_t count = 4; // Four textures, three for deferred rendering and one for output.
+
+        gl4RenderTarget->header.count = count;
+        gl4RenderTarget->header.textures = new Texture*[count];
+        gl4RenderTarget->buffers = new GLenum[count];
+
+        glGenFramebuffers(1, &gl4RenderTarget->id);
+        glBindFramebuffer(GL_FRAMEBUFFER, gl4RenderTarget->id);
+
+        // Output texture.
+        gl4RenderTarget->header.textures[0] = createTexture(width, height, nullptr, Format::RGB);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[0])->id, 0);
+        gl4RenderTarget->buffers[0] = GL_COLOR_ATTACHMENT0;
+
+        // Position texture.
+        gl4RenderTarget->header.textures[1] = createTexture(width, height, nullptr, Format::RGB);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[1])->id, 0);
+        gl4RenderTarget->buffers[1] = GL_COLOR_ATTACHMENT1;
+
+        // Normal texture.
+        gl4RenderTarget->header.textures[2] = createTexture(width, height, nullptr, Format::RGB);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[2])->id, 0);
+        gl4RenderTarget->buffers[2] = GL_COLOR_ATTACHMENT2;
+
+        // Color + specular texture. Note RGBA.
+        gl4RenderTarget->header.textures[3] = createTexture(width, height, nullptr, Format::RGBA);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, reinterpret_cast<GL4Texture*>(gl4RenderTarget->header.textures[3])->id, 0);
+        gl4RenderTarget->buffers[3] = GL_COLOR_ATTACHMENT3;
+
+        if (depth)
+        {
+            //glGenRenderbuffers(1, &gl4RenderTarget->depth);
+            //glBindRenderbuffer(GL_RENDERBUFFER, gl4RenderTarget->depth);
+            //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+            //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, gl4RenderTarget->depth);
         }
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

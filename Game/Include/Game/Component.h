@@ -5,6 +5,9 @@
 
 namespace sge
 {
+    class CameraComponent;
+    class TransformComponent;
+    
 	class Entity;
 
 	class Component

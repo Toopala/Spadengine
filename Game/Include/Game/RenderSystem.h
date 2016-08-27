@@ -77,6 +77,10 @@ namespace sge
         void addCameras(size_t count, Entity* cameras[]);
         void setRenderTarget(RenderTarget* renderTarget);
 
+        void setPipeline(Pipeline* pipeline);
+        void setDefaultSpritePipeline();
+        void setDefaultTextPipeline();
+
 		void begin();
 		void end();
         void render(RenderMode renderMode = FORWARD);
@@ -104,6 +108,9 @@ namespace sge
 		
         GraphicsDevice* device;
         math::vec4 clearColor;
+
+        // Active pipeline.
+        Pipeline* activePipeline;
 
         // Vectors for different render components.
         std::vector<SpriteComponent*> spritesToRender;

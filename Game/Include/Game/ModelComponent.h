@@ -21,10 +21,6 @@ namespace sge
 
 		void setModelResource(sge::Handle <sge::ModelResource>* modelHandle);
 
-		void setPipeline(Pipeline* pipeline) { this->pipeline = pipeline; }
-
-		Pipeline* getPipeline() { return pipeline; }
-
 		ModelResource* getModelResource() { return modelHandle->getResource<ModelResource>(); }
 
         TransformComponent* transform;
@@ -45,7 +41,6 @@ namespace sge
 		
 		CubeMap* myCube;
 		sge::Handle <sge::ModelResource>* modelHandle;
-		Pipeline* pipeline;
 		float shininess;
 		float glossyness;
 	};
